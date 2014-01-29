@@ -13,55 +13,55 @@ import com.google.common.base.Suppliers;
 
 public class MethodReturnFixerFactory extends FixerFactory {
 
-	private final MethodReturnFixerDescriptor descriptor;
+    private final MethodReturnFixerDescriptor descriptor;
 
-	private final Supplier<CompilationUnitFactory> compilationUnitFactorySupplier = Suppliers
-			.memoize(new Supplier<CompilationUnitFactory>() {
-				@Override
-				public CompilationUnitFactory get() {
-					return new CompilationUnitFactory(javaProject, descriptor
-							.getCompilationUnitDescriptor());
-				}
-			});
+    private final Supplier<CompilationUnitFactory> compilationUnitFactorySupplier = Suppliers
+            .memoize(new Supplier<CompilationUnitFactory>() {
+                @Override
+                public CompilationUnitFactory get() {
+                    return new CompilationUnitFactory(javaProject, descriptor
+                            .getCompilationUnitDescriptor());
+                }
+            });
 
-	private final Supplier<MethodFactory> methodFactorySupplier = Suppliers
-			.memoize(new Supplier<MethodFactory>() {
-				@Override
-				public MethodFactory get() {
-					return new MethodFactory(compilationUnitFactorySupplier
-							.get(), descriptor.getOldMethodDescriptor());
-				}
-			});
+    private final Supplier<MethodFactory> methodFactorySupplier = Suppliers
+            .memoize(new Supplier<MethodFactory>() {
+                @Override
+                public MethodFactory get() {
+                    return new MethodFactory(compilationUnitFactorySupplier
+                            .get(), descriptor.getOldMethodDescriptor());
+                }
+            });
 
-	private CompilationUnitDescriptor compilationUnitDescriptor;
+    private CompilationUnitDescriptor compilationUnitDescriptor;
 
-	private CompilationUnitFactory compilationUnitFactory;
+    private CompilationUnitFactory compilationUnitFactory;
 
-	private BindingBasedMethodFactory methodFactory;
+    private BindingBasedMethodFactory methodFactory;
 
-	public MethodReturnFixerFactory(MethodReturnFixerDescriptor descriptor,
-			IJavaProject javaProject) {
-		super(javaProject);
-		this.descriptor = descriptor;
-		this.compilationUnitDescriptor = descriptor
-				.getCompilationUnitDescriptor();
-		this.compilationUnitFactory = new CompilationUnitFactory(javaProject,
-				compilationUnitDescriptor);
-		this.methodFactory = new BindingBasedMethodFactory(
-				compilationUnitFactory, descriptor.getMethodDescriptor());
-	}
+    public MethodReturnFixerFactory(MethodReturnFixerDescriptor descriptor,
+            IJavaProject javaProject) {
+        super(javaProject);
+        this.descriptor = descriptor;
+        this.compilationUnitDescriptor = descriptor
+                .getCompilationUnitDescriptor();
+        this.compilationUnitFactory = new CompilationUnitFactory(javaProject,
+                compilationUnitDescriptor);
+        this.methodFactory = new BindingBasedMethodFactory(
+                compilationUnitFactory, descriptor.getMethodDescriptor());
+    }
 
-	@Override
-	public MethodReturnFixer get() {
-		return new MethodReturnFixer(compilationUnitFactory.getASTNode(),
-				methodFactory.getASTNode(), descriptor.getNewReturnTypeString());
-	}
+    @Override
+    public MethodReturnFixer get() {
+        return new MethodReturnFixer(compilationUnitFactory.getASTNode(),
+                methodFactory.getASTNode(), descriptor.getNewReturnTypeString());
+    }
 
-	@Deprecated
-	public MethodReturnFixer oldGet() {
-		return new MethodReturnFixer(compilationUnitFactorySupplier.get()
-				.getASTNode(), methodFactorySupplier.get().getASTNode(),
-				descriptor.getNewReturnTypeString());
-	}
+    @Deprecated
+    public MethodReturnFixer oldGet() {
+        return new MethodReturnFixer(compilationUnitFactorySupplier.get()
+                .getASTNode(), methodFactorySupplier.get().getASTNode(),
+                descriptor.getNewReturnTypeString());
+    }
 
 }

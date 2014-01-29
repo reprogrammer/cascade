@@ -10,30 +10,29 @@ import checker.framework.quickfixes.descriptors.FixerFactory;
 
 public class MethodReceiverFixerFactory extends FixerFactory {
 
-	private final MethodReceiverFixerDescriptor descriptor;
+    private final MethodReceiverFixerDescriptor descriptor;
 
-	private final CompilationUnitFactory compilationUnitFactory;
+    private final CompilationUnitFactory compilationUnitFactory;
 
-	private final BindingBasedMethodFactory methodFactory;
+    private final BindingBasedMethodFactory methodFactory;
 
-	private final CompilationUnitDescriptor compilationUnitDescriptor;
+    private final CompilationUnitDescriptor compilationUnitDescriptor;
 
-	public MethodReceiverFixerFactory(
-			MethodReceiverFixerDescriptor descriptor, IJavaProject javaProject) {
-		super(javaProject);
-		this.descriptor = descriptor;
-		compilationUnitDescriptor = descriptor.getCompilationUnitDescriptor();
-		this.compilationUnitFactory = new CompilationUnitFactory(javaProject,
-				compilationUnitDescriptor);
-		this.methodFactory = new BindingBasedMethodFactory(
-				compilationUnitFactory, descriptor.getMethodDescriptor());
-	}
+    public MethodReceiverFixerFactory(MethodReceiverFixerDescriptor descriptor,
+            IJavaProject javaProject) {
+        super(javaProject);
+        this.descriptor = descriptor;
+        compilationUnitDescriptor = descriptor.getCompilationUnitDescriptor();
+        this.compilationUnitFactory = new CompilationUnitFactory(javaProject,
+                compilationUnitDescriptor);
+        this.methodFactory = new BindingBasedMethodFactory(
+                compilationUnitFactory, descriptor.getMethodDescriptor());
+    }
 
-	@Override
-	public Fixer get() {
-		return new MethodReceiverFixer(compilationUnitFactory.getASTNode(),
-				methodFactory.getASTNode(),
-				descriptor.getNewTypeString());
-	}
+    @Override
+    public Fixer get() {
+        return new MethodReceiverFixer(compilationUnitFactory.getASTNode(),
+                methodFactory.getASTNode(), descriptor.getNewTypeString());
+    }
 
 }

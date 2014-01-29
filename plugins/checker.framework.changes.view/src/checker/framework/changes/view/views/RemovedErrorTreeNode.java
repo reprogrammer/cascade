@@ -11,19 +11,19 @@ import com.google.common.base.Function;
 
 public class RemovedErrorTreeNode extends ErrorTreeNode {
 
-	public RemovedErrorTreeNode(ComparableMarker marker) {
-		super(marker);
-	}
+    public RemovedErrorTreeNode(ComparableMarker marker) {
+        super(marker);
+    }
 
-	public static Set<RemovedErrorTreeNode> createTreeNodesFrom(
-			Set<ComparableMarker> markers) {
-		return newHashSet(transform(markers,
-				new Function<ComparableMarker, RemovedErrorTreeNode>() {
-					@Override
-					public RemovedErrorTreeNode apply(ComparableMarker marker) {
-						return new RemovedErrorTreeNode(marker);
-					}
-				}));
-	}
+    public static Set<RemovedErrorTreeNode> createTreeNodesFrom(
+            Set<ComparableMarker> markers) {
+        return newHashSet(transform(markers,
+                new Function<ComparableMarker, RemovedErrorTreeNode>() {
+                    @Override
+                    public RemovedErrorTreeNode apply(ComparableMarker marker) {
+                        return new RemovedErrorTreeNode(marker);
+                    }
+                }));
+    }
 
 }

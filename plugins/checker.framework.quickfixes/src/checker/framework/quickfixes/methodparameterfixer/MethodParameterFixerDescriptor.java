@@ -12,59 +12,59 @@ import checker.framework.quickfixes.descriptors.FixerFactory;
 @Deprecated
 public class MethodParameterFixerDescriptor extends FixerDescriptor {
 
-	private final CompilationUnitDescriptor compilationUnitDescriptor;
+    private final CompilationUnitDescriptor compilationUnitDescriptor;
 
-	private final BindingBasedMethodDescriptor methodDescriptor;
+    private final BindingBasedMethodDescriptor methodDescriptor;
 
-	private final int selectedArgumentPosition;
+    private final int selectedArgumentPosition;
 
-	private final String newTypeString;
+    private final String newTypeString;
 
-	public MethodParameterFixerDescriptor(
-			CompilationUnitDescriptor compilationUnitDescriptor,
-			BindingBasedMethodDescriptor methodDescriptor,
-			int selectedArgumentPosition, String newTypeString) {
-		this.compilationUnitDescriptor = compilationUnitDescriptor;
-		this.methodDescriptor = methodDescriptor;
-		this.selectedArgumentPosition = selectedArgumentPosition;
-		this.newTypeString = newTypeString;
-	}
+    public MethodParameterFixerDescriptor(
+            CompilationUnitDescriptor compilationUnitDescriptor,
+            BindingBasedMethodDescriptor methodDescriptor,
+            int selectedArgumentPosition, String newTypeString) {
+        this.compilationUnitDescriptor = compilationUnitDescriptor;
+        this.methodDescriptor = methodDescriptor;
+        this.selectedArgumentPosition = selectedArgumentPosition;
+        this.newTypeString = newTypeString;
+    }
 
-	@Override
-	public FixerFactory createFixerFactory(IJavaProject javaProject) {
-		return new MethodParameterFixerFactory(this, javaProject);
-	}
+    @Override
+    public FixerFactory createFixerFactory(IJavaProject javaProject) {
+        return new MethodParameterFixerFactory(this, javaProject);
+    }
 
-	CompilationUnitDescriptor getCompilationUnitDescriptor() {
-		return compilationUnitDescriptor;
-	}
+    CompilationUnitDescriptor getCompilationUnitDescriptor() {
+        return compilationUnitDescriptor;
+    }
 
-	BindingBasedMethodDescriptor getMethodDescriptor() {
-		return methodDescriptor;
-	}
+    BindingBasedMethodDescriptor getMethodDescriptor() {
+        return methodDescriptor;
+    }
 
-	int getSelectedArgumentPosition() {
-		return selectedArgumentPosition;
-	}
+    int getSelectedArgumentPosition() {
+        return selectedArgumentPosition;
+    }
 
-	String getNewTypeString() {
-		return newTypeString;
-	}
+    String getNewTypeString() {
+        return newTypeString;
+    }
 
-	@Override
-	public int hashCode() {
-		return HashCodeBuilder.reflectionHashCode(this);
-	}
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		return EqualsBuilder.reflectionEquals(this, obj);
-	}
+    @Override
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
+    }
 
-	@Override
-	public String toString() {
-		return "Change parameter " + selectedArgumentPosition + " of "
-				+ methodDescriptor.toString() + " to " + newTypeString;
-	}
+    @Override
+    public String toString() {
+        return "Change parameter " + selectedArgumentPosition + " of "
+                + methodDescriptor.toString() + " to " + newTypeString;
+    }
 
 }

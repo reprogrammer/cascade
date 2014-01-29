@@ -10,24 +10,24 @@ import checker.framework.quickfixes.MarkerContext;
 
 public abstract class FixerDescriptorFactory<T extends FixerDescriptor> {
 
-	protected final MarkerContext context;
+    protected final MarkerContext context;
 
-	public FixerDescriptorFactory(MarkerContext context) {
-		this.context = context;
-	}
+    public FixerDescriptorFactory(MarkerContext context) {
+        this.context = context;
+    }
 
-	protected Set<ErrorKey> getSupportedErrorKeys() {
-		return newHashSet(ErrorKey.errorKeys());
-	}
+    protected Set<ErrorKey> getSupportedErrorKeys() {
+        return newHashSet(ErrorKey.errorKeys());
+    }
 
-	public abstract Set<T> doGet();
+    public abstract Set<T> doGet();
 
-	public Set<T> get() {
-		if (getSupportedErrorKeys().contains(context.getErrorKey())) {
-			return doGet();
-		} else {
-			return new HashSet<>();
-		}
-	}
+    public Set<T> get() {
+        if (getSupportedErrorKeys().contains(context.getErrorKey())) {
+            return doGet();
+        } else {
+            return new HashSet<>();
+        }
+    }
 
 }

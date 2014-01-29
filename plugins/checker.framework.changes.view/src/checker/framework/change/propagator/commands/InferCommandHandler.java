@@ -16,34 +16,34 @@ import checkers.eclipse.actions.CheckerHandler;
 
 public abstract class InferCommandHandler extends CheckerHandler {
 
-	public static CheckerID checkerID;
+    public static CheckerID checkerID;
 
-	public static Optional<IJavaProject> selectedJavaProject = Optional
-			.absent();
+    public static Optional<IJavaProject> selectedJavaProject = Optional
+            .absent();
 
-	@Override
-	public Object execute(ExecutionEvent event) throws ExecutionException {
-		try {
-			selectedJavaProject = getSelectedProject(getSelection(event));
-			if (selectedJavaProject.isPresent()) {
-				// Adapted from http://stackoverflow.com/a/172082
-				PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-						.getActivePage().showView(ChangesView.ID);
-			}
-		} catch (PartInitException e) {
-			throw new RuntimeException(e);
-		}
-		return null;
-	}
+    @Override
+    public Object execute(ExecutionEvent event) throws ExecutionException {
+        try {
+            selectedJavaProject = getSelectedProject(getSelection(event));
+            if (selectedJavaProject.isPresent()) {
+                // Adapted from http://stackoverflow.com/a/172082
+                PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+                        .getActivePage().showView(ChangesView.ID);
+            }
+        } catch (PartInitException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
+    }
 
-	private Optional<IJavaProject> getSelectedProject(ISelection selection) {
-		if (selection instanceof IStructuredSelection) {
-			return Optional
-					.of((IJavaProject) ((IStructuredSelection) selection)
-							.getFirstElement());
-		} else {
-			return Optional.absent();
-		}
-	}
+    private Optional<IJavaProject> getSelectedProject(ISelection selection) {
+        if (selection instanceof IStructuredSelection) {
+            return Optional
+                    .of((IJavaProject) ((IStructuredSelection) selection)
+                            .getFirstElement());
+        } else {
+            return Optional.absent();
+        }
+    }
 
 }

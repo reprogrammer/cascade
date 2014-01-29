@@ -9,26 +9,26 @@ import checker.framework.quickfixes.MarkerContext;
 
 public class FixerProposalFactory {
 
-	private final MarkerContext context;
+    private final MarkerContext context;
 
-	private final FixerDescriptor fixerDescriptor;
+    private final FixerDescriptor fixerDescriptor;
 
-	public FixerProposalFactory(MarkerContext context,
-			FixerDescriptor fixerDescriptor) {
-		this.context = context;
-		this.fixerDescriptor = fixerDescriptor;
-	}
+    public FixerProposalFactory(MarkerContext context,
+            FixerDescriptor fixerDescriptor) {
+        this.context = context;
+        this.fixerDescriptor = fixerDescriptor;
+    }
 
-	public IJavaCompletionProposal createProposal() {
-		return fixerDescriptor.createFixerFactory(context.getJavaProject())
-				.get().getProposal();
-	}
+    public IJavaCompletionProposal createProposal() {
+        return fixerDescriptor.createFixerFactory(context.getJavaProject())
+                .get().getProposal();
+    }
 
-	public CheckerMarkerResolution createResolution(IMarker marker) {
-		return new CheckerMarkerResolution((ICompilationUnit) context
-				.getCompilationUnitNode().getJavaElement(), context
-				.getProblemLocation().getOffset(), context.getProblemLocation()
-				.getLength(), createProposal(), marker);
-	}
+    public CheckerMarkerResolution createResolution(IMarker marker) {
+        return new CheckerMarkerResolution((ICompilationUnit) context
+                .getCompilationUnitNode().getJavaElement(), context
+                .getProblemLocation().getOffset(), context.getProblemLocation()
+                .getLength(), createProposal(), marker);
+    }
 
 }

@@ -20,74 +20,74 @@ import com.google.common.base.Predicate;
 
 public class MarkerResolutionTreeNode extends TreeObject {
 
-	private ActionableMarkerResolution resolution;
+    private ActionableMarkerResolution resolution;
 
-	public MarkerResolutionTreeNode(ActionableMarkerResolution resolution) {
-		super(resolution.getLabel());
-		this.resolution = resolution;
-	}
+    public MarkerResolutionTreeNode(ActionableMarkerResolution resolution) {
+        super(resolution.getLabel());
+        this.resolution = resolution;
+    }
 
-	public ActionableMarkerResolution getResolution() {
-		return resolution;
-	}
+    public ActionableMarkerResolution getResolution() {
+        return resolution;
+    }
 
-	public boolean hasChildren() {
-		return true;
-	}
+    public boolean hasChildren() {
+        return true;
+    }
 
-	private Set<MarkerResolutionTreeNode> createMarkerTreeNodesFrom(
-			Set<ActionableMarkerResolution> resolutions) {
-		Set<MarkerResolutionTreeNode> nodes = new HashSet<>();
-		for (ActionableMarkerResolution resolution : resolutions) {
-			nodes.add(new MarkerResolutionTreeNode(resolution));
-		}
-		return nodes;
-	}
+    private Set<MarkerResolutionTreeNode> createMarkerTreeNodesFrom(
+            Set<ActionableMarkerResolution> resolutions) {
+        Set<MarkerResolutionTreeNode> nodes = new HashSet<>();
+        for (ActionableMarkerResolution resolution : resolutions) {
+            nodes.add(new MarkerResolutionTreeNode(resolution));
+        }
+        return nodes;
+    }
 
-	private List<FixerDescriptor> getParentFixerDescriptors() {
-		LinkedList<FixerDescriptor> fixerDescriptors = new LinkedList<>();
-		TreeObject parent = getParent();
-		while (parent != null && parent instanceof MarkerResolutionTreeNode) {
-			fixerDescriptors.addLast(((MarkerResolutionTreeNode) parent)
-					.getResolution().getFixerDescriptor());
-			parent = parent.getParent();
-		}
-		return fixerDescriptors;
-	}
+    private List<FixerDescriptor> getParentFixerDescriptors() {
+        LinkedList<FixerDescriptor> fixerDescriptors = new LinkedList<>();
+        TreeObject parent = getParent();
+        while (parent != null && parent instanceof MarkerResolutionTreeNode) {
+            fixerDescriptors.addLast(((MarkerResolutionTreeNode) parent)
+                    .getResolution().getFixerDescriptor());
+            parent = parent.getParent();
+        }
+        return fixerDescriptors;
+    }
 
-	public TreeObject[] getChildren() {
-		final List<FixerDescriptor> parentFixerDescriptors = getParentFixerDescriptors();
-		resolution.getShadowProject().updateToPrimaryProjectWithChanges(
-				parentFixerDescriptors);
-		resolution.apply();
-		WorkspaceUtils.saveAllEditors();
-		ShadowProject shadowProject = resolution.getShadowProject();
-		shadowProject.runChecker(InferCommandHandler.checkerID);
-		Set<ComparableMarker> allMarkersAfterResolution = shadowProject
-				.getMarkers();
-		Set<ComparableMarker> removedMarkers = difference(
-				resolution.getAllMarkers(), allMarkersAfterResolution);
-		addChildren(RemovedErrorTreeNode.createTreeNodesFrom(removedMarkers));
-		Set<ComparableMarker> addedMarkers = difference(
-				allMarkersAfterResolution, resolution.getAllMarkers());
-		addChildren(AddedErrorTreeNode.createTreeNodesFrom(addedMarkers));
-		Set<ActionableMarkerResolution> newResolutions = shadowProject
-				.getResolutions(allMarkersAfterResolution, addedMarkers);
-		HashSet<ActionableMarkerResolution> historicallyNewResolutions = newHashSet(filter(
-				newResolutions, new Predicate<ActionableMarkerResolution>() {
-					@Override
-					public boolean apply(
-							ActionableMarkerResolution newResolution) {
-						FixerDescriptor fixerDescriptor = newResolution
-								.getFixerDescriptor();
-						return !resolution.getFixerDescriptor().equals(
-								fixerDescriptor)
-								&& !parentFixerDescriptors
-										.contains(fixerDescriptor);
-					}
-				}));
-		addChildren(createMarkerTreeNodesFrom(historicallyNewResolutions));
-		return super.getChildren();
-	}
+    public TreeObject[] getChildren() {
+        final List<FixerDescriptor> parentFixerDescriptors = getParentFixerDescriptors();
+        resolution.getShadowProject().updateToPrimaryProjectWithChanges(
+                parentFixerDescriptors);
+        resolution.apply();
+        WorkspaceUtils.saveAllEditors();
+        ShadowProject shadowProject = resolution.getShadowProject();
+        shadowProject.runChecker(InferCommandHandler.checkerID);
+        Set<ComparableMarker> allMarkersAfterResolution = shadowProject
+                .getMarkers();
+        Set<ComparableMarker> removedMarkers = difference(
+                resolution.getAllMarkers(), allMarkersAfterResolution);
+        addChildren(RemovedErrorTreeNode.createTreeNodesFrom(removedMarkers));
+        Set<ComparableMarker> addedMarkers = difference(
+                allMarkersAfterResolution, resolution.getAllMarkers());
+        addChildren(AddedErrorTreeNode.createTreeNodesFrom(addedMarkers));
+        Set<ActionableMarkerResolution> newResolutions = shadowProject
+                .getResolutions(allMarkersAfterResolution, addedMarkers);
+        HashSet<ActionableMarkerResolution> historicallyNewResolutions = newHashSet(filter(
+                newResolutions, new Predicate<ActionableMarkerResolution>() {
+                    @Override
+                    public boolean apply(
+                            ActionableMarkerResolution newResolution) {
+                        FixerDescriptor fixerDescriptor = newResolution
+                                .getFixerDescriptor();
+                        return !resolution.getFixerDescriptor().equals(
+                                fixerDescriptor)
+                                && !parentFixerDescriptors
+                                        .contains(fixerDescriptor);
+                    }
+                }));
+        addChildren(createMarkerTreeNodesFrom(historicallyNewResolutions));
+        return super.getChildren();
+    }
 
 }

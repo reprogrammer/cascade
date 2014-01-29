@@ -11,43 +11,43 @@ import checker.framework.quickfixes.descriptors.CompilationUnitDescriptorFactory
 
 public class MarkerLocationDescriptorFactory {
 
-	private final IMarker marker;
+    private final IMarker marker;
 
-	private final CompilationUnitDescriptorFactory compilationUnitDescriptorFactory = new CompilationUnitDescriptorFactory();
+    private final CompilationUnitDescriptorFactory compilationUnitDescriptorFactory = new CompilationUnitDescriptorFactory();
 
-	public MarkerLocationDescriptorFactory(IMarker marker) {
-		this.marker = marker;
-	}
+    public MarkerLocationDescriptorFactory(IMarker marker) {
+        this.marker = marker;
+    }
 
-	// Adapted from
-	// http://help.eclipse.org/indigo/index.jsp?topic=%2Forg.eclipse.jdt.doc.isv%2Fporting%2F3.3%2Frecommended.html
-	private ICompilationUnit toCompilationUnit(IResource resource) {
-		return (ICompilationUnit) JavaCore.create(resource);
-	}
+    // Adapted from
+    // http://help.eclipse.org/indigo/index.jsp?topic=%2Forg.eclipse.jdt.doc.isv%2Fporting%2F3.3%2Frecommended.html
+    private ICompilationUnit toCompilationUnit(IResource resource) {
+        return (ICompilationUnit) JavaCore.create(resource);
+    }
 
-	public MarkerLocationDescriptor get() {
-		ICompilationUnit compilationUnit = toCompilationUnit(marker
-				.getResource());
-		CompilationUnitDescriptor compilationUnitDescriptor = compilationUnitDescriptorFactory
-				.get(compilationUnit);
-		String text = new CompilationUnitTextExtractor(compilationUnit)
-				.getText();
-		try {
-			Integer beginIndex = (Integer) marker
-					.getAttribute(IMarker.CHAR_START);
-			Integer endIndex = (Integer) marker.getAttribute(IMarker.CHAR_END);
-			if (beginIndex < 0) {
-				beginIndex = 0;
-			}
-			if (endIndex < beginIndex) {
-				endIndex = beginIndex;
-			}
-			return new MarkerLocationDescriptor(compilationUnitDescriptor,
-					beginIndex, endIndex - beginIndex, text.substring(
-							beginIndex, endIndex));
-		} catch (CoreException e) {
-			throw new RuntimeException(e);
-		}
-	}
+    public MarkerLocationDescriptor get() {
+        ICompilationUnit compilationUnit = toCompilationUnit(marker
+                .getResource());
+        CompilationUnitDescriptor compilationUnitDescriptor = compilationUnitDescriptorFactory
+                .get(compilationUnit);
+        String text = new CompilationUnitTextExtractor(compilationUnit)
+                .getText();
+        try {
+            Integer beginIndex = (Integer) marker
+                    .getAttribute(IMarker.CHAR_START);
+            Integer endIndex = (Integer) marker.getAttribute(IMarker.CHAR_END);
+            if (beginIndex < 0) {
+                beginIndex = 0;
+            }
+            if (endIndex < beginIndex) {
+                endIndex = beginIndex;
+            }
+            return new MarkerLocationDescriptor(compilationUnitDescriptor,
+                    beginIndex, endIndex - beginIndex, text.substring(
+                            beginIndex, endIndex));
+        } catch (CoreException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }

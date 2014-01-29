@@ -5,12 +5,12 @@ import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 
 public interface Fixer {
 
-	ICompilationUnit getCompilationUnit();
+    ICompilationUnit getCompilationUnit();
 
-	int getOffset();
+    int getOffset();
 
-	int getLength();
+    int getLength();
 
-	IJavaCompletionProposal getProposal();
+    IJavaCompletionProposal getProposal();
 
 }

@@ -11,31 +11,31 @@ import checker.framework.quickfixes.descriptors.FixerFactory;
 @Deprecated
 public class MethodParameterFixerFactory extends FixerFactory {
 
-	private final MethodParameterFixerDescriptor descriptor;
+    private final MethodParameterFixerDescriptor descriptor;
 
-	private final CompilationUnitFactory compilationUnitFactory;
+    private final CompilationUnitFactory compilationUnitFactory;
 
-	private final BindingBasedMethodFactory methodFactory;
+    private final BindingBasedMethodFactory methodFactory;
 
-	private final CompilationUnitDescriptor compilationUnitDescriptor;
+    private final CompilationUnitDescriptor compilationUnitDescriptor;
 
-	public MethodParameterFixerFactory(
-			MethodParameterFixerDescriptor descriptor, IJavaProject javaProject) {
-		super(javaProject);
-		this.descriptor = descriptor;
-		compilationUnitDescriptor = descriptor.getCompilationUnitDescriptor();
-		this.compilationUnitFactory = new CompilationUnitFactory(javaProject,
-				compilationUnitDescriptor);
-		this.methodFactory = new BindingBasedMethodFactory(
-				compilationUnitFactory, descriptor.getMethodDescriptor());
-	}
+    public MethodParameterFixerFactory(
+            MethodParameterFixerDescriptor descriptor, IJavaProject javaProject) {
+        super(javaProject);
+        this.descriptor = descriptor;
+        compilationUnitDescriptor = descriptor.getCompilationUnitDescriptor();
+        this.compilationUnitFactory = new CompilationUnitFactory(javaProject,
+                compilationUnitDescriptor);
+        this.methodFactory = new BindingBasedMethodFactory(
+                compilationUnitFactory, descriptor.getMethodDescriptor());
+    }
 
-	@Override
-	public Fixer get() {
-		return new MethodParameterFixer(compilationUnitFactory.getASTNode(),
-				methodFactory.getASTNode(),
-				descriptor.getSelectedArgumentPosition(),
-				descriptor.getNewTypeString());
-	}
+    @Override
+    public Fixer get() {
+        return new MethodParameterFixer(compilationUnitFactory.getASTNode(),
+                methodFactory.getASTNode(),
+                descriptor.getSelectedArgumentPosition(),
+                descriptor.getNewTypeString());
+    }
 
 }

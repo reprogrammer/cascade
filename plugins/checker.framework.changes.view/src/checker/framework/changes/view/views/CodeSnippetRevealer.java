@@ -9,16 +9,16 @@ import org.eclipse.ui.texteditor.ITextEditor;
 
 public class CodeSnippetRevealer {
 
-	public void reveal(ICompilationUnit compilationUnit, int offset, int length) {
-		try {
-			IEditorPart part = JavaUI
-					.openInEditor(compilationUnit, true, false);
-			if (part instanceof ITextEditor) {
-				((ITextEditor) part).selectAndReveal(offset, length);
-			}
-		} catch (JavaModelException | PartInitException e) {
-			throw new RuntimeException(e);
-		}
-	}
+    public void reveal(ICompilationUnit compilationUnit, int offset, int length) {
+        try {
+            IEditorPart part = JavaUI
+                    .openInEditor(compilationUnit, true, false);
+            if (part instanceof ITextEditor) {
+                ((ITextEditor) part).selectAndReveal(offset, length);
+            }
+        } catch (JavaModelException | PartInitException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }

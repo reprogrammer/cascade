@@ -19,40 +19,40 @@ import checker.framework.quickfixes.descriptors.CompilationUnitDescriptorFactory
 import checker.framework.quickfixes.descriptors.FixerDescriptorFactory;
 
 public class MethodReceiverFixerDescriptorFactory extends
-		FixerDescriptorFactory<MethodReceiverFixerDescriptor> {
+        FixerDescriptorFactory<MethodReceiverFixerDescriptor> {
 
-	private final CompilationUnitDescriptorFactory compilationUnitDescriptorFactory = new CompilationUnitDescriptorFactory();
+    private final CompilationUnitDescriptorFactory compilationUnitDescriptorFactory = new CompilationUnitDescriptorFactory();
 
-	private final BindingBasedMethodDescriptorFactory methodDescriptorFactory = new BindingBasedMethodDescriptorFactory();
+    private final BindingBasedMethodDescriptorFactory methodDescriptorFactory = new BindingBasedMethodDescriptorFactory();
 
-	public MethodReceiverFixerDescriptorFactory(MarkerContext context) {
-		super(context);
-	}
+    public MethodReceiverFixerDescriptorFactory(MarkerContext context) {
+        super(context);
+    }
 
-	@Override
-	protected Set<ErrorKey> getSupportedErrorKeys() {
-		return newHashSet(ErrorKey.ReceiverInvalid,
-				ErrorKey.OverrideReceiverInvalid,
-				ErrorKey.MethodInvocationInvalid);
-	}
+    @Override
+    protected Set<ErrorKey> getSupportedErrorKeys() {
+        return newHashSet(ErrorKey.ReceiverInvalid,
+                ErrorKey.OverrideReceiverInvalid,
+                ErrorKey.MethodInvocationInvalid);
+    }
 
-	@Override
-	public Set<MethodReceiverFixerDescriptor> doGet() {
-		ASTNode selectedNode = context.getCoveringNode();
-		if (selectedNode instanceof MethodInvocation) {
-			ASTNode methodInvocationNode = selectedNode;
-			IMethodBinding methodBinding = ((MethodInvocation) methodInvocationNode)
-					.resolveMethodBinding().getMethodDeclaration();
-			ICompilationUnit compilationUnit = (ICompilationUnit) methodBinding
-					.getMethodDeclaration().getJavaElement()
-					.getAncestor(IJavaElement.COMPILATION_UNIT);
-			BindingBasedMethodDescriptor methodDescriptor = methodDescriptorFactory
-					.get(methodBinding);
-			return newHashSet(new MethodReceiverFixerDescriptor(
-					compilationUnitDescriptorFactory.get(compilationUnit),
-					methodDescriptor, context.getFoundTypeString()));
-		}
-		return new HashSet<>();
-	}
+    @Override
+    public Set<MethodReceiverFixerDescriptor> doGet() {
+        ASTNode selectedNode = context.getCoveringNode();
+        if (selectedNode instanceof MethodInvocation) {
+            ASTNode methodInvocationNode = selectedNode;
+            IMethodBinding methodBinding = ((MethodInvocation) methodInvocationNode)
+                    .resolveMethodBinding().getMethodDeclaration();
+            ICompilationUnit compilationUnit = (ICompilationUnit) methodBinding
+                    .getMethodDeclaration().getJavaElement()
+                    .getAncestor(IJavaElement.COMPILATION_UNIT);
+            BindingBasedMethodDescriptor methodDescriptor = methodDescriptorFactory
+                    .get(methodBinding);
+            return newHashSet(new MethodReceiverFixerDescriptor(
+                    compilationUnitDescriptorFactory.get(compilationUnit),
+                    methodDescriptor, context.getFoundTypeString()));
+        }
+        return new HashSet<>();
+    }
 
 }

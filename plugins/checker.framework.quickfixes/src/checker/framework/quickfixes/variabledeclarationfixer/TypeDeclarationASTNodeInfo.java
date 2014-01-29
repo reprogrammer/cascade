@@ -7,38 +7,38 @@ import org.eclipse.jdt.core.dom.ChildListPropertyDescriptor;
 
 public class TypeDeclarationASTNodeInfo {
 
-	private ChildListPropertyDescriptor modifiersProperty;
+    private ChildListPropertyDescriptor modifiersProperty;
 
-	private ASTNode typeDeclarationNode;
+    private ASTNode typeDeclarationNode;
 
-	private List<?> modifiers;
+    private List<?> modifiers;
 
-	private String identifierName;
+    private String identifierName;
 
-	public TypeDeclarationASTNodeInfo(
-			ChildListPropertyDescriptor modifiersProperty,
-			ASTNode typeDeclarationNode, List<?> modifiers,
-			String identifierName) {
-		this.modifiersProperty = modifiersProperty;
-		this.typeDeclarationNode = typeDeclarationNode;
-		this.modifiers = modifiers;
-		this.identifierName = identifierName;
-	}
+    public TypeDeclarationASTNodeInfo(
+            ChildListPropertyDescriptor modifiersProperty,
+            ASTNode typeDeclarationNode, List<?> modifiers,
+            String identifierName) {
+        this.modifiersProperty = modifiersProperty;
+        this.typeDeclarationNode = typeDeclarationNode;
+        this.modifiers = modifiers;
+        this.identifierName = identifierName;
+    }
 
-	ChildListPropertyDescriptor getModifiersProperty() {
-		return modifiersProperty;
-	}
+    ChildListPropertyDescriptor getModifiersProperty() {
+        return modifiersProperty;
+    }
 
-	ASTNode getTypeDeclarationNode() {
-		return typeDeclarationNode;
-	}
+    ASTNode getTypeDeclarationNode() {
+        return typeDeclarationNode;
+    }
 
-	List<?> getModifiers() {
-		return modifiers;
-	}
+    List<?> getModifiers() {
+        return modifiers;
+    }
 
-	String getIdentifierName() {
-		return identifierName;
-	}
+    String getIdentifierName() {
+        return identifierName;
+    }
 
 }

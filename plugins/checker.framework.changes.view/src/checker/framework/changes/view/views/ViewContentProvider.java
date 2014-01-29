@@ -19,56 +19,56 @@ import checker.framework.change.propagator.commands.InferCommandHandler;
  * and always show the same content (like Task List, for example).
  */
 public class ViewContentProvider implements IStructuredContentProvider,
-		ITreeContentProvider {
+        ITreeContentProvider {
 
-	private TreeObject invisibleRoot;
+    private TreeObject invisibleRoot;
 
-	private IJavaProject javaProject;
+    private IJavaProject javaProject;
 
-	public void inputChanged(Viewer v, Object oldInput, Object newInput) {
-	}
+    public void inputChanged(Viewer v, Object oldInput, Object newInput) {
+    }
 
-	public void dispose() {
-	}
+    public void dispose() {
+    }
 
-	public Object[] getElements(Object parent) {
-		if (invisibleRoot == null) {
-			initialize();
-			return getChildren(invisibleRoot);
-		}
-		return getChildren(parent);
-	}
+    public Object[] getElements(Object parent) {
+        if (invisibleRoot == null) {
+            initialize();
+            return getChildren(invisibleRoot);
+        }
+        return getChildren(parent);
+    }
 
-	public Object getParent(Object child) {
-		return ((TreeObject) child).getParent();
-	}
+    public Object getParent(Object child) {
+        return ((TreeObject) child).getParent();
+    }
 
-	public Object[] getChildren(Object parent) {
-		return ((TreeObject) parent).getChildren();
-	}
+    public Object[] getChildren(Object parent) {
+        return ((TreeObject) parent).getChildren();
+    }
 
-	public boolean hasChildren(Object parent) {
-		return ((TreeObject) parent).hasChildren();
-	}
+    public boolean hasChildren(Object parent) {
+        return ((TreeObject) parent).hasChildren();
+    }
 
-	private void initialize() {
-		invisibleRoot = new TreeObject("");
-		if (InferCommandHandler.checkerID == null) {
-			return;
-		}
-		if (!InferCommandHandler.selectedJavaProject.isPresent()) {
-			return;
-		}
-		javaProject = InferCommandHandler.selectedJavaProject.get();
-		ShadowProject shadowProject = new ShadowProjectFactory(javaProject)
-				.get();
-		shadowProject.runChecker(InferCommandHandler.checkerID);
-		Set<ActionableMarkerResolution> resolutions = shadowProject
-				.getResolutions();
-		for (ActionableMarkerResolution resolution : resolutions) {
-			TreeObject node = new MarkerResolutionTreeNode(resolution);
-			invisibleRoot.addChild(node);
-		}
-	}
+    private void initialize() {
+        invisibleRoot = new TreeObject("");
+        if (InferCommandHandler.checkerID == null) {
+            return;
+        }
+        if (!InferCommandHandler.selectedJavaProject.isPresent()) {
+            return;
+        }
+        javaProject = InferCommandHandler.selectedJavaProject.get();
+        ShadowProject shadowProject = new ShadowProjectFactory(javaProject)
+                .get();
+        shadowProject.runChecker(InferCommandHandler.checkerID);
+        Set<ActionableMarkerResolution> resolutions = shadowProject
+                .getResolutions();
+        for (ActionableMarkerResolution resolution : resolutions) {
+            TreeObject node = new MarkerResolutionTreeNode(resolution);
+            invisibleRoot.addChild(node);
+        }
+    }
 
 }

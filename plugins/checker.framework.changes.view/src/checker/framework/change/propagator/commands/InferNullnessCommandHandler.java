@@ -7,10 +7,10 @@ import checker.framework.change.propagator.CheckerID;
 
 public class InferNullnessCommandHandler extends InferCommandHandler {
 
-	@Override
-	public Object execute(ExecutionEvent event) throws ExecutionException {
-		checkerID = CheckerID.NULLNESS;
-		return super.execute(event);
-	}
+    @Override
+    public Object execute(ExecutionEvent event) throws ExecutionException {
+        checkerID = CheckerID.NULLNESS;
+        return super.execute(event);
+    }
 
 }

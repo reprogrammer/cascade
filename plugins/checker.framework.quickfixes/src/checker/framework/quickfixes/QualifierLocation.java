@@ -2,8 +2,8 @@ package checker.framework.quickfixes;
 
 public enum QualifierLocation {
 
-	TYPE,
+    TYPE,
 
-	METHOD
+    METHOD
 
 }

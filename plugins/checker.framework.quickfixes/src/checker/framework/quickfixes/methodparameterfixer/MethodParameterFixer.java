@@ -17,64 +17,64 @@ import checker.framework.quickfixes.descriptors.Fixer;
 @SuppressWarnings("restriction")
 public class MethodParameterFixer implements Fixer {
 
-	private final CompilationUnit compilationUnit;
+    private final CompilationUnit compilationUnit;
 
-	private final MethodDeclaration methodDeclarationNode;
+    private final MethodDeclaration methodDeclarationNode;
 
-	private int selectedArgumentPosition;
+    private int selectedArgumentPosition;
 
-	private final String newTypeString;
+    private final String newTypeString;
 
-	private final ImportRewriter importRewriter = new ImportRewriter();
+    private final ImportRewriter importRewriter = new ImportRewriter();
 
-	public MethodParameterFixer(CompilationUnit compilationUnit,
-			MethodDeclaration methodDeclNode, int selectedArgumentPosition,
-			String newTypeString) {
-		this.compilationUnit = compilationUnit;
-		this.methodDeclarationNode = methodDeclNode;
-		this.selectedArgumentPosition = selectedArgumentPosition;
-		this.newTypeString = newTypeString;
-	}
+    public MethodParameterFixer(CompilationUnit compilationUnit,
+            MethodDeclaration methodDeclNode, int selectedArgumentPosition,
+            String newTypeString) {
+        this.compilationUnit = compilationUnit;
+        this.methodDeclarationNode = methodDeclNode;
+        this.selectedArgumentPosition = selectedArgumentPosition;
+        this.newTypeString = newTypeString;
+    }
 
-	@Override
-	public ICompilationUnit getCompilationUnit() {
-		return (ICompilationUnit) compilationUnit.getJavaElement();
-	}
+    @Override
+    public ICompilationUnit getCompilationUnit() {
+        return (ICompilationUnit) compilationUnit.getJavaElement();
+    }
 
-	@Override
-	public int getOffset() {
-		return getVariableDeclaration().getStartPosition();
-	}
+    @Override
+    public int getOffset() {
+        return getVariableDeclaration().getStartPosition();
+    }
 
-	@Override
-	public int getLength() {
-		return getVariableDeclaration().getLength();
-	}
+    @Override
+    public int getLength() {
+        return getVariableDeclaration().getLength();
+    }
 
-	@Override
-	public IJavaCompletionProposal getProposal() {
-		ASTRewrite rewrite = ASTRewrite.create(compilationUnit.getAST());
-		String label = String.format("Change parameter %s of %s to %s",
-				getVariableDeclaration().getName().getIdentifier(),
-				methodDeclarationNode.getName().getIdentifier(),
-				ASTParsingUtils
-						.typeStringExcludingInternalQualifiers(newTypeString));
-		ASTRewriteCorrectionProposal proposal = new ASTRewriteCorrectionProposal(
-				label, getCompilationUnit(), rewrite,
-				IProposalRelevance.CHANGE_METHOD_SIGNATURE);
-		SingleVariableDeclaration selectedParameterDeclaration = getVariableDeclaration();
-		rewrite.replace(selectedParameterDeclaration.getType(), ASTParsingUtils
-				.parseTypeStringExcludingInternalQualifiers(newTypeString),
-				null);
-		importRewriter.addRequiredImports(proposal, compilationUnit,
-				methodDeclarationNode, newTypeString);
-		return proposal;
-	}
+    @Override
+    public IJavaCompletionProposal getProposal() {
+        ASTRewrite rewrite = ASTRewrite.create(compilationUnit.getAST());
+        String label = String.format("Change parameter %s of %s to %s",
+                getVariableDeclaration().getName().getIdentifier(),
+                methodDeclarationNode.getName().getIdentifier(),
+                ASTParsingUtils
+                        .typeStringExcludingInternalQualifiers(newTypeString));
+        ASTRewriteCorrectionProposal proposal = new ASTRewriteCorrectionProposal(
+                label, getCompilationUnit(), rewrite,
+                IProposalRelevance.CHANGE_METHOD_SIGNATURE);
+        SingleVariableDeclaration selectedParameterDeclaration = getVariableDeclaration();
+        rewrite.replace(selectedParameterDeclaration.getType(), ASTParsingUtils
+                .parseTypeStringExcludingInternalQualifiers(newTypeString),
+                null);
+        importRewriter.addRequiredImports(proposal, compilationUnit,
+                methodDeclarationNode, newTypeString);
+        return proposal;
+    }
 
-	private SingleVariableDeclaration getVariableDeclaration() {
-		SingleVariableDeclaration selectedParameterDeclaration = (SingleVariableDeclaration) methodDeclarationNode
-				.parameters().get(selectedArgumentPosition);
-		return selectedParameterDeclaration;
-	}
+    private SingleVariableDeclaration getVariableDeclaration() {
+        SingleVariableDeclaration selectedParameterDeclaration = (SingleVariableDeclaration) methodDeclarationNode
+                .parameters().get(selectedArgumentPosition);
+        return selectedParameterDeclaration;
+    }
 
 }

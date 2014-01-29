@@ -7,59 +7,59 @@ import org.eclipse.core.runtime.IAdaptable;
 
 public class TreeObject implements IAdaptable {
 
-	private String name;
+    private String name;
 
-	private TreeObject parent;
+    private TreeObject parent;
 
-	protected ArrayList<TreeObject> children;
+    protected ArrayList<TreeObject> children;
 
-	public TreeObject(String name) {
-		this.name = name;
-		this.children = new ArrayList<>();
-	}
+    public TreeObject(String name) {
+        this.name = name;
+        this.children = new ArrayList<>();
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setParent(TreeObject parent) {
-		this.parent = parent;
-	}
+    public void setParent(TreeObject parent) {
+        this.parent = parent;
+    }
 
-	public TreeObject getParent() {
-		return parent;
-	}
+    public TreeObject getParent() {
+        return parent;
+    }
 
-	public String toString() {
-		return getName();
-	}
+    public String toString() {
+        return getName();
+    }
 
-	public Object getAdapter(Class key) {
-		return null;
-	}
+    public Object getAdapter(Class key) {
+        return null;
+    }
 
-	public void addChild(TreeObject child) {
-		children.add(child);
-		child.setParent(this);
-	}
+    public void addChild(TreeObject child) {
+        children.add(child);
+        child.setParent(this);
+    }
 
-	public void addChildren(Collection<? extends TreeObject> children) {
-		for (TreeObject child : children) {
-			addChild(child);
-		}
-	}
+    public void addChildren(Collection<? extends TreeObject> children) {
+        for (TreeObject child : children) {
+            addChild(child);
+        }
+    }
 
-	public void removeChild(TreeObject child) {
-		children.remove(child);
-		child.setParent(null);
-	}
+    public void removeChild(TreeObject child) {
+        children.remove(child);
+        child.setParent(null);
+    }
 
-	public TreeObject[] getChildren() {
-		return (TreeObject[]) children.toArray(new TreeObject[children.size()]);
-	}
+    public TreeObject[] getChildren() {
+        return (TreeObject[]) children.toArray(new TreeObject[children.size()]);
+    }
 
-	public boolean hasChildren() {
-		return children.size() > 0;
-	}
+    public boolean hasChildren() {
+        return children.size() > 0;
+    }
 
 }

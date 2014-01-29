@@ -7,26 +7,26 @@ import com.google.common.base.Optional;
 
 public class MethodDeclarationFinder extends ASTVisitor {
 
-	private final MethodDescriptor targetMethodDescriptor;
+    private final MethodDescriptor targetMethodDescriptor;
 
-	private Optional<MethodDeclaration> matchingMethodDeclaration = Optional
-			.absent();
+    private Optional<MethodDeclaration> matchingMethodDeclaration = Optional
+            .absent();
 
-	public MethodDeclarationFinder(MethodDescriptor targetMethodDescriptor) {
-		this.targetMethodDescriptor = targetMethodDescriptor;
-	}
+    public MethodDeclarationFinder(MethodDescriptor targetMethodDescriptor) {
+        this.targetMethodDescriptor = targetMethodDescriptor;
+    }
 
-	@Override
-	public boolean visit(MethodDeclaration node) {
-		if (new MethodDescriptorFactory().get(node).equals(
-				targetMethodDescriptor)) {
-			matchingMethodDeclaration = Optional.of(node);
-		}
-		return true;
-	}
+    @Override
+    public boolean visit(MethodDeclaration node) {
+        if (new MethodDescriptorFactory().get(node).equals(
+                targetMethodDescriptor)) {
+            matchingMethodDeclaration = Optional.of(node);
+        }
+        return true;
+    }
 
-	public MethodDeclaration getResult() {
-		return matchingMethodDeclaration.get();
-	}
+    public MethodDeclaration getResult() {
+        return matchingMethodDeclaration.get();
+    }
 
 }

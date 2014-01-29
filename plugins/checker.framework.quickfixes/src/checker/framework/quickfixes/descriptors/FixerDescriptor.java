@@ -7,19 +7,19 @@ import checker.framework.quickfixes.MarkerContext;
 
 public abstract class FixerDescriptor {
 
-	public abstract FixerFactory createFixerFactory(IJavaProject javaProject);
+    public abstract FixerFactory createFixerFactory(IJavaProject javaProject);
 
-	public FixerDescriptorApplier createFixerDescriptorApplier(
-			IJavaProject javaProject) {
-		return new FixerDescriptorApplier(createFixerFactory(javaProject));
-	}
+    public FixerDescriptorApplier createFixerDescriptorApplier(
+            IJavaProject javaProject) {
+        return new FixerDescriptorApplier(createFixerFactory(javaProject));
+    }
 
-	public FixerProposalFactory createProposalFactory(MarkerContext context) {
-		return new FixerProposalFactory(context, this);
-	}
+    public FixerProposalFactory createProposalFactory(MarkerContext context) {
+        return new FixerProposalFactory(context, this);
+    }
 
-	public abstract int hashCode();
+    public abstract int hashCode();
 
-	public abstract boolean equals(Object obj);
+    public abstract boolean equals(Object obj);
 
 }

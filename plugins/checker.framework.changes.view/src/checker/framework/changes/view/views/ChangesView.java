@@ -47,204 +47,204 @@ import com.google.common.base.Optional;
 
 public class ChangesView extends ViewPart {
 
-	/**
-	 * The ID of the view as specified by the extension.
-	 */
-	public static final String ID = "checker.framework.changes.view.views.ChangesView";
+    /**
+     * The ID of the view as specified by the extension.
+     */
+    public static final String ID = "checker.framework.changes.view.views.ChangesView";
 
-	private TreeViewer viewer;
-	private DrillDownAdapter drillDownAdapter;
-	private Action computeFixesAction;
-	private Action action2;
-	private Action doubleClickAction;
+    private TreeViewer viewer;
+    private DrillDownAdapter drillDownAdapter;
+    private Action computeFixesAction;
+    private Action action2;
+    private Action doubleClickAction;
 
-	/**
-	 * The constructor.
-	 */
-	public ChangesView() {
-	}
+    /**
+     * The constructor.
+     */
+    public ChangesView() {
+    }
 
-	/**
-	 * This is a callback that will allow us to create the viewer and initialize
-	 * it.
-	 */
-	public void createPartControl(Composite parent) {
-		viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-		drillDownAdapter = new DrillDownAdapter(viewer);
-		viewer.setContentProvider(new ViewContentProvider());
-		viewer.setLabelProvider(new ViewLabelProvider());
-		viewer.setSorter(new NameSorter());
-		viewer.setInput(getViewSite());
-		makeActions();
-		hookContextMenu();
-		hookDoubleClickAction();
-		hookSelectionAction();
-		contributeToActionBars();
-	}
+    /**
+     * This is a callback that will allow us to create the viewer and initialize
+     * it.
+     */
+    public void createPartControl(Composite parent) {
+        viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+        drillDownAdapter = new DrillDownAdapter(viewer);
+        viewer.setContentProvider(new ViewContentProvider());
+        viewer.setLabelProvider(new ViewLabelProvider());
+        viewer.setSorter(new NameSorter());
+        viewer.setInput(getViewSite());
+        makeActions();
+        hookContextMenu();
+        hookDoubleClickAction();
+        hookSelectionAction();
+        contributeToActionBars();
+    }
 
-	private void hookContextMenu() {
-		MenuManager menuMgr = new MenuManager("#PopupMenu");
-		menuMgr.setRemoveAllWhenShown(true);
-		menuMgr.addMenuListener(new IMenuListener() {
-			public void menuAboutToShow(IMenuManager manager) {
-				ChangesView.this.fillContextMenu(manager);
-			}
-		});
-		Menu menu = menuMgr.createContextMenu(viewer.getControl());
-		viewer.getControl().setMenu(menu);
-		getSite().registerContextMenu(menuMgr, viewer);
-	}
+    private void hookContextMenu() {
+        MenuManager menuMgr = new MenuManager("#PopupMenu");
+        menuMgr.setRemoveAllWhenShown(true);
+        menuMgr.addMenuListener(new IMenuListener() {
+            public void menuAboutToShow(IMenuManager manager) {
+                ChangesView.this.fillContextMenu(manager);
+            }
+        });
+        Menu menu = menuMgr.createContextMenu(viewer.getControl());
+        viewer.getControl().setMenu(menu);
+        getSite().registerContextMenu(menuMgr, viewer);
+    }
 
-	private void contributeToActionBars() {
-		IActionBars bars = getViewSite().getActionBars();
-		fillLocalPullDown(bars.getMenuManager());
-		fillLocalToolBar(bars.getToolBarManager());
-	}
+    private void contributeToActionBars() {
+        IActionBars bars = getViewSite().getActionBars();
+        fillLocalPullDown(bars.getMenuManager());
+        fillLocalToolBar(bars.getToolBarManager());
+    }
 
-	private void fillLocalPullDown(IMenuManager manager) {
-		manager.add(computeFixesAction);
-		manager.add(new Separator());
-		manager.add(action2);
-	}
+    private void fillLocalPullDown(IMenuManager manager) {
+        manager.add(computeFixesAction);
+        manager.add(new Separator());
+        manager.add(action2);
+    }
 
-	private void fillContextMenu(IMenuManager manager) {
-		manager.add(computeFixesAction);
-		manager.add(action2);
-		manager.add(new Separator());
-		drillDownAdapter.addNavigationActions(manager);
-		// Other plug-ins can contribute there actions here
-		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
-	}
+    private void fillContextMenu(IMenuManager manager) {
+        manager.add(computeFixesAction);
+        manager.add(action2);
+        manager.add(new Separator());
+        drillDownAdapter.addNavigationActions(manager);
+        // Other plug-ins can contribute there actions here
+        manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+    }
 
-	private void fillLocalToolBar(IToolBarManager manager) {
-		manager.add(computeFixesAction);
-		manager.add(action2);
-		manager.add(new Separator());
-		drillDownAdapter.addNavigationActions(manager);
-	}
+    private void fillLocalToolBar(IToolBarManager manager) {
+        manager.add(computeFixesAction);
+        manager.add(action2);
+        manager.add(new Separator());
+        drillDownAdapter.addNavigationActions(manager);
+    }
 
-	private void makeActions() {
-		computeFixesAction = new Action() {
-			public void run() {
-				showMessage("Action 1 executed");
-			}
-		};
-		computeFixesAction.setText("Propose Fixes");
-		computeFixesAction
-				.setToolTipText("Proposes changes to fix type errors.");
-		computeFixesAction.setImageDescriptor(PlatformUI.getWorkbench()
-				.getSharedImages()
-				.getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
+    private void makeActions() {
+        computeFixesAction = new Action() {
+            public void run() {
+                showMessage("Action 1 executed");
+            }
+        };
+        computeFixesAction.setText("Propose Fixes");
+        computeFixesAction
+                .setToolTipText("Proposes changes to fix type errors.");
+        computeFixesAction.setImageDescriptor(PlatformUI.getWorkbench()
+                .getSharedImages()
+                .getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
 
-		action2 = new Action() {
-			public void run() {
-				showMessage("Action 2 executed");
-			}
-		};
-		action2.setText("Action 2");
-		action2.setToolTipText("Action 2 tooltip");
-		action2.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
-				.getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
-		doubleClickAction = new Action() {
-			public void run() {
-				Optional<TreeObject> selectedTreeObject = getSelectedTreeObject(viewer
-						.getSelection());
-				Optional<MarkerResolutionTreeNode> resolution = getSelectedMarkResolution(selectedTreeObject);
-				if (resolution.isPresent()) {
-					resolution.get().getResolution().run();
-				}
-				Optional<ErrorTreeNode> error = getSelectedError(selectedTreeObject);
-				if (error.isPresent()) {
-					error.get().reveal();
-				}
-			}
+        action2 = new Action() {
+            public void run() {
+                showMessage("Action 2 executed");
+            }
+        };
+        action2.setText("Action 2");
+        action2.setToolTipText("Action 2 tooltip");
+        action2.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
+                .getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
+        doubleClickAction = new Action() {
+            public void run() {
+                Optional<TreeObject> selectedTreeObject = getSelectedTreeObject(viewer
+                        .getSelection());
+                Optional<MarkerResolutionTreeNode> resolution = getSelectedMarkResolution(selectedTreeObject);
+                if (resolution.isPresent()) {
+                    resolution.get().getResolution().run();
+                }
+                Optional<ErrorTreeNode> error = getSelectedError(selectedTreeObject);
+                if (error.isPresent()) {
+                    error.get().reveal();
+                }
+            }
 
-		};
-	}
+        };
+    }
 
-	private Optional<MarkerResolutionTreeNode> getSelectedMarkResolution(
-			Optional<TreeObject> optionalTreeObject) {
-		Optional<MarkerResolutionTreeNode> optionalMarkerTreeNode = Optional
-				.absent();
-		if (optionalTreeObject.isPresent()) {
-			if (optionalTreeObject.isPresent()) {
-				TreeObject treeObject = optionalTreeObject.get();
-				if (treeObject instanceof MarkerResolutionTreeNode) {
-					optionalMarkerTreeNode = Optional
-							.of((MarkerResolutionTreeNode) treeObject);
-				}
-			}
-		}
-		return optionalMarkerTreeNode;
-	}
+    private Optional<MarkerResolutionTreeNode> getSelectedMarkResolution(
+            Optional<TreeObject> optionalTreeObject) {
+        Optional<MarkerResolutionTreeNode> optionalMarkerTreeNode = Optional
+                .absent();
+        if (optionalTreeObject.isPresent()) {
+            if (optionalTreeObject.isPresent()) {
+                TreeObject treeObject = optionalTreeObject.get();
+                if (treeObject instanceof MarkerResolutionTreeNode) {
+                    optionalMarkerTreeNode = Optional
+                            .of((MarkerResolutionTreeNode) treeObject);
+                }
+            }
+        }
+        return optionalMarkerTreeNode;
+    }
 
-	private Optional<ErrorTreeNode> getSelectedError(
-			Optional<TreeObject> optionalTreeObject) {
-		Optional<ErrorTreeNode> optionalMarkerTreeNode = Optional.absent();
-		if (optionalTreeObject.isPresent()) {
-			if (optionalTreeObject.isPresent()) {
-				TreeObject treeObject = optionalTreeObject.get();
-				if (treeObject instanceof ErrorTreeNode) {
-					optionalMarkerTreeNode = Optional
-							.of((ErrorTreeNode) treeObject);
-				}
-			}
-		}
-		return optionalMarkerTreeNode;
-	}
+    private Optional<ErrorTreeNode> getSelectedError(
+            Optional<TreeObject> optionalTreeObject) {
+        Optional<ErrorTreeNode> optionalMarkerTreeNode = Optional.absent();
+        if (optionalTreeObject.isPresent()) {
+            if (optionalTreeObject.isPresent()) {
+                TreeObject treeObject = optionalTreeObject.get();
+                if (treeObject instanceof ErrorTreeNode) {
+                    optionalMarkerTreeNode = Optional
+                            .of((ErrorTreeNode) treeObject);
+                }
+            }
+        }
+        return optionalMarkerTreeNode;
+    }
 
-	private Optional<TreeObject> getSelectedTreeObject(ISelection selection) {
-		Object selectedObject = ((IStructuredSelection) selection)
-				.getFirstElement();
-		if (selectedObject instanceof TreeObject) {
-			return Optional.of((TreeObject) selectedObject);
-		}
-		return Optional.absent();
-	}
+    private Optional<TreeObject> getSelectedTreeObject(ISelection selection) {
+        Object selectedObject = ((IStructuredSelection) selection)
+                .getFirstElement();
+        if (selectedObject instanceof TreeObject) {
+            return Optional.of((TreeObject) selectedObject);
+        }
+        return Optional.absent();
+    }
 
-	private void hookDoubleClickAction() {
-		viewer.addDoubleClickListener(new IDoubleClickListener() {
-			public void doubleClick(DoubleClickEvent event) {
-				doubleClickAction.run();
-			}
-		});
-	}
+    private void hookDoubleClickAction() {
+        viewer.addDoubleClickListener(new IDoubleClickListener() {
+            public void doubleClick(DoubleClickEvent event) {
+                doubleClickAction.run();
+            }
+        });
+    }
 
-	private void hookSelectionAction() {
-		viewer.addPostSelectionChangedListener(new ISelectionChangedListener() {
-			@Override
-			public void selectionChanged(SelectionChangedEvent event) {
-				Optional<MarkerResolutionTreeNode> optionalResolution = getSelectedMarkResolution(getSelectedTreeObject(event
-						.getSelection()));
-				if (optionalResolution.isPresent()) {
-					MarkerResolutionTreeNode resolution = optionalResolution
-							.get();
-					IJavaProject javaProject = InferNullnessCommandHandler.selectedJavaProject
-							.get();
-					Fixer fixer = resolution.getResolution().createFixer(
-							javaProject);
-					selectAndReveal(fixer);
+    private void hookSelectionAction() {
+        viewer.addPostSelectionChangedListener(new ISelectionChangedListener() {
+            @Override
+            public void selectionChanged(SelectionChangedEvent event) {
+                Optional<MarkerResolutionTreeNode> optionalResolution = getSelectedMarkResolution(getSelectedTreeObject(event
+                        .getSelection()));
+                if (optionalResolution.isPresent()) {
+                    MarkerResolutionTreeNode resolution = optionalResolution
+                            .get();
+                    IJavaProject javaProject = InferNullnessCommandHandler.selectedJavaProject
+                            .get();
+                    Fixer fixer = resolution.getResolution().createFixer(
+                            javaProject);
+                    selectAndReveal(fixer);
 
-				}
-			}
+                }
+            }
 
-			private void selectAndReveal(Fixer fixer) {
-				new CodeSnippetRevealer().reveal(fixer.getCompilationUnit(),
-						fixer.getOffset(), fixer.getLength());
-			}
+            private void selectAndReveal(Fixer fixer) {
+                new CodeSnippetRevealer().reveal(fixer.getCompilationUnit(),
+                        fixer.getOffset(), fixer.getLength());
+            }
 
-		});
-	}
+        });
+    }
 
-	private void showMessage(String message) {
-		MessageDialog.openInformation(viewer.getControl().getShell(),
-				"Changes View", message);
-	}
+    private void showMessage(String message) {
+        MessageDialog.openInformation(viewer.getControl().getShell(),
+                "Changes View", message);
+    }
 
-	/**
-	 * Passing the focus request to the viewer's control.
-	 */
-	public void setFocus() {
-		viewer.getControl().setFocus();
-	}
+    /**
+     * Passing the focus request to the viewer's control.
+     */
+    public void setFocus() {
+        viewer.getControl().setFocus();
+    }
 }

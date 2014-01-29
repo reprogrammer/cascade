@@ -16,47 +16,47 @@ import com.google.common.collect.Ordering;
 
 public class MarkerLocationFactory {
 
-	private final MarkerLocationDescriptor markerLocationDescriptor;
+    private final MarkerLocationDescriptor markerLocationDescriptor;
 
-	public MarkerLocationFactory(MarkerLocationDescriptor markerDescriptor) {
-		this.markerLocationDescriptor = markerDescriptor;
-	}
+    public MarkerLocationFactory(MarkerLocationDescriptor markerDescriptor) {
+        this.markerLocationDescriptor = markerDescriptor;
+    }
 
-	public Optional<MarkerLocation> createMarkerLocation(
-			IJavaProject javaProject) {
-		CompilationUnitFactory compilationUnitFactory = new CompilationUnitFactory(
-				javaProject,
-				markerLocationDescriptor.getCompilationUnitDescriptor());
-		ICompilationUnit compilationUnit = compilationUnitFactory
-				.getJavaElement();
-		CompilationUnitTextExtractor textExtractor = new CompilationUnitTextExtractor(
-				compilationUnit);
-		return findBestMatch(compilationUnit, textExtractor.getText());
-	}
+    public Optional<MarkerLocation> createMarkerLocation(
+            IJavaProject javaProject) {
+        CompilationUnitFactory compilationUnitFactory = new CompilationUnitFactory(
+                javaProject,
+                markerLocationDescriptor.getCompilationUnitDescriptor());
+        ICompilationUnit compilationUnit = compilationUnitFactory
+                .getJavaElement();
+        CompilationUnitTextExtractor textExtractor = new CompilationUnitTextExtractor(
+                compilationUnit);
+        return findBestMatch(compilationUnit, textExtractor.getText());
+    }
 
-	private Optional<MarkerLocation> findBestMatch(
-			ICompilationUnit compilationUnit, String text) {
-		Set<MarkerLocation> matches = new HashSet<>();
-		Pattern p = Pattern.compile(markerLocationDescriptor.getCodeSnippet());
-		Matcher m = p.matcher(text);
-		while (m.find()) {
-			matches.add(new MarkerLocation(compilationUnit, m.start(), m.end()
-					- m.start()));
-		}
-		if (matches.isEmpty()) {
-			return Optional.absent();
-		}
-		MarkerLocation bestMatch = Ordering.natural()
-				.onResultOf(new Function<MarkerLocation, Integer>() {
-					@Override
-					public Integer apply(MarkerLocation markerLocation) {
-						return Math.abs(markerLocationDescriptor
-								.getInitialOffset()
-								- markerLocation.getOffset());
-					}
+    private Optional<MarkerLocation> findBestMatch(
+            ICompilationUnit compilationUnit, String text) {
+        Set<MarkerLocation> matches = new HashSet<>();
+        Pattern p = Pattern.compile(markerLocationDescriptor.getCodeSnippet());
+        Matcher m = p.matcher(text);
+        while (m.find()) {
+            matches.add(new MarkerLocation(compilationUnit, m.start(), m.end()
+                    - m.start()));
+        }
+        if (matches.isEmpty()) {
+            return Optional.absent();
+        }
+        MarkerLocation bestMatch = Ordering.natural()
+                .onResultOf(new Function<MarkerLocation, Integer>() {
+                    @Override
+                    public Integer apply(MarkerLocation markerLocation) {
+                        return Math.abs(markerLocationDescriptor
+                                .getInitialOffset()
+                                - markerLocation.getOffset());
+                    }
 
-				}).min(matches);
-		return Optional.of(bestMatch);
-	}
+                }).min(matches);
+        return Optional.of(bestMatch);
+    }
 
 }

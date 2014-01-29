@@ -9,33 +9,33 @@ import org.eclipse.jdt.core.JavaModelException;
 
 public class CompilationUnitDescriptor {
 
-	private final IPath pathRelativeToClasspath;
+    private final IPath pathRelativeToClasspath;
 
-	CompilationUnitDescriptor(IPath pathRelativeToClassPath) {
-		this.pathRelativeToClasspath = pathRelativeToClassPath;
-	}
+    CompilationUnitDescriptor(IPath pathRelativeToClassPath) {
+        this.pathRelativeToClasspath = pathRelativeToClassPath;
+    }
 
-	IPath getPathRelativeToClasspath() {
-		return pathRelativeToClasspath;
-	}
+    IPath getPathRelativeToClasspath() {
+        return pathRelativeToClasspath;
+    }
 
-	public ICompilationUnit get(IJavaProject project) {
-		try {
-			return (ICompilationUnit) project
-					.findElement(pathRelativeToClasspath);
-		} catch (JavaModelException e) {
-			throw new RuntimeException(e);
-		}
-	}
+    public ICompilationUnit get(IJavaProject project) {
+        try {
+            return (ICompilationUnit) project
+                    .findElement(pathRelativeToClasspath);
+        } catch (JavaModelException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	@Override
-	public int hashCode() {
-		return HashCodeBuilder.reflectionHashCode(this);
-	}
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		return EqualsBuilder.reflectionEquals(this, obj);
-	}
+    @Override
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
+    }
 
 }

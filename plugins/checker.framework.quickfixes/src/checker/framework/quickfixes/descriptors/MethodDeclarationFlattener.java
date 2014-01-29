@@ -6,9 +6,9 @@ import org.eclipse.jdt.internal.core.dom.NaiveASTFlattener;
 @SuppressWarnings("restriction")
 public class MethodDeclarationFlattener extends NaiveASTFlattener {
 
-	@Override
-	public boolean visit(Block node) {
-		return false;
-	}
+    @Override
+    public boolean visit(Block node) {
+        return false;
+    }
 
 }
