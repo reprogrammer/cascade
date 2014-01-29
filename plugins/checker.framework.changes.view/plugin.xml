@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            name="Changes Category"
+            id="checker.framework.changes.view">
+      </category>
+      <view
+            name="Changes View"
+            icon="icons/sample.gif"
+            category="checker.framework.changes.view"
+            class="checker.framework.changes.view.views.ChangesView"
+            id="checker.framework.changes.view.views.ChangesView">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.eclipse.jdt.ui.JavaPerspective">
+         <view
+               ratio="0.5"
+               relative="org.eclipse.ui.views.ProblemView"
+               relationship="right"
+               id="checker.framework.changes.view.views.ChangesView">
+         </view>
+      </perspectiveExtension>
+   </extension>
+   
+   <extension
+     point="org.eclipse.ui.commands">
+
+     <category
+       id="checker.framework.change.propagator.category"
+       name="Type Qualifier Inference Category">
+     </category>
+   
+     <command
+       categoryId="checker.framework.change.propagator.category"
+       defaultHandler="checker.framework.change.propagator.commands.InferNullnessCommandHandler"
+       id="checker.framework.change.propagator.infernullness"
+       name="Infer Nullness Qualifiers">
+      </command>
+
+     <command
+       categoryId="checker.framework.change.propagator.category"
+       defaultHandler="checker.framework.change.propagator.commands.InferJavariCommandHandler"
+       id="checker.framework.change.propagator.inferjavari"
+       name="Infer Javari Qualifiers">
+      </command>
+
+   </extension>
+   
+   <extension
+     point="org.eclipse.ui.menus">
+     <menuContribution
+       locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+       <menu
+         id="checker.framework.change.propagator.menu"
+         label="Type Qualifier Inference">
+         <command
+           commandId="checker.framework.change.propagator.infernullness"
+           label="Infer Nullness Qualifiers"
+           style="push">
+         </command>
+         <command
+           commandId="checker.framework.change.propagator.inferjavari"
+           label="Infer Javari Qualifiers"
+           style="push">
+         </command>
+       </menu>
+     </menuContribution>
+   </extension>
+
+</plugin>
