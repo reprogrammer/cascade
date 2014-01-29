@@ -1,0 +1,13 @@
+diff --git a/org.eclipse.jdt.ui/ui/org/eclipse/jdt/internal/ui/javaeditor/ASTProvider.java b/org.eclipse.jdt.ui/ui/org/eclipse/jdt/internal/ui/javaeditor/ASTProvider.java
+index a405ae2..1c65e2b 100644
+--- a/org.eclipse.jdt.ui/ui/org/eclipse/jdt/internal/ui/javaeditor/ASTProvider.java
++++ b/org.eclipse.jdt.ui/ui/org/eclipse/jdt/internal/ui/javaeditor/ASTProvider.java
+@@ -202,7 +202,7 @@ public final class ASTProvider {
+ 		}
+ 	}
+ 
+-	public static final int SHARED_AST_LEVEL= AST.JLS4;
++	public static final int SHARED_AST_LEVEL= AST.JLS8;
+ 	public static final boolean SHARED_AST_STATEMENT_RECOVERY= true;
+ 	public static final boolean SHARED_BINDING_RECOVERY= true;
+ 
