@@ -15,7 +15,7 @@ class C14 extends C13 {
 class C15 {
 	C13 c15f1;
 
-	void c16m2() {
+	void c15m1() {
 		c15f1.c13m1(null);
 	}
 }
