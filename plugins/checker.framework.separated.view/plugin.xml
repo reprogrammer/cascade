@@ -11,8 +11,15 @@
             name="Separated Changes View"
             icon="icons/sample.gif"
             category="checker.framework.separated.view"
-            class="checker.framework.separated.view.views.SeparatedChangesView"
-            id="checker.framework.separated.view.views.SeparatedChangesView">
+            class="checker.framework.separated.view.views.tree.SeparatedChangesView"
+            id="checker.framework.separated.view.views.tree.SeparatedChangesView">
+      </view>
+      <view
+            name="Separated Errors View"
+            icon="icons/sample.gif"
+            category="checker.framework.separated.view"
+            class="checker.framework.separated.view.views.list.SeparatedErrorsView"
+            id="checker.framework.separated.view.views.list.SeparatedErrorsView">
       </view>
       
    </extension>
@@ -24,7 +31,7 @@
                ratio="0.5"
                relative="org.eclipse.ui.views.ProblemView"
                relationship="right"
-               id="checker.framework.separated.view.views.SeparatedChangesView">
+               id="checker.framework.separated.view.views.tree.SeparatedChangesView">
          </view>
       </perspectiveExtension>
    </extension>

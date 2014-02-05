@@ -1,4 +1,4 @@
-package checker.framework.separated.view.views;
+package checker.framework.separated.view.views.tree;
 
 import java.util.Set;
 
@@ -8,9 +8,11 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
 import checker.framework.change.propagator.ActionableMarkerResolution;
+import checker.framework.change.propagator.ComparableMarker;
 import checker.framework.change.propagator.ShadowProject;
 import checker.framework.change.propagator.ShadowProjectFactory;
 import checker.framework.separated.propagator.commands.InferCommandHandler;
+import checker.framework.separated.view.views.Resolutions;
 
 /**
  * The content provider class is responsible for providing objects to the view.
@@ -53,18 +55,7 @@ public class ViewContentProvider implements IStructuredContentProvider,
 
     private void initialize() {
         invisibleRoot = new TreeObject("");
-        if (InferCommandHandler.checkerID == null) {
-            return;
-        }
-        if (!InferCommandHandler.selectedJavaProject.isPresent()) {
-            return;
-        }
-        javaProject = InferCommandHandler.selectedJavaProject.get();
-        ShadowProject shadowProject = new ShadowProjectFactory(javaProject)
-                .get();
-        shadowProject.runChecker(InferCommandHandler.checkerID);
-        Set<ActionableMarkerResolution> resolutions = shadowProject
-                .getResolutions();
+        Set<ActionableMarkerResolution> resolutions = Resolutions.get();
         for (ActionableMarkerResolution resolution : resolutions) {
             TreeObject node = new MarkerResolutionTreeNode(resolution);
             invisibleRoot.addChild(node);

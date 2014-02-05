@@ -1,4 +1,4 @@
-package checker.framework.separated.view.views;
+package checker.framework.separated.view.views.tree;
 
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;

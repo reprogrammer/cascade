@@ -1,4 +1,4 @@
-package checker.framework.separated.view.views;
+package checker.framework.separated.view.views.tree;
 
 import java.util.ArrayList;
 import java.util.Collection;

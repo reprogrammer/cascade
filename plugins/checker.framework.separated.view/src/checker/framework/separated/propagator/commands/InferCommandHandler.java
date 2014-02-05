@@ -5,13 +5,16 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
 import com.google.common.base.Optional;
 
 import checker.framework.change.propagator.CheckerID;
-import checker.framework.separated.view.views.SeparatedChangesView;
+import checker.framework.separated.view.views.list.SeparatedErrorsView;
+import checker.framework.separated.view.views.tree.SeparatedChangesView;
 import checkers.eclipse.actions.CheckerHandler;
 
 public abstract class InferCommandHandler extends CheckerHandler {
@@ -27,8 +30,11 @@ public abstract class InferCommandHandler extends CheckerHandler {
             selectedJavaProject = getSelectedProject(getSelection(event));
             if (selectedJavaProject.isPresent()) {
                 // Adapted from http://stackoverflow.com/a/172082
-                PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-                        .getActivePage().showView(SeparatedChangesView.ID);
+                IWorkbenchPage activePage = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+                        .getActivePage();
+                activePage.showView(SeparatedChangesView.ID);
+                activePage.showView(SeparatedErrorsView.ID);
+                IViewPart findView = activePage.findView(SeparatedChangesView.ID);
             }
         } catch (PartInitException e) {
             throw new RuntimeException(e);

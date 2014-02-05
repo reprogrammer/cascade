@@ -1,4 +1,4 @@
-package checker.framework.separated.view.views;
+package checker.framework.separated.view.views.tree;
 
 import static com.google.common.collect.Iterables.filter;
 import static com.google.common.collect.Sets.difference;

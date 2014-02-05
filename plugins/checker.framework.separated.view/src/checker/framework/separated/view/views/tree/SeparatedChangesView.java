@@ -1,4 +1,4 @@
-package checker.framework.separated.view.views;
+package checker.framework.separated.view.views.tree;
 
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jface.action.Action;
@@ -50,7 +50,7 @@ public class SeparatedChangesView extends ViewPart {
     /**
      * The ID of the view as specified by the extension.
      */
-    public static final String ID = "checker.framework.separated.view.views.SeparatedChangesView";
+    public static final String ID = "checker.framework.separated.view.views.tree.SeparatedChangesView";
 
     private TreeViewer viewer;
     private DrillDownAdapter drillDownAdapter;
@@ -80,6 +80,8 @@ public class SeparatedChangesView extends ViewPart {
         hookDoubleClickAction();
         hookSelectionAction();
         contributeToActionBars();
+        
+        getSite().setSelectionProvider(viewer);
     }
 
     private void hookContextMenu() {
