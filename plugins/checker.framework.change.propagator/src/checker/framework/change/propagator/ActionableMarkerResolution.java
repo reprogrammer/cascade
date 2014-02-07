@@ -18,6 +18,10 @@ public class ActionableMarkerResolution {
 
     private final Set<ComparableMarker> markers;
 
+    public Set<ComparableMarker> getMarkers() {
+        return markers;
+    }
+
     private final FixerDescriptor fixerDescriptor;
 
     private final Set<ComparableMarker> allMarkers;

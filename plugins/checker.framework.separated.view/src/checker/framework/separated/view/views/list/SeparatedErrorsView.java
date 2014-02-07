@@ -1,6 +1,8 @@
 package checker.framework.separated.view.views.list;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -23,6 +25,7 @@ import org.eclipse.ui.part.ViewPart;
 import checker.framework.change.propagator.ActionableMarkerResolution;
 import checker.framework.change.propagator.ComparableMarker;
 import checker.framework.separated.view.views.Resolutions;
+import checker.framework.separated.view.views.tree.MarkerResolutionTreeNode;
 import checker.framework.separated.view.views.tree.SeparatedChangesView;
 
 public class SeparatedErrorsView extends ViewPart implements ISelectionListener {
@@ -70,20 +73,26 @@ public class SeparatedErrorsView extends ViewPart implements ISelectionListener 
         });
         final Table table = viewer.getTable();
         table.setLinesVisible(true);
-
         viewer.setContentProvider(new ArrayContentProvider());
+        viewer.setInput(prepareInput());
+        getSite().getPage().addSelectionListener(SeparatedChangesView.ID, this);
+    }
 
+    private List<String> prepareInput() {
+        Set<String> existingMessages = new HashSet<String>();
         List<String> messages = new ArrayList<String>();
         Set<ActionableMarkerResolution> resolutions = Resolutions.get();
         for (ActionableMarkerResolution resolution : resolutions) {
             Set<ComparableMarker> markers = resolution.getAllMarkers();
             for (ComparableMarker marker : markers) {
-                messages.add(marker.getMessage());
+                String message = marker.getMessage();
+                if (!existingMessages.contains(message)) {
+                    existingMessages.add(message);
+                    messages.add(message);
+                }
             }
         }
-        viewer.setInput(messages);
-
-        getSite().getPage().addSelectionListener(SeparatedChangesView.ID, this);
+        return messages;
     }
 
     @Override
@@ -104,16 +113,28 @@ public class SeparatedErrorsView extends ViewPart implements ISelectionListener 
         }
         prevSelection = selection.toString();
 
-        System.out.println("new selection is \n" + selection.toString());
-        // TODO Implement the actual conditions for highlighting the text in the
-        // table.
-        isHighlighted = !isHighlighted;
+        TreeSelection treeSelection = (TreeSelection) selection;
+
+        Iterator iterator = treeSelection.iterator();
+        Set<String> removedErrors = new HashSet<String>();
+        while (iterator.hasNext()) {
+            Object next = iterator.next();
+            if (next instanceof MarkerResolutionTreeNode) {
+                ActionableMarkerResolution resolution = ((MarkerResolutionTreeNode) next)
+                        .getResolution();
+                Set<ComparableMarker> markers = resolution.getMarkers();
+                for (ComparableMarker marker : markers) {
+                    removedErrors.add(marker.getMessage());
+                }
+            }
+        }
+
         Table table = viewer.getTable();
         Color defaultColor = table.getForeground();
         Color highlightColor = new Color(null, 255, 0, 0);
-        // TODO Remove the i < 5 condition that is only used for testing.
-        for (int i = 0; i < table.getItemCount() && i < 5; ++i) {
+        for (int i = 0; i < table.getItemCount(); ++i) {
             TableItem item = table.getItem(i);
+            isHighlighted = removedErrors.contains(item.getText());
             item.setForeground(isHighlighted ? highlightColor : defaultColor);
         }
     }
