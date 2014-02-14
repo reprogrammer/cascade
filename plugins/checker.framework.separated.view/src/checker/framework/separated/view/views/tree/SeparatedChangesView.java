@@ -1,5 +1,7 @@
 package checker.framework.separated.view.views.tree;
 
+import java.util.Set;
+
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -20,13 +22,19 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchActionConstants;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.DrillDownAdapter;
 import org.eclipse.ui.part.ViewPart;
 
+import checker.framework.change.propagator.ActionableMarkerResolution;
+import checker.framework.change.propagator.ComparableMarker;
 import checker.framework.quickfixes.descriptors.Fixer;
 import checker.framework.separated.propagator.commands.InferNullnessCommandHandler;
+import checker.framework.separated.view.views.Views;
+import checker.framework.separated.view.views.list.SeparatedErrorsView;
 
 import com.google.common.base.Optional;
 
@@ -65,6 +73,15 @@ public class SeparatedChangesView extends ViewPart {
     }
 
     /**
+     * This is a callback during the initialization phase.
+     */
+    @Override
+    public void init(IViewSite site) throws PartInitException {
+        super.init(site);
+        Views.setChangesView(this);
+    }
+
+    /**
      * This is a callback that will allow us to create the viewer and initialize
      * it.
      */
@@ -80,7 +97,7 @@ public class SeparatedChangesView extends ViewPart {
         hookDoubleClickAction();
         hookSelectionAction();
         contributeToActionBars();
-        
+
         getSite().setSelectionProvider(viewer);
     }
 
@@ -151,9 +168,20 @@ public class SeparatedChangesView extends ViewPart {
             public void run() {
                 Optional<TreeObject> selectedTreeObject = getSelectedTreeObject(viewer
                         .getSelection());
-                Optional<MarkerResolutionTreeNode> resolution = getSelectedMarkResolution(selectedTreeObject);
-                if (resolution.isPresent()) {
-                    resolution.get().getResolution().run();
+                Optional<MarkerResolutionTreeNode> resolutionTreeNode = getSelectedMarkResolution(selectedTreeObject);
+                if (resolutionTreeNode.isPresent()) {
+                    MarkerResolutionTreeNode markerResolutionTreeNode = resolutionTreeNode
+                            .get();
+                    ActionableMarkerResolution resolution = markerResolutionTreeNode
+                            .getResolution();
+                    resolution.run();
+                    Optional<SeparatedErrorsView> errorsView = Views
+                            .getErrorsView();
+                    if (errorsView.isPresent()) {
+                        errorsView.get().updateErrors(
+                                markerResolutionTreeNode.getAddedMarkers(),
+                                markerResolutionTreeNode.getRemovedMarkers());
+                    }
                 }
             }
         };
