@@ -29,6 +29,8 @@ import checker.framework.separated.view.views.Views;
 import checker.framework.separated.view.views.tree.MarkerResolutionTreeNode;
 import checker.framework.separated.view.views.tree.SeparatedChangesView;
 
+import com.google.common.collect.Sets;
+
 public class SeparatedErrorsView extends ViewPart implements ISelectionListener {
     /**
      * The ID of the view as specified by the extension.
@@ -42,7 +44,7 @@ public class SeparatedErrorsView extends ViewPart implements ISelectionListener 
      */
     private String prevSelection = "";
 
-    private boolean isHighlighted;
+    private Set<ComparableMarker> input;
 
     /**
      * The constructor.
@@ -97,25 +99,19 @@ public class SeparatedErrorsView extends ViewPart implements ISelectionListener 
      */
     public void updateErrors(Set<ComparableMarker> addedErrors,
             Set<ComparableMarker> removedErrors) {
-        Table table = viewer.getTable();
-
-        table.setRedraw(false);
-        for (String message : getErrorMessages(removedErrors)) {
-            removeErrorItem(table, message);
-        }
-        for (String message : getErrorMessages(addedErrors)) {
-            addErrorItem(table, message);
-        }
-        table.setRedraw(true);
-
+        HashSet<ComparableMarker> newInput = Sets.newHashSet(input);
+        newInput.addAll(addedErrors);
+        newInput.removeAll(removedErrors);
+        viewer.setInput(newInput);
     }
 
     private Set<ComparableMarker> prepareInput() {
+        input = new HashSet<ComparableMarker>();
         Set<ActionableMarkerResolution> resolutions = Resolutions.get();
         for (ActionableMarkerResolution resolution : resolutions) {
-            return resolution.getAllMarkers();
+            input = resolution.getAllMarkers();
         }
-        return new HashSet<ComparableMarker>();
+        return input;
     }
 
     @Override
@@ -152,10 +148,15 @@ public class SeparatedErrorsView extends ViewPart implements ISelectionListener 
         Color defaultColor = table.getForeground();
         for (int i = 0; i < table.getItemCount(); ++i) {
             TableItem item = table.getItem(i);
-            isHighlighted = removedMarkers.contains((ComparableMarker) item
-                    .getData());
-            item.setForeground(isHighlighted ? Colors.RED : defaultColor);
+            boolean isHighlighted = removedMarkers
+                    .contains((ComparableMarker) item.getData());
+            highlightTableItem(defaultColor, item, isHighlighted);
         }
+    }
+
+    private void highlightTableItem(Color defaultColor, TableItem item,
+            boolean isHighlighted) {
+        item.setForeground(isHighlighted ? Colors.RED : defaultColor);
     }
 
     private void removeErrorItem(Table table, String message) {

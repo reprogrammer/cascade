@@ -17,10 +17,8 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Tree;
@@ -61,7 +59,8 @@ import com.google.common.base.Optional;
  * <p>
  */
 
-public class SeparatedChangesView extends ViewPart implements ISelectionListener {
+public class SeparatedChangesView extends ViewPart implements
+        ISelectionListener {
 
     /**
      * The ID of the view as specified by the extension.
@@ -286,22 +285,28 @@ public class SeparatedChangesView extends ViewPart implements ISelectionListener
             return;
         }
         prevSelection = currentSelection;
-        Tree tree = viewer.getTree();
-        for (TreeItem item : tree.getItems()) {
-            System.out.println(item.toString());
-            Object data = item.getData();
-            if (!(data instanceof MarkerResolutionTreeNode)) {
-                continue;
-            }
-            MarkerResolutionTreeNode treeNode = (MarkerResolutionTreeNode)data;
-            Set<ComparableMarker> markers = treeNode.getResolution().getMarkers();
-            for (ComparableMarker marker : markers) {
-                if (marker.getMessage().equals(currentSelection)) {
-                   item.setForeground(Colors.RED);
+
+        for (Object o : ((StructuredSelection) selection).toList()) {
+            ComparableMarker selectedMarker = (ComparableMarker) o;
+            Tree tree = viewer.getTree();
+            for (TreeItem item : tree.getItems()) {
+                Object data = item.getData();
+                if (!(data instanceof MarkerResolutionTreeNode)) {
+                    continue;
+                }
+                MarkerResolutionTreeNode treeNode = (MarkerResolutionTreeNode) data;
+                Set<ComparableMarker> markers = treeNode.getResolution()
+                        .getMarkers();
+                if (markers.contains(selectedMarker)) {
+                    highlightTreeItem(item);
+                } else {
+                    item.setForeground(tree.getForeground());
                 }
             }
         }
-        
+    }
 
+    private void highlightTreeItem(TreeItem item) {
+        item.setForeground(Colors.RED);
     }
 }
