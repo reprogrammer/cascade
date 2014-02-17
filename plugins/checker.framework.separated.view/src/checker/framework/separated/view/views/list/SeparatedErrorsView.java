@@ -1,11 +1,9 @@
 package checker.framework.separated.view.views.list;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.TableViewer;
@@ -25,6 +23,7 @@ import org.eclipse.ui.part.ViewPart;
 
 import checker.framework.change.propagator.ActionableMarkerResolution;
 import checker.framework.change.propagator.ComparableMarker;
+import checker.framework.separated.view.views.Colors;
 import checker.framework.separated.view.views.Resolutions;
 import checker.framework.separated.view.views.Views;
 import checker.framework.separated.view.views.tree.MarkerResolutionTreeNode;
@@ -39,7 +38,7 @@ public class SeparatedErrorsView extends ViewPart implements ISelectionListener 
     private TableViewer viewer;
 
     /**
-     * String representation of the previous selection;
+     * String representation of the previous selection in the changes view;
      */
     private String prevSelection = "";
 
@@ -84,8 +83,11 @@ public class SeparatedErrorsView extends ViewPart implements ISelectionListener 
         });
         final Table table = viewer.getTable();
         table.setLinesVisible(true);
-        viewer.setContentProvider(new ArrayContentProvider());
+        viewer.setLabelProvider(new ListLabelProvider());
+        viewer.setContentProvider(new ListContentProvider());
         viewer.setInput(prepareInput());
+
+        getSite().setSelectionProvider(viewer);
         getSite().getPage().addSelectionListener(SeparatedChangesView.ID, this);
 
     }
@@ -93,8 +95,10 @@ public class SeparatedErrorsView extends ViewPart implements ISelectionListener 
     /**
      * Updates the error list with the supplied addedErrors and removedErrors.
      */
-    public void updateErrors(Set<ComparableMarker> addedErrors, Set<ComparableMarker> removedErrors) {
+    public void updateErrors(Set<ComparableMarker> addedErrors,
+            Set<ComparableMarker> removedErrors) {
         Table table = viewer.getTable();
+
         table.setRedraw(false);
         for (String message : getErrorMessages(removedErrors)) {
             removeErrorItem(table, message);
@@ -106,21 +110,12 @@ public class SeparatedErrorsView extends ViewPart implements ISelectionListener 
 
     }
 
-    private ArrayList<String> prepareInput() {
-        Set<String> existingMessages = new HashSet<String>();
-        ArrayList<String> messages = new ArrayList<String>();
+    private Set<ComparableMarker> prepareInput() {
         Set<ActionableMarkerResolution> resolutions = Resolutions.get();
         for (ActionableMarkerResolution resolution : resolutions) {
-            Set<ComparableMarker> markers = resolution.getAllMarkers();
-            for (ComparableMarker marker : markers) {
-                String message = marker.getMessage();
-                if (!existingMessages.contains(message)) {
-                    existingMessages.add(message);
-                    messages.add(message);
-                }
-            }
+            return resolution.getAllMarkers();
         }
-        return messages;
+        return new HashSet<ComparableMarker>();
     }
 
     @Override
@@ -144,23 +139,22 @@ public class SeparatedErrorsView extends ViewPart implements ISelectionListener 
         TreeSelection treeSelection = (TreeSelection) selection;
 
         Iterator iterator = treeSelection.iterator();
-        Set<String> removedErrorMessages = new HashSet<String>();
+        Set<ComparableMarker> removedMarkers = new HashSet<ComparableMarker>();
         while (iterator.hasNext()) {
             Object next = iterator.next();
             if (next instanceof MarkerResolutionTreeNode) {
-                removedErrorMessages
-                        .addAll(getErrorMessages(((MarkerResolutionTreeNode) next)
-                                .getResolution().getMarkers()));
+                removedMarkers.addAll(((MarkerResolutionTreeNode) next)
+                        .getResolution().getMarkers());
             }
         }
 
         Table table = viewer.getTable();
         Color defaultColor = table.getForeground();
-        Color highlightColor = new Color(null, 255, 0, 0);
         for (int i = 0; i < table.getItemCount(); ++i) {
             TableItem item = table.getItem(i);
-            isHighlighted = removedErrorMessages.contains(item.getText());
-            item.setForeground(isHighlighted ? highlightColor : defaultColor);
+            isHighlighted = removedMarkers.contains((ComparableMarker) item
+                    .getData());
+            item.setForeground(isHighlighted ? Colors.RED : defaultColor);
         }
     }
 
@@ -177,14 +171,13 @@ public class SeparatedErrorsView extends ViewPart implements ISelectionListener 
             table.remove(removeIndex);
         }
     }
-    
+
     private void addErrorItem(Table table, String message) {
         TableItem newItem = new TableItem(table, table.getItemCount() - 1);
         newItem.setText(message);
     }
-    
-    private Set<String> getErrorMessages(
-            Set<ComparableMarker> markers) {
+
+    private Set<String> getErrorMessages(Set<ComparableMarker> markers) {
         Set<String> messages = new HashSet<String>();
         for (ComparableMarker marker : markers) {
             messages.add(marker.getMessage());

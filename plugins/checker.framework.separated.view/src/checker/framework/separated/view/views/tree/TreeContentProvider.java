@@ -20,7 +20,7 @@ import checker.framework.separated.view.views.Resolutions;
  * These objects may be sensitive to the current input of the view, or ignore it
  * and always show the same content (like Task List, for example).
  */
-public class ViewContentProvider implements IStructuredContentProvider,
+public class TreeContentProvider implements IStructuredContentProvider,
         ITreeContentProvider {
 
     private TreeObject invisibleRoot;

@@ -18,6 +18,7 @@ public class ActionableMarkerResolution {
 
     private final Set<ComparableMarker> markers;
 
+    // TODO renamed to a more descriptive method name
     public Set<ComparableMarker> getMarkers() {
         return markers;
     }

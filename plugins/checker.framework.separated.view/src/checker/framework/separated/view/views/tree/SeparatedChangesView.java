@@ -16,14 +16,21 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchActionConstants;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.DrillDownAdapter;
@@ -33,6 +40,7 @@ import checker.framework.change.propagator.ActionableMarkerResolution;
 import checker.framework.change.propagator.ComparableMarker;
 import checker.framework.quickfixes.descriptors.Fixer;
 import checker.framework.separated.propagator.commands.InferNullnessCommandHandler;
+import checker.framework.separated.view.views.Colors;
 import checker.framework.separated.view.views.Views;
 import checker.framework.separated.view.views.list.SeparatedErrorsView;
 
@@ -53,7 +61,7 @@ import com.google.common.base.Optional;
  * <p>
  */
 
-public class SeparatedChangesView extends ViewPart {
+public class SeparatedChangesView extends ViewPart implements ISelectionListener {
 
     /**
      * The ID of the view as specified by the extension.
@@ -65,6 +73,11 @@ public class SeparatedChangesView extends ViewPart {
     private Action computeFixesAction;
     private Action action2;
     private Action doubleClickAction;
+
+    /**
+     * String representation of the previous in the errors view;
+     */
+    private String prevSelection = "";
 
     /**
      * The constructor.
@@ -88,8 +101,8 @@ public class SeparatedChangesView extends ViewPart {
     public void createPartControl(Composite parent) {
         viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
         drillDownAdapter = new DrillDownAdapter(viewer);
-        viewer.setContentProvider(new ViewContentProvider());
-        viewer.setLabelProvider(new ViewLabelProvider());
+        viewer.setContentProvider(new TreeContentProvider());
+        viewer.setLabelProvider(new TreeLabelProvider());
         viewer.setSorter(new NameSorter());
         viewer.setInput(getViewSite());
         makeActions();
@@ -99,6 +112,8 @@ public class SeparatedChangesView extends ViewPart {
         contributeToActionBars();
 
         getSite().setSelectionProvider(viewer);
+        getSite().getPage().addSelectionListener(SeparatedErrorsView.ID, this);
+
     }
 
     private void hookContextMenu() {
@@ -256,5 +271,37 @@ public class SeparatedChangesView extends ViewPart {
      */
     public void setFocus() {
         viewer.getControl().setFocus();
+    }
+
+    @Override
+    public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+        if (!(selection instanceof StructuredSelection)) {
+            return;
+        }
+        if (selection.isEmpty()) {
+            return;
+        }
+        String currentSelection = selection.toString();
+        if (prevSelection.equals(currentSelection)) {
+            return;
+        }
+        prevSelection = currentSelection;
+        Tree tree = viewer.getTree();
+        for (TreeItem item : tree.getItems()) {
+            System.out.println(item.toString());
+            Object data = item.getData();
+            if (!(data instanceof MarkerResolutionTreeNode)) {
+                continue;
+            }
+            MarkerResolutionTreeNode treeNode = (MarkerResolutionTreeNode)data;
+            Set<ComparableMarker> markers = treeNode.getResolution().getMarkers();
+            for (ComparableMarker marker : markers) {
+                if (marker.getMessage().equals(currentSelection)) {
+                   item.setForeground(Colors.RED);
+                }
+            }
+        }
+        
+
     }
 }
