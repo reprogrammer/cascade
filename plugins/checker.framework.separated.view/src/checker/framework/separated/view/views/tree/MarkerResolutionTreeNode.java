@@ -2,6 +2,7 @@ package checker.framework.separated.view.views.tree;
 
 import static com.google.common.collect.Iterables.filter;
 import static com.google.common.collect.Sets.difference;
+import static com.google.common.collect.Sets.intersection;
 import static com.google.common.collect.Sets.newHashSet;
 
 import java.util.HashSet;
@@ -12,28 +13,20 @@ import java.util.Set;
 import checker.framework.change.propagator.ActionableMarkerResolution;
 import checker.framework.change.propagator.ComparableMarker;
 import checker.framework.change.propagator.ShadowProject;
-import checker.framework.separated.propagator.commands.InferCommandHandler;
 import checker.framework.quickfixes.WorkspaceUtils;
 import checker.framework.quickfixes.descriptors.FixerDescriptor;
+import checker.framework.separated.propagator.commands.InferCommandHandler;
 
 import com.google.common.base.Predicate;
 
 public class MarkerResolutionTreeNode extends TreeObject {
 
     private ActionableMarkerResolution resolution;
-    public Set<ComparableMarker> getAddedMarkers() {
-        calculateAndCacheMarkers();
-        return addedMarkers;
-    }
 
-    public Set<ComparableMarker> getRemovedMarkers() {
-        calculateAndCacheMarkers();
-        return removedMarkers;
-    }
-
-    private Set<ComparableMarker> addedMarkers;
-    private Set<ComparableMarker> removedMarkers;
     private Set<ComparableMarker> allMarkersAfterResolution;
+    private Set<ComparableMarker> allMarkersOnlyAfterResolution;
+    private Set<ComparableMarker> allMarkersOnlyBeforeResolution;
+    private Set<ComparableMarker> allMarkersBeforeAndAfterResolution;
     private LinkedList<FixerDescriptor> parentFixerDescriptors;
 
     public MarkerResolutionTreeNode(ActionableMarkerResolution resolution) {
@@ -73,11 +66,27 @@ public class MarkerResolutionTreeNode extends TreeObject {
 
     }
 
+    public Set<ComparableMarker> getAllMarkersOnlyAfterResolution() {
+        calculateAndCacheMarkers();
+        return allMarkersOnlyAfterResolution;
+    }
+
+    public Set<ComparableMarker> getAllMarkersOnlyBeforeResolution() {
+        calculateAndCacheMarkers();
+        return allMarkersOnlyBeforeResolution;
+    }
+
+    public Set<ComparableMarker> getAllMarkersBeforeAndAfterResolution() {
+        calculateAndCacheMarkers();
+        return allMarkersBeforeAndAfterResolution;
+    }
+
     public TreeObject[] getChildren() {
         calculateAndCacheMarkers();
         ShadowProject shadowProject = resolution.getShadowProject();
         Set<ActionableMarkerResolution> newResolutions = shadowProject
-                .getResolutions(allMarkersAfterResolution, addedMarkers);
+                .getResolutions(allMarkersAfterResolution,
+                        allMarkersOnlyAfterResolution);
         HashSet<ActionableMarkerResolution> historicallyNewResolutions = newHashSet(filter(
                 newResolutions, new Predicate<ActionableMarkerResolution>() {
                     @Override
@@ -100,8 +109,9 @@ public class MarkerResolutionTreeNode extends TreeObject {
      * parentFixerDescriptors are initialized and cached here
      */
     private void calculateAndCacheMarkers() {
-        if (addedMarkers == null || removedMarkers == null
-                || allMarkersAfterResolution == null) {
+        if (allMarkersOnlyAfterResolution == null
+                || allMarkersOnlyBeforeResolution == null
+                || allMarkersBeforeAndAfterResolution == null) {
             resolution.getShadowProject().updateToPrimaryProjectWithChanges(
                     getParentFixerDescriptors());
             resolution.apply();
@@ -110,10 +120,17 @@ public class MarkerResolutionTreeNode extends TreeObject {
                     InferCommandHandler.checkerID);
             allMarkersAfterResolution = resolution.getShadowProject()
                     .getMarkers();
-            removedMarkers = difference(resolution.getAllMarkers(),
-                    allMarkersAfterResolution);
-            addedMarkers = difference(allMarkersAfterResolution,
-                    resolution.getAllMarkers());
+            Set<ComparableMarker> allMarkersBeforeResolution = resolution
+                    .getAllMarkersBeforeResolution();
+
+            allMarkersOnlyBeforeResolution = difference(
+                    allMarkersBeforeResolution, allMarkersAfterResolution);
+
+            allMarkersOnlyAfterResolution = difference(
+                    allMarkersAfterResolution, allMarkersBeforeResolution);
+
+            allMarkersBeforeAndAfterResolution = intersection(
+                    allMarkersAfterResolution, allMarkersBeforeResolution);
         }
     }
 }

@@ -109,7 +109,7 @@ public class SeparatedErrorsView extends ViewPart implements ISelectionListener 
         input = new HashSet<ComparableMarker>();
         Set<ActionableMarkerResolution> resolutions = Resolutions.get();
         for (ActionableMarkerResolution resolution : resolutions) {
-            input = resolution.getAllMarkers();
+            input = resolution.getAllMarkersBeforeResolution();
         }
         return input;
     }
@@ -132,57 +132,66 @@ public class SeparatedErrorsView extends ViewPart implements ISelectionListener 
         }
         prevSelection = selection.toString();
 
-        TreeSelection treeSelection = (TreeSelection) selection;
+        Set<ComparableMarker> markersOnlyBeforeResolution = new HashSet<ComparableMarker>();
+        Set<ComparableMarker> markersOnlyAfterResolution = new HashSet<ComparableMarker>();
+        Set<ComparableMarker> markersBeforeAndAfterResolution = new HashSet<ComparableMarker>();
+        rebuildErrorsList((TreeSelection) selection,
+                markersOnlyBeforeResolution, markersOnlyAfterResolution,
+                markersBeforeAndAfterResolution);
+        Set<ComparableMarker> allErrors = new HashSet<ComparableMarker>();
+        allErrors.addAll(markersOnlyBeforeResolution);
+        allErrors.addAll(markersOnlyAfterResolution);
+        allErrors.addAll(markersBeforeAndAfterResolution);
+        viewer.setInput(allErrors);
+        highlightErrors(markersOnlyBeforeResolution, markersOnlyAfterResolution);
 
+    }
+
+    private void rebuildErrorsList(TreeSelection treeSelection,
+            Set<ComparableMarker> markersOnlyBeforeResolution,
+            Set<ComparableMarker> markersOnlyAfterResolution,
+            Set<ComparableMarker> markersBeforeAndAfterResolution) {
         Iterator iterator = treeSelection.iterator();
-        Set<ComparableMarker> removedMarkers = new HashSet<ComparableMarker>();
         while (iterator.hasNext()) {
             Object next = iterator.next();
             if (next instanceof MarkerResolutionTreeNode) {
-                removedMarkers.addAll(((MarkerResolutionTreeNode) next)
-                        .getResolution().getMarkers());
+                MarkerResolutionTreeNode markerTreeNode = (MarkerResolutionTreeNode) next;
+                markersOnlyBeforeResolution.addAll(markerTreeNode
+                        .getAllMarkersOnlyBeforeResolution());
+                markersOnlyAfterResolution.addAll(markerTreeNode
+                        .getAllMarkersOnlyAfterResolution());
+                markersBeforeAndAfterResolution.addAll(markerTreeNode
+                        .getAllMarkersBeforeAndAfterResolution());
             }
         }
+    }
 
+    private void highlightErrors(Set<ComparableMarker> removedMarkers,
+            Set<ComparableMarker> addedMarkers) {
         Table table = viewer.getTable();
         Color defaultColor = table.getForeground();
         for (int i = 0; i < table.getItemCount(); ++i) {
             TableItem item = table.getItem(i);
-            boolean isHighlighted = removedMarkers
-                    .contains((ComparableMarker) item.getData());
-            highlightTableItem(defaultColor, item, isHighlighted);
-        }
-    }
-
-    private void highlightTableItem(Color defaultColor, TableItem item,
-            boolean isHighlighted) {
-        item.setForeground(isHighlighted ? Colors.RED : defaultColor);
-    }
-
-    private void removeErrorItem(Table table, String message) {
-        int removeIndex = -1;
-        for (int i = 0; i < table.getItemCount(); ++i) {
-            TableItem item = table.getItem(i);
-            if (item.getText().equals(message)) {
-                removeIndex = i;
-                break;
+            ComparableMarker marker = (ComparableMarker) item.getData();
+            if (removedMarkers.contains(marker)) {
+                highlightRemovedItem(item, defaultColor);
+            } else if (addedMarkers.contains(marker)) {
+                highlightAddedItem(item, defaultColor);
+            } else {
+                unhighlightItem(item, defaultColor);
             }
         }
-        if (removeIndex > -1) {
-            table.remove(removeIndex);
-        }
     }
 
-    private void addErrorItem(Table table, String message) {
-        TableItem newItem = new TableItem(table, table.getItemCount() - 1);
-        newItem.setText(message);
+    private void highlightRemovedItem(TableItem item, Color defaultColor) {
+        item.setForeground(Colors.GREEN);
     }
 
-    private Set<String> getErrorMessages(Set<ComparableMarker> markers) {
-        Set<String> messages = new HashSet<String>();
-        for (ComparableMarker marker : markers) {
-            messages.add(marker.getMessage());
-        }
-        return messages;
+    private void highlightAddedItem(TableItem item, Color defaultColor) {
+        item.setForeground(Colors.RED);
+    }
+
+    private void unhighlightItem(TableItem item, Color defaultColor) {
+        item.setForeground(defaultColor);
     }
 }

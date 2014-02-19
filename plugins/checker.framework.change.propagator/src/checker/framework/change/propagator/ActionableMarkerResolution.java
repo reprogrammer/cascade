@@ -16,25 +16,22 @@ public class ActionableMarkerResolution {
 
     private final IMarkerResolution resolution;
 
-    private final Set<ComparableMarker> markers;
-
-    // TODO renamed to a more descriptive method name
-    public Set<ComparableMarker> getMarkers() {
-        return markers;
-    }
+    private final Set<ComparableMarker> markersToBeResolvedByFixer;
 
     private final FixerDescriptor fixerDescriptor;
 
-    private final Set<ComparableMarker> allMarkers;
+    private final Set<ComparableMarker> allMarkersBeforeResolution;
 
     public ActionableMarkerResolution(ShadowProject shadowProject,
-            IMarkerResolution resolution, Set<ComparableMarker> markers,
-            FixerDescriptor fixerDescriptor, Set<ComparableMarker> allMarkers) {
+            IMarkerResolution resolution,
+            Set<ComparableMarker> markersToBeResolvedByFixer,
+            FixerDescriptor fixerDescriptor,
+            Set<ComparableMarker> allMarkersBeforeResolution) {
         this.shadowProject = shadowProject;
         this.resolution = resolution;
-        this.markers = markers;
+        this.markersToBeResolvedByFixer = markersToBeResolvedByFixer;
         this.fixerDescriptor = fixerDescriptor;
-        this.allMarkers = allMarkers;
+        this.allMarkersBeforeResolution = allMarkersBeforeResolution;
     }
 
     // TODO(reprogrammer): Compute the label without relying on marker
@@ -51,8 +48,12 @@ public class ActionableMarkerResolution {
         return shadowProject;
     }
 
-    public Set<ComparableMarker> getAllMarkers() {
-        return allMarkers;
+    public Set<ComparableMarker> getMarkersToBeResolvedByFixer() {
+        return markersToBeResolvedByFixer;
+    }
+
+    public Set<ComparableMarker> getAllMarkersBeforeResolution() {
+        return allMarkersBeforeResolution;
     }
 
     public Fixer createFixer(IJavaProject javaProject) {

@@ -66,10 +66,10 @@ public class MarkerResolutionTreeNode extends TreeObject {
         Set<ComparableMarker> allMarkersAfterResolution = shadowProject
                 .getMarkers();
         Set<ComparableMarker> removedMarkers = difference(
-                resolution.getAllMarkers(), allMarkersAfterResolution);
+                resolution.getAllMarkersBeforeResolution(), allMarkersAfterResolution);
         addChildren(RemovedErrorTreeNode.createTreeNodesFrom(removedMarkers));
         Set<ComparableMarker> addedMarkers = difference(
-                allMarkersAfterResolution, resolution.getAllMarkers());
+                allMarkersAfterResolution, resolution.getAllMarkersBeforeResolution());
         addChildren(AddedErrorTreeNode.createTreeNodesFrom(addedMarkers));
         Set<ActionableMarkerResolution> newResolutions = shadowProject
                 .getResolutions(allMarkersAfterResolution, addedMarkers);

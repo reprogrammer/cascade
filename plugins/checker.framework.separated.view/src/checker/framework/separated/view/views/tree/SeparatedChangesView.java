@@ -193,8 +193,8 @@ public class SeparatedChangesView extends ViewPart implements
                             .getErrorsView();
                     if (errorsView.isPresent()) {
                         errorsView.get().updateErrors(
-                                markerResolutionTreeNode.getAddedMarkers(),
-                                markerResolutionTreeNode.getRemovedMarkers());
+                                markerResolutionTreeNode.getAllMarkersOnlyAfterResolution(),
+                                markerResolutionTreeNode.getAllMarkersOnlyBeforeResolution());
                     }
                 }
             }
@@ -296,7 +296,7 @@ public class SeparatedChangesView extends ViewPart implements
                 }
                 MarkerResolutionTreeNode treeNode = (MarkerResolutionTreeNode) data;
                 Set<ComparableMarker> markers = treeNode.getResolution()
-                        .getMarkers();
+                        .getMarkersToBeResolvedByFixer();
                 if (markers.contains(selectedMarker)) {
                     highlightTreeItem(item);
                 } else {

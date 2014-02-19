@@ -119,11 +119,12 @@ public class ShadowProject {
     }
 
     private Optional<ActionableMarkerResolution> createActionableResolutions(
-            FixerDescriptor fixerDescriptor, Set<ComparableMarker> markers,
+            FixerDescriptor fixerDescriptor,
+            Set<ComparableMarker> markersToBeResolvedByFixer,
             Set<ComparableMarker> baseMarkers) {
         Optional<ActionableMarkerResolution> optionalResolution = Optional
                 .absent();
-        ComparableMarker marker = getFirst(markers, null);
+        ComparableMarker marker = getFirst(markersToBeResolvedByFixer, null);
         if (marker == null) {
             return optionalResolution;
         }
@@ -136,7 +137,8 @@ public class ShadowProject {
             CheckerMarkerResolution resolution = proposalFactory
                     .createResolution(marker.getMarker());
             optionalResolution = Optional.of(new ActionableMarkerResolution(
-                    this, resolution, markers, fixerDescriptor, baseMarkers));
+                    this, resolution, markersToBeResolvedByFixer,
+                    fixerDescriptor, baseMarkers));
         }
         return optionalResolution;
     }
