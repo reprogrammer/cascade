@@ -180,8 +180,8 @@ public class SeparatedChangesView extends ViewPart implements
                 .getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
         doubleClickAction = new Action() {
             public void run() {
-                Optional<TreeObject> selectedTreeObject = getSelectedTreeObject(viewer
-                        .getSelection());
+                ISelection selection = viewer.getSelection();
+                Optional<TreeObject> selectedTreeObject = getSelectedTreeObject(selection);
                 Optional<MarkerResolutionTreeNode> resolutionTreeNode = getSelectedMarkResolution(selectedTreeObject);
                 if (resolutionTreeNode.isPresent()) {
                     MarkerResolutionTreeNode markerResolutionTreeNode = resolutionTreeNode
@@ -192,9 +192,13 @@ public class SeparatedChangesView extends ViewPart implements
                     Optional<SeparatedErrorsView> errorsView = Views
                             .getErrorsView();
                     if (errorsView.isPresent()) {
-                        errorsView.get().updateErrors(
-                                markerResolutionTreeNode.getAllMarkersOnlyAfterResolution(),
-                                markerResolutionTreeNode.getAllMarkersOnlyBeforeResolution());
+                        errorsView
+                                .get()
+                                .updateErrors(
+                                        markerResolutionTreeNode
+                                                .getAllMarkersOnlyAfterResolution(),
+                                        markerResolutionTreeNode
+                                                .getAllMarkersOnlyBeforeResolution());
                     }
                 }
             }

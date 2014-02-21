@@ -42,7 +42,7 @@ public class SeparatedErrorsView extends ViewPart implements ISelectionListener 
     /**
      * String representation of the previous selection in the changes view;
      */
-    private String prevSelection = "";
+    private TreeSelection prevSelection;
 
     private Set<ComparableMarker> input;
 
@@ -108,8 +108,10 @@ public class SeparatedErrorsView extends ViewPart implements ISelectionListener 
     private Set<ComparableMarker> prepareInput() {
         input = new HashSet<ComparableMarker>();
         Set<ActionableMarkerResolution> resolutions = Resolutions.get();
-        for (ActionableMarkerResolution resolution : resolutions) {
-            input = resolution.getAllMarkersBeforeResolution();
+        if (resolutions != null) {
+            for (ActionableMarkerResolution resolution : resolutions) {
+                input = resolution.getAllMarkersBeforeResolution();
+            }
         }
         return input;
     }
@@ -121,21 +123,24 @@ public class SeparatedErrorsView extends ViewPart implements ISelectionListener 
 
     @Override
     public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-        if (!(selection instanceof TreeSelection)) {
+        TreeSelection treeSelection = (TreeSelection) selection;
+        if (!isNewNonEmptyNonNull(treeSelection)) {
             return;
         }
-        if (selection.isEmpty()) {
-            return;
-        }
-        if (prevSelection.equals(selection.toString())) {
-            return;
-        }
-        prevSelection = selection.toString();
+        prevSelection = treeSelection;
+        rebuildErrorsList(selection);
+    }
 
+    private boolean isNewNonEmptyNonNull(TreeSelection selection) {
+        return selection != null && !selection.isEmpty()
+                && (prevSelection == null || !selection.equals(prevSelection));
+    }
+
+    private void rebuildErrorsList(ISelection selection) {
         Set<ComparableMarker> markersOnlyBeforeResolution = new HashSet<ComparableMarker>();
         Set<ComparableMarker> markersOnlyAfterResolution = new HashSet<ComparableMarker>();
         Set<ComparableMarker> markersBeforeAndAfterResolution = new HashSet<ComparableMarker>();
-        rebuildErrorsList((TreeSelection) selection,
+        getMarkersForSelection((TreeSelection) selection,
                 markersOnlyBeforeResolution, markersOnlyAfterResolution,
                 markersBeforeAndAfterResolution);
         Set<ComparableMarker> allErrors = new HashSet<ComparableMarker>();
@@ -144,10 +149,9 @@ public class SeparatedErrorsView extends ViewPart implements ISelectionListener 
         allErrors.addAll(markersBeforeAndAfterResolution);
         viewer.setInput(allErrors);
         highlightErrors(markersOnlyBeforeResolution, markersOnlyAfterResolution);
-
     }
 
-    private void rebuildErrorsList(TreeSelection treeSelection,
+    private void getMarkersForSelection(TreeSelection treeSelection,
             Set<ComparableMarker> markersOnlyBeforeResolution,
             Set<ComparableMarker> markersOnlyAfterResolution,
             Set<ComparableMarker> markersBeforeAndAfterResolution) {
