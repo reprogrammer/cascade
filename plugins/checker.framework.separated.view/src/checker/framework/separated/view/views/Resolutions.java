@@ -12,6 +12,10 @@ import checker.framework.separated.propagator.commands.InferCommandHandler;
 public class Resolutions {
     private static Set<ActionableMarkerResolution> resolutions;
 
+    public static void clear() {
+        resolutions = null;
+    }
+
     public static Set<ActionableMarkerResolution> get() {
         if (InferCommandHandler.checkerID == null) {
             return null;

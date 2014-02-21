@@ -1,0 +1,118 @@
+[33mcommit 9c9c640890d427d47730f19d2cfb4360f3fa9b9b[m
+Author: Amarin Phaosawasdi <amarinph@amarinph.com>
+Date:   Fri Feb 21 12:08:21 2014 -0600
+
+    Refactored some code in errors and changes view.
+    Also fixed issue #1 along the way.
+
+[33mcommit 67b3be53c0a0622b6eea0bf780003ed9f55dd5b2[m
+Author: Amarin Phaosawasdi <amarinph@amarinph.com>
+Date:   Wed Feb 19 14:05:19 2014 -0600
+
+    Added support for showing and highlighting the to-be-added errors by a selected change in the changes view.
+    Also renamed methods to be more descriptive along the way.
+
+[33mcommit 70783dd9d1f64a905849c86eaf4b42c814bffc8f[m
+Author: Amarin Phaosawasdi <amarinph@amarinph.com>
+Date:   Mon Feb 17 13:30:01 2014 -0600
+
+    Used viewer.setInput to update the error list instead of directly modifying the table.
+
+[33mcommit 6a323d2ea123e8b62859439851954e2f2cea5d1d[m
+Author: Amarin Phaosawasdi <amarinph@amarinph.com>
+Date:   Mon Feb 17 12:54:37 2014 -0600
+
+    Refactored errors and changes list to use ContentProvider.
+    Also renamed some classes.
+
+[33mcommit 9b8d8ed66212ee986c09ecd950dc7058efc44da2[m
+Author: Amarin Phaosawasdi <amarinph@amarinph.com>
+Date:   Fri Feb 14 11:59:46 2014 -0600
+
+    The error view now updates according actions on the changes view.
+    * When a change is selected, the error that will be removed is highlighted.
+    * When a change is applied, the error list adds/removes errors depending on the change.
+
+[33mcommit 7f28f9f8a5188803e1ee7b66a6a48168ddecd3f6[m
+Author: Amarin Phaosawasdi <amarinph@amarinph.com>
+Date:   Fri Feb 7 13:45:51 2014 -0600
+
+    The separated error view can now highlight messages corresponding
+    to the change selected in the separated changes view.
+
+[33mcommit 0ae1393344aec1b0d7c4f210cf7628c3c341dae9[m
+Author: Amarin Phaosawasdi <amarinph@amarinph.com>
+Date:   Thu Feb 6 16:35:09 2014 -0600
+
+    Added code to ignore multiple duplicate selection change events.
+    Maybe there's a better way to do this but this will work for now.
+    Also added text coloring to the errors that simply switch on and
+    off every time a selection is changed.
+
+[33mcommit 23bb002de232847ac7cc44722bb880724d7fa52f[m
+Author: Amarin Phaosawasdi <amarinph@amarinph.com>
+Date:   Wed Feb 5 13:20:22 2014 -0600
+
+    Added the error view that listens to the changes view for the separated views interface.
+
+[33mcommit 0974817fd860c6f3ec0692126ed341c96491c994[m
+Author: Amarin Phaosawasdi <amarinph@amarinph.com>
+Date:   Fri Jan 31 13:54:03 2014 -0600
+
+    Implemented initial version of the separated changes view.
+
+[33mcommit 9e295843b3bfef76e89e1cf896598c796bb63585[m
+Author: Amarin Phaosawasdi <amarinph@amarinph.com>
+Date:   Fri Jan 31 12:50:44 2014 -0600
+
+    Added an empty plug-in for implementing the separated view.
+
+[33mcommit 6b7e399e1be5d0c2c571d3548859eb8e5f050078[m
+Author: Amarin Phaosawasdi <amarinph@amarinph.com>
+Date:   Fri Jan 31 11:01:05 2014 -0600
+
+    Added test for method receiver fixer.
+    Renamed a method for C13.
+
+[33mcommit f6c467ab9cc57259456002600fb47771c8a7e522[m
+Author: Amarin Phaosawasdi <amarinph@amarinph.com>
+Date:   Fri Jan 31 10:44:49 2014 -0600
+
+    Simplified C13 in Nullness test.
+
+[33mcommit e8dd027d523ffe090e6966770b19339794a7ea27[m
+Author: Amarin Phaosawasdi <amarinph@amarinph.com>
+Date:   Wed Jan 29 13:38:54 2014 -0600
+
+    Formatted all the plug-ins according to the checker framework's Java code style.
+
+[33mcommit 165da4060cdec5f941ab9deabb676cb318b421c9[m
+Author: Amarin Phaosawasdi <amarinph@amarinph.com>
+Date:   Wed Jan 29 13:36:04 2014 -0600
+
+    Added example for SingleVariableDeclaration.
+    Checked left to right flag in method parameter fixer.
+
+[33mcommit 9a3e2e5a2300bae2e6a7df5f53a89631ebdfd623[m
+Author: Mohsen Vakilian <reprogrammer@gmail.com>
+Date:   Wed Jan 29 10:55:41 2014 -0600
+
+    Added Eclipse patches.
+
+[33mcommit 6cc42112963a4c507cb30945f87d65c78fb04688[m
+Author: Mohsen Vakilian <reprogrammer@gmail.com>
+Date:   Tue Jan 28 18:57:26 2014 -0600
+
+    Ignored bin/ folders.
+
+[33mcommit 13bee7a860d8e1ca93c973f2b6597518a1459c53[m
+Author: Mohsen Vakilian <reprogrammer@gmail.com>
+Date:   Tue Jan 28 18:40:57 2014 -0600
+
+    Added the Eclipse plugins for inferring type qualifiers.
+
+[33mcommit 1c3bc67bd2fbf20127e189cf3936111387cc7a76[m
+Author: Mohsen Vakilian <reprogrammer@gmail.com>
+Date:   Tue Jan 28 13:51:27 2014 -0800
+
+    Initial commit
