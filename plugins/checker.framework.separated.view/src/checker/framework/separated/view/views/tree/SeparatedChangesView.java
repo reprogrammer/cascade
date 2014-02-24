@@ -290,9 +290,10 @@ public class SeparatedChangesView extends ViewPart implements
         }
         prevSelection = currentSelection;
 
+        Tree tree = viewer.getTree();
+        tree.setRedraw(false);
         for (Object o : ((StructuredSelection) selection).toList()) {
             ComparableMarker selectedMarker = (ComparableMarker) o;
-            Tree tree = viewer.getTree();
             for (TreeItem item : tree.getItems()) {
                 Object data = item.getData();
                 if (!(data instanceof MarkerResolutionTreeNode)) {
@@ -308,6 +309,8 @@ public class SeparatedChangesView extends ViewPart implements
                 }
             }
         }
+        tree.setRedraw(true);
+        viewer.refresh();
     }
 
     private void highlightTreeItem(TreeItem item) {

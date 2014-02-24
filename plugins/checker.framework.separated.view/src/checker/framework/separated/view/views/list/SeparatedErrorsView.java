@@ -147,8 +147,12 @@ public class SeparatedErrorsView extends ViewPart implements ISelectionListener 
         allErrors.addAll(markersOnlyBeforeResolution);
         allErrors.addAll(markersOnlyAfterResolution);
         allErrors.addAll(markersBeforeAndAfterResolution);
+        Table table = viewer.getTable();
+        table.setRedraw(false);
         viewer.setInput(allErrors);
         highlightErrors(markersOnlyBeforeResolution, markersOnlyAfterResolution);
+        table.setRedraw(true);
+        viewer.refresh();
     }
 
     private void getMarkersForSelection(TreeSelection treeSelection,
