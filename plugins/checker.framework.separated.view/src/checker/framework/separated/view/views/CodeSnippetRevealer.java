@@ -1,4 +1,4 @@
-package checker.framework.separated.view.views.tree;
+package checker.framework.separated.view.views;
 
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.JavaModelException;

@@ -38,6 +38,7 @@ import checker.framework.change.propagator.ActionableMarkerResolution;
 import checker.framework.change.propagator.ComparableMarker;
 import checker.framework.quickfixes.descriptors.Fixer;
 import checker.framework.separated.propagator.commands.InferNullnessCommandHandler;
+import checker.framework.separated.view.views.CodeSnippetRevealer;
 import checker.framework.separated.view.views.Colors;
 import checker.framework.separated.view.views.Views;
 import checker.framework.separated.view.views.list.SeparatedErrorsView;

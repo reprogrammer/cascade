@@ -4,8 +4,12 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TreeSelection;
@@ -23,12 +27,15 @@ import org.eclipse.ui.part.ViewPart;
 
 import checker.framework.change.propagator.ActionableMarkerResolution;
 import checker.framework.change.propagator.ComparableMarker;
+import checker.framework.change.propagator.MarkerLocation;
+import checker.framework.separated.view.views.CodeSnippetRevealer;
 import checker.framework.separated.view.views.Colors;
 import checker.framework.separated.view.views.Resolutions;
 import checker.framework.separated.view.views.Views;
 import checker.framework.separated.view.views.tree.MarkerResolutionTreeNode;
 import checker.framework.separated.view.views.tree.SeparatedChangesView;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 
 public class SeparatedErrorsView extends ViewPart implements ISelectionListener {
@@ -45,6 +52,8 @@ public class SeparatedErrorsView extends ViewPart implements ISelectionListener 
     private TreeSelection prevSelection;
 
     private Set<ComparableMarker> input;
+
+    private Action doubleClickAction;
 
     /**
      * The constructor.
@@ -92,6 +101,35 @@ public class SeparatedErrorsView extends ViewPart implements ISelectionListener 
         getSite().setSelectionProvider(viewer);
         getSite().getPage().addSelectionListener(SeparatedChangesView.ID, this);
 
+        createAndHookDoubleClickAction();
+    }
+
+    private void createAndHookDoubleClickAction() {
+        doubleClickAction = new Action() {
+            public void run() {
+                StructuredSelection selection = (StructuredSelection) viewer
+                        .getSelection();
+                if (selection != null) {
+                    ComparableMarker marker = (ComparableMarker) selection
+                            .getFirstElement();
+                    Optional<MarkerLocation> optionalMarkerLocation = marker
+                            .createMarkerLocation();
+                    if (optionalMarkerLocation.isPresent()) {
+                        MarkerLocation markerLocation = optionalMarkerLocation
+                                .get();
+                        new CodeSnippetRevealer().reveal(
+                                markerLocation.getCompilationUnit(),
+                                markerLocation.getOffset(),
+                                markerLocation.getLength());
+                    }
+                }
+            }
+        };
+        viewer.addDoubleClickListener(new IDoubleClickListener() {
+            public void doubleClick(DoubleClickEvent event) {
+                doubleClickAction.run();
+            }
+        });
     }
 
     /**
