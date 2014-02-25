@@ -1,5 +1,7 @@
 package checker.framework.separated.view.views.list;
 
+import static com.google.common.collect.Sets.newHashSet;
+
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -36,7 +38,6 @@ import checker.framework.separated.view.views.tree.MarkerResolutionTreeNode;
 import checker.framework.separated.view.views.tree.SeparatedChangesView;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Sets;
 
 public class SeparatedErrorsView extends ViewPart implements ISelectionListener {
     /**
@@ -52,6 +53,8 @@ public class SeparatedErrorsView extends ViewPart implements ISelectionListener 
     private TreeSelection prevSelection;
 
     private Set<ComparableMarker> input;
+
+    private Set<ComparableMarker> removedMarkers = newHashSet();
 
     private Action doubleClickAction;
 
@@ -132,15 +135,8 @@ public class SeparatedErrorsView extends ViewPart implements ISelectionListener 
         });
     }
 
-    /**
-     * Updates the error list with the supplied addedErrors and removedErrors.
-     */
-    public void updateErrors(Set<ComparableMarker> addedErrors,
-            Set<ComparableMarker> removedErrors) {
-        HashSet<ComparableMarker> newInput = Sets.newHashSet(input);
-        newInput.addAll(addedErrors);
-        newInput.removeAll(removedErrors);
-        viewer.setInput(newInput);
+    public void markAsFixed(Set<ComparableMarker> removedErrors) {
+        removedMarkers.addAll(removedErrors);
     }
 
     private Set<ComparableMarker> prepareInput() {
@@ -174,7 +170,7 @@ public class SeparatedErrorsView extends ViewPart implements ISelectionListener 
                 && (prevSelection == null || !selection.equals(prevSelection));
     }
 
-    private void rebuildErrorsList(ISelection selection) {
+    public void rebuildErrorsList(ISelection selection) {
         Set<ComparableMarker> markersOnlyBeforeResolution = new HashSet<ComparableMarker>();
         Set<ComparableMarker> markersOnlyAfterResolution = new HashSet<ComparableMarker>();
         Set<ComparableMarker> markersBeforeAndAfterResolution = new HashSet<ComparableMarker>();
@@ -190,7 +186,6 @@ public class SeparatedErrorsView extends ViewPart implements ISelectionListener 
         viewer.setInput(allErrors);
         highlightErrors(markersOnlyBeforeResolution, markersOnlyAfterResolution);
         table.setRedraw(true);
-        viewer.refresh();
     }
 
     private void getMarkersForSelection(TreeSelection treeSelection,
@@ -212,28 +207,34 @@ public class SeparatedErrorsView extends ViewPart implements ISelectionListener 
         }
     }
 
-    private void highlightErrors(Set<ComparableMarker> removedMarkers,
-            Set<ComparableMarker> addedMarkers) {
+    private void highlightErrors(Set<ComparableMarker> toBeRemovedMarkers,
+            Set<ComparableMarker> toBeAddedMarkers) {
         Table table = viewer.getTable();
         Color defaultColor = table.getForeground();
         for (int i = 0; i < table.getItemCount(); ++i) {
             TableItem item = table.getItem(i);
             ComparableMarker marker = (ComparableMarker) item.getData();
             if (removedMarkers.contains(marker)) {
-                highlightRemovedItem(item, defaultColor);
-            } else if (addedMarkers.contains(marker)) {
-                highlightAddedItem(item, defaultColor);
+                highlightRemovedItem(item);
+            } else if (toBeRemovedMarkers.contains(marker)) {
+                highlightToBeRemovedItem(item);
+            } else if (toBeAddedMarkers.contains(marker)) {
+                highlightToBeAddedItem(item);
             } else {
                 unhighlightItem(item, defaultColor);
             }
         }
     }
 
-    private void highlightRemovedItem(TableItem item, Color defaultColor) {
+    private void highlightRemovedItem(TableItem item) {
+        item.setForeground(Colors.GRAY);
+    }
+
+    private void highlightToBeRemovedItem(TableItem item) {
         item.setForeground(Colors.GREEN);
     }
 
-    private void highlightAddedItem(TableItem item, Color defaultColor) {
+    private void highlightToBeAddedItem(TableItem item) {
         item.setForeground(Colors.RED);
     }
 

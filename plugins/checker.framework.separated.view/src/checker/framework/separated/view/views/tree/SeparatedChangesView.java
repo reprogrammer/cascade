@@ -19,6 +19,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Tree;
@@ -193,13 +194,10 @@ public class SeparatedChangesView extends ViewPart implements
                     Optional<SeparatedErrorsView> errorsView = Views
                             .getErrorsView();
                     if (errorsView.isPresent()) {
-                        errorsView
-                                .get()
-                                .updateErrors(
-                                        markerResolutionTreeNode
-                                                .getAllMarkersOnlyAfterResolution(),
-                                        markerResolutionTreeNode
-                                                .getAllMarkersOnlyBeforeResolution());
+                        errorsView.get().markAsFixed(
+                                markerResolutionTreeNode
+                                        .getAllMarkersOnlyBeforeResolution());
+                        errorsView.get().rebuildErrorsList(selection);
                     }
                 }
             }
@@ -292,26 +290,34 @@ public class SeparatedChangesView extends ViewPart implements
         prevSelection = currentSelection;
 
         Tree tree = viewer.getTree();
+        Color defaultColor = tree.getForeground();
         tree.setRedraw(false);
         for (Object o : ((StructuredSelection) selection).toList()) {
             ComparableMarker selectedMarker = (ComparableMarker) o;
             for (TreeItem item : tree.getItems()) {
-                Object data = item.getData();
-                if (!(data instanceof MarkerResolutionTreeNode)) {
-                    continue;
-                }
-                MarkerResolutionTreeNode treeNode = (MarkerResolutionTreeNode) data;
-                Set<ComparableMarker> markers = treeNode.getResolution()
-                        .getMarkersToBeResolvedByFixer();
-                if (markers.contains(selectedMarker)) {
-                    highlightTreeItem(item);
-                } else {
-                    item.setForeground(tree.getForeground());
-                }
+                highlight(selectedMarker, item, defaultColor);
             }
         }
         tree.setRedraw(true);
-        viewer.refresh();
+    }
+
+    private void highlight(ComparableMarker selectedMarker, TreeItem item,
+            Color defaultColor) {
+        Object data = item.getData();
+        if (!(data instanceof MarkerResolutionTreeNode)) {
+            return;
+        }
+        MarkerResolutionTreeNode treeNode = (MarkerResolutionTreeNode) data;
+        Set<ComparableMarker> markers = treeNode.getResolution()
+                .getMarkersToBeResolvedByFixer();
+        if (markers.contains(selectedMarker)) {
+            highlightTreeItem(item);
+        } else {
+            item.setForeground(defaultColor);
+        }
+        for (TreeItem child : item.getItems()) {
+            highlight(selectedMarker, child, defaultColor);
+        }
     }
 
     private void highlightTreeItem(TreeItem item) {
