@@ -11,7 +11,7 @@ import org.eclipse.ui.PlatformUI;
 import com.google.common.base.Optional;
 
 import checker.framework.change.propagator.CheckerID;
-import checker.framework.errorcentric.view.views.ChangesView;
+import checker.framework.errorcentric.view.views.ErrorCentricView;
 import checkers.eclipse.actions.CheckerHandler;
 
 public abstract class InferCommandHandler extends CheckerHandler {
@@ -28,7 +28,7 @@ public abstract class InferCommandHandler extends CheckerHandler {
             if (selectedJavaProject.isPresent()) {
                 // Adapted from http://stackoverflow.com/a/172082
                 PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-                        .getActivePage().showView(ChangesView.ID);
+                        .getActivePage().showView(ErrorCentricView.ID);
             }
         } catch (PartInitException e) {
             throw new RuntimeException(e);

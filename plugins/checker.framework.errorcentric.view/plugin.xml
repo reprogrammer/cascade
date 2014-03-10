@@ -12,8 +12,8 @@
             name="Error-Centric View"
             icon="icons/sample.gif"
             category="checker.framework.errorcentric.view"
-            class="checker.framework.errorcentric.view.views.ChangesView"
-            id="checker.framework.errorcentric.view.views.ChangesView">
+            class="checker.framework.errorcentric.view.views.ErrorCentricView"
+            id="checker.framework.errorcentric.view.views.ErrorCentricView">
       </view>
    </extension>
    <extension
@@ -24,7 +24,7 @@
                ratio="0.5"
                relative="org.eclipse.ui.views.ProblemView"
                relationship="right"
-               id="checker.framework.errorcentric.view.views.ChangesView">
+               id="checker.framework.errorcentric.view.views.ErrorCentricView">
          </view>
       </perspectiveExtension>
    </extension>

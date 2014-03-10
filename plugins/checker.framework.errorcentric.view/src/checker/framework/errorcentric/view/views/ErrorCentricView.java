@@ -45,12 +45,12 @@ import com.google.common.base.Optional;
  * <p>
  */
 
-public class ChangesView extends ViewPart {
+public class ErrorCentricView extends ViewPart {
 
     /**
      * The ID of the view as specified by the extension.
      */
-    public static final String ID = "checker.framework.errorcentric.view.views.ChangesView";
+    public static final String ID = "checker.framework.errorcentric.view.views.ErrorCentricView";
 
     private TreeViewer viewer;
     private DrillDownAdapter drillDownAdapter;
@@ -61,7 +61,7 @@ public class ChangesView extends ViewPart {
     /**
      * The constructor.
      */
-    public ChangesView() {
+    public ErrorCentricView() {
     }
 
     /**
@@ -87,7 +87,7 @@ public class ChangesView extends ViewPart {
         menuMgr.setRemoveAllWhenShown(true);
         menuMgr.addMenuListener(new IMenuListener() {
             public void menuAboutToShow(IMenuManager manager) {
-                ChangesView.this.fillContextMenu(manager);
+                ErrorCentricView.this.fillContextMenu(manager);
             }
         });
         Menu menu = menuMgr.createContextMenu(viewer.getControl());
