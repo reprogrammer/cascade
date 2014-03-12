@@ -144,6 +144,7 @@ public class SeparatedErrorsView extends ViewPart implements ISelectionListener 
         Set<ActionableMarkerResolution> resolutions = Resolutions.get();
         if (resolutions != null) {
             for (ActionableMarkerResolution resolution : resolutions) {
+                // FIXME this seems to be overwriting the old input every time
                 input = resolution.getAllMarkersBeforeResolution();
             }
         }
