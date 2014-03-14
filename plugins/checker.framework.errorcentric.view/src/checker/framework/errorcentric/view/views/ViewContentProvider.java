@@ -1,7 +1,5 @@
 package checker.framework.errorcentric.view.views;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.core.IJavaProject;
@@ -10,7 +8,6 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
 import checker.framework.change.propagator.ActionableMarkerResolution;
-import checker.framework.change.propagator.ComparableMarker;
 import checker.framework.change.propagator.ShadowProject;
 import checker.framework.change.propagator.ShadowProjectFactory;
 import checker.framework.errorcentric.propagator.commands.InferCommandHandler;
@@ -68,24 +65,8 @@ public class ViewContentProvider implements IStructuredContentProvider,
         shadowProject.runChecker(InferCommandHandler.checkerID);
         Set<ActionableMarkerResolution> resolutions = shadowProject
                 .getResolutions();
-        Map<ComparableMarker, ErrorTreeNode> allNodes = new HashMap<ComparableMarker, ErrorTreeNode>();
-        for (ActionableMarkerResolution resolution : resolutions) {
-            Set<ComparableMarker> markersToBeResolved = resolution
-                    .getMarkersToBeResolvedByFixer();
-            for (ComparableMarker comparableMarker : markersToBeResolved) {
-                if (allNodes.containsKey(comparableMarker)) {
-                    allNodes.get(comparableMarker).addResolution(resolution);
-                } else {
-                    AddedErrorTreeNode newErrorNode = new AddedErrorTreeNode(
-                            comparableMarker);
-                    newErrorNode.addResolution(resolution);
-                    allNodes.put(comparableMarker, newErrorNode);
-                }
-            }
-        }
-        for (ErrorTreeNode node : allNodes.values()) {
-            invisibleRoot.addChild(node);
-        }
+        invisibleRoot.addChildren(AddedErrorTreeNode
+                .createTreeNodesFrom(resolutions));
     }
 
 }

@@ -35,21 +35,14 @@ public class MarkerResolutionTreeNode extends TreeObject {
         return true;
     }
 
-    private Set<MarkerResolutionTreeNode> createMarkerTreeNodesFrom(
-            Set<ActionableMarkerResolution> resolutions) {
-        Set<MarkerResolutionTreeNode> nodes = new HashSet<>();
-        for (ActionableMarkerResolution resolution : resolutions) {
-            nodes.add(new MarkerResolutionTreeNode(resolution));
-        }
-        return nodes;
-    }
-
     private List<FixerDescriptor> getParentFixerDescriptors() {
         LinkedList<FixerDescriptor> fixerDescriptors = new LinkedList<>();
         TreeObject parent = getParent();
-        while (parent != null && parent instanceof MarkerResolutionTreeNode) {
-            fixerDescriptors.addLast(((MarkerResolutionTreeNode) parent)
-                    .getResolution().getFixerDescriptor());
+        while (parent != null) {
+            if (parent instanceof MarkerResolutionTreeNode) {
+                fixerDescriptors.addLast(((MarkerResolutionTreeNode) parent)
+                        .getResolution().getFixerDescriptor());
+            }
             parent = parent.getParent();
         }
         return fixerDescriptors;
@@ -63,14 +56,12 @@ public class MarkerResolutionTreeNode extends TreeObject {
         WorkspaceUtils.saveAllEditors();
         ShadowProject shadowProject = resolution.getShadowProject();
         shadowProject.runChecker(InferCommandHandler.checkerID);
+
         Set<ComparableMarker> allMarkersAfterResolution = shadowProject
                 .getMarkers();
-        Set<ComparableMarker> removedMarkers = difference(
-                resolution.getAllMarkersBeforeResolution(), allMarkersAfterResolution);
-        addChildren(RemovedErrorTreeNode.createTreeNodesFrom(removedMarkers));
         Set<ComparableMarker> addedMarkers = difference(
-                allMarkersAfterResolution, resolution.getAllMarkersBeforeResolution());
-        addChildren(AddedErrorTreeNode.createTreeNodesFrom(addedMarkers));
+                allMarkersAfterResolution,
+                resolution.getAllMarkersBeforeResolution());
         Set<ActionableMarkerResolution> newResolutions = shadowProject
                 .getResolutions(allMarkersAfterResolution, addedMarkers);
         HashSet<ActionableMarkerResolution> historicallyNewResolutions = newHashSet(filter(
@@ -86,7 +77,8 @@ public class MarkerResolutionTreeNode extends TreeObject {
                                         .contains(fixerDescriptor);
                     }
                 }));
-        addChildren(createMarkerTreeNodesFrom(historicallyNewResolutions));
+        addChildren(AddedErrorTreeNode
+                .createTreeNodesFrom(historicallyNewResolutions));
         return super.getChildren();
     }
 
