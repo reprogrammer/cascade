@@ -70,9 +70,9 @@ public class ViewContentProvider implements IStructuredContentProvider,
                 .getResolutions();
         Map<ComparableMarker, ErrorTreeNode> allNodes = new HashMap<ComparableMarker, ErrorTreeNode>();
         for (ActionableMarkerResolution resolution : resolutions) {
-            Set<ComparableMarker> allMarkersBeforeResolution = resolution
-                    .getAllMarkersBeforeResolution();
-            for (ComparableMarker comparableMarker : allMarkersBeforeResolution) {
+            Set<ComparableMarker> markersToBeResolved = resolution
+                    .getMarkersToBeResolvedByFixer();
+            for (ComparableMarker comparableMarker : markersToBeResolved) {
                 if (allNodes.containsKey(comparableMarker)) {
                     allNodes.get(comparableMarker).addResolution(resolution);
                 } else {

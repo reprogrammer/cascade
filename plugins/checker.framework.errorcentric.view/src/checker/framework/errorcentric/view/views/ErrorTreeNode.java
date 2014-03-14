@@ -19,11 +19,6 @@ public class ErrorTreeNode extends TreeObject {
         this.marker = marker;
     }
 
-    @Override
-    public boolean hasChildren() {
-        return false;
-    }
-
     public void reveal() {
         Optional<MarkerLocation> optionalMarkerLocation = marker
                 .createMarkerLocation();
@@ -49,4 +44,17 @@ public class ErrorTreeNode extends TreeObject {
     public void addResolution(ActionableMarkerResolution resolution) {
         resolutions.add(resolution);
     }
+
+    @Override
+    public boolean hasChildren() {
+        return true;
+    }
+
+    public TreeObject[] getChildren() {
+        for (ActionableMarkerResolution resolution : resolutions) {
+            addChild(new MarkerResolutionTreeNode(resolution));
+        }
+        return super.getChildren();
+    }
+
 }
