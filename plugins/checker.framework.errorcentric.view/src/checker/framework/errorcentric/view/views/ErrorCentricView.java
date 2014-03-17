@@ -75,6 +75,7 @@ public class ErrorCentricView extends ViewPart {
         viewer.setLabelProvider(new ViewLabelProvider());
         viewer.setSorter(new NameSorter());
         viewer.setInput(getViewSite());
+        viewer.getTree().setLinesVisible(true);
         makeActions();
         hookContextMenu();
         hookDoubleClickAction();
