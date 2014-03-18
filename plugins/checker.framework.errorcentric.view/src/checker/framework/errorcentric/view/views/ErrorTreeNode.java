@@ -52,7 +52,10 @@ public class ErrorTreeNode extends TreeObject {
 
     public TreeObject[] getChildren() {
         for (ActionableMarkerResolution resolution : resolutions) {
-            addChild(new MarkerResolutionTreeNode(resolution));
+            MarkerResolutionTreeNode child = new MarkerResolutionTreeNode(
+                    resolution);
+            child.computeChangeEffectAsync();
+            addChild(child);
         }
         return super.getChildren();
     }
