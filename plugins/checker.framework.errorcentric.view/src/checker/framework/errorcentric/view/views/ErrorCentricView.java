@@ -54,7 +54,7 @@ public class ErrorCentricView extends ViewPart {
 
     private TreeViewer viewer;
     private DrillDownAdapter drillDownAdapter;
-    private Action computeFixesAction;
+    private Action refreshAction;
     private Action action2;
     private Action doubleClickAction;
 
@@ -103,13 +103,13 @@ public class ErrorCentricView extends ViewPart {
     }
 
     private void fillLocalPullDown(IMenuManager manager) {
-        manager.add(computeFixesAction);
+        manager.add(refreshAction);
         manager.add(new Separator());
         manager.add(action2);
     }
 
     private void fillContextMenu(IMenuManager manager) {
-        manager.add(computeFixesAction);
+        manager.add(refreshAction);
         manager.add(action2);
         manager.add(new Separator());
         drillDownAdapter.addNavigationActions(manager);
@@ -118,22 +118,22 @@ public class ErrorCentricView extends ViewPart {
     }
 
     private void fillLocalToolBar(IToolBarManager manager) {
-        manager.add(computeFixesAction);
+        manager.add(refreshAction);
         manager.add(action2);
         manager.add(new Separator());
         drillDownAdapter.addNavigationActions(manager);
     }
 
     private void makeActions() {
-        computeFixesAction = new Action() {
+        refreshAction = new Action() {
             public void run() {
-                showMessage("Action 1 executed");
+                ((ViewContentProvider) viewer.getContentProvider()).clearView();
+                viewer.refresh();
             }
         };
-        computeFixesAction.setText("Propose Fixes");
-        computeFixesAction
-                .setToolTipText("Proposes changes to fix type errors.");
-        computeFixesAction.setImageDescriptor(PlatformUI.getWorkbench()
+        refreshAction.setText("Refresh");
+        refreshAction.setToolTipText("Recomputes the error/change tree.");
+        refreshAction.setImageDescriptor(PlatformUI.getWorkbench()
                 .getSharedImages()
                 .getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
 

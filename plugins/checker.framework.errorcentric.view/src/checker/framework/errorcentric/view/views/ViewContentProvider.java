@@ -51,6 +51,10 @@ public class ViewContentProvider implements IStructuredContentProvider,
         return ((TreeObject) parent).hasChildren();
     }
 
+    public void clearView() {
+        invisibleRoot = null;
+    }
+
     private void initialize() {
         invisibleRoot = new TreeObject("");
         if (InferCommandHandler.checkerID == null) {
