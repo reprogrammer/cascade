@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -104,6 +105,7 @@ public class MarkerResolutionTreeNode extends TreeObject {
                 return Status.OK_STATUS;
             }
         };
+        job.setRule(ResourcesPlugin.getWorkspace().getRoot());
         job.schedule();
     }
 
