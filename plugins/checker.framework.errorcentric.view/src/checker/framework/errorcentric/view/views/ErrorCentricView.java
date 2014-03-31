@@ -17,6 +17,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISharedImages;
@@ -45,7 +46,7 @@ import com.google.common.base.Optional;
  * <p>
  */
 
-public class ErrorCentricView extends ViewPart {
+public class ErrorCentricView extends ViewPart implements TreeLabelUpdater {
 
     /**
      * The ID of the view as specified by the extension.
@@ -71,7 +72,7 @@ public class ErrorCentricView extends ViewPart {
     public void createPartControl(Composite parent) {
         viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
         drillDownAdapter = new DrillDownAdapter(viewer);
-        viewer.setContentProvider(new ViewContentProvider());
+        viewer.setContentProvider(new ViewContentProvider(this));
         viewer.setLabelProvider(new ViewLabelProvider());
         viewer.setSorter(new NameSorter());
         viewer.setInput(getViewSite());
@@ -247,5 +248,14 @@ public class ErrorCentricView extends ViewPart {
      */
     public void setFocus() {
         viewer.getControl().setFocus();
+    }
+
+    @Override
+    public void update(final TreeObject node) {
+        Display.getDefault().asyncExec(new Runnable() {
+            public void run() {
+                viewer.update(node, null);
+            }
+        });
     }
 }

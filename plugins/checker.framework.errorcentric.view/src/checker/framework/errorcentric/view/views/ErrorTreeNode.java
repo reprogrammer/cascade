@@ -41,10 +41,12 @@ public class ErrorTreeNode extends TreeObject {
                 && marker.equals(((ErrorTreeNode) obj).marker);
     }
 
-    public void addResolution(ActionableMarkerResolution resolution) {
+    public void addResolution(ActionableMarkerResolution resolution,
+            TreeLabelUpdater labelUpdater) {
         resolutions.add(resolution);
         MarkerResolutionTreeNode child = new MarkerResolutionTreeNode(
                 resolution);
+        child.setLabelUpdateListener(labelUpdater);
         child.computeChangeEffectAsync();
         addChild(child);
     }

@@ -56,9 +56,11 @@ public class MarkerResolutionTreeNode extends TreeObject {
     }
 
     public void computeChangeEffectAsync() {
+        final MarkerResolutionTreeNode thisNode = this;
         job = new Job("Computing the effect of the change") {
             @Override
             protected IStatus run(IProgressMonitor monitor) {
+
                 monitor.beginTask("Computing the effect of the change", 25);
                 final List<FixerDescriptor> parentFixerDescriptors = getParentFixerDescriptors();
                 resolution.getShadowProject()
@@ -82,6 +84,10 @@ public class MarkerResolutionTreeNode extends TreeObject {
                 monitor.worked(1);
                 Set<ActionableMarkerResolution> newResolutions = shadowProject
                         .getResolutions(allMarkersAfterResolution, addedMarkers);
+                System.out.println(resolution + "\n" + "fixes "
+                        + resolution.getMarkersToBeResolvedByFixer().size()
+                        + " errors=n" + "introduces " + addedMarkers.size()
+                        + " errors");
                 monitor.worked(3);
                 HashSet<ActionableMarkerResolution> historicallyNewResolutions = newHashSet(filter(
                         newResolutions,
@@ -98,10 +104,11 @@ public class MarkerResolutionTreeNode extends TreeObject {
                             }
                         }));
                 monitor.worked(1);
-                addChildren(AddedErrorTreeNode
-                        .createTreeNodesFrom(historicallyNewResolutions));
+                addChildren(AddedErrorTreeNode.createTreeNodesFrom(
+                        historicallyNewResolutions, thisNode.getLabelUpdater()));
                 monitor.worked(1);
                 monitor.done();
+                thisNode.setName(thisNode.getName() + "***");
                 return Status.OK_STATUS;
             }
         };

@@ -15,18 +15,21 @@ public class AddedErrorTreeNode extends ErrorTreeNode {
     }
 
     public static Collection<ErrorTreeNode> createTreeNodesFrom(
-            Set<ActionableMarkerResolution> resolutions) {
+            Set<ActionableMarkerResolution> resolutions,
+            TreeLabelUpdater labelUpdater) {
         Map<ComparableMarker, ErrorTreeNode> allNodes = new HashMap<ComparableMarker, ErrorTreeNode>();
         for (ActionableMarkerResolution resolution : resolutions) {
             Set<ComparableMarker> markersToBeResolved = resolution
                     .getMarkersToBeResolvedByFixer();
             for (ComparableMarker comparableMarker : markersToBeResolved) {
                 if (allNodes.containsKey(comparableMarker)) {
-                    allNodes.get(comparableMarker).addResolution(resolution);
+                    allNodes.get(comparableMarker).addResolution(resolution,
+                            labelUpdater);
                 } else {
                     AddedErrorTreeNode newErrorNode = new AddedErrorTreeNode(
                             comparableMarker);
-                    newErrorNode.addResolution(resolution);
+                    newErrorNode.setLabelUpdateListener(labelUpdater);
+                    newErrorNode.addResolution(resolution, labelUpdater);
                     allNodes.put(comparableMarker, newErrorNode);
                 }
             }

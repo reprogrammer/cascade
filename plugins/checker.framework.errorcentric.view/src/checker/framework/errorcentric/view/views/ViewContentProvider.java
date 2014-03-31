@@ -25,6 +25,13 @@ public class ViewContentProvider implements IStructuredContentProvider,
 
     private IJavaProject javaProject;
 
+    private TreeLabelUpdater labelUpdater;
+
+    public ViewContentProvider(TreeLabelUpdater treeUpdateListener) {
+        super();
+        this.labelUpdater = treeUpdateListener;
+    }
+
     public void inputChanged(Viewer v, Object oldInput, Object newInput) {
     }
 
@@ -69,8 +76,8 @@ public class ViewContentProvider implements IStructuredContentProvider,
         shadowProject.runChecker(InferCommandHandler.checkerID);
         Set<ActionableMarkerResolution> resolutions = shadowProject
                 .getResolutions();
-        invisibleRoot.addChildren(AddedErrorTreeNode
-                .createTreeNodesFrom(resolutions));
+        invisibleRoot.addChildren(AddedErrorTreeNode.createTreeNodesFrom(
+                resolutions, labelUpdater));
     }
 
 }

@@ -22,6 +22,10 @@ public class TreeObject implements IAdaptable {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public void setParent(TreeObject parent) {
         this.parent = parent;
     }

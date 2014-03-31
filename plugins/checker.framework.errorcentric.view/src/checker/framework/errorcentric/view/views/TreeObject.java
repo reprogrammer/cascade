@@ -13,6 +13,8 @@ public class TreeObject implements IAdaptable {
 
     protected ArrayList<TreeObject> children;
 
+    private TreeLabelUpdater labelUpdater;
+
     public TreeObject(String name) {
         this.name = name;
         this.children = new ArrayList<>();
@@ -20,6 +22,13 @@ public class TreeObject implements IAdaptable {
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+        if (labelUpdater != null) {
+            labelUpdater.update(this);
+        }
     }
 
     public void setParent(TreeObject parent) {
@@ -60,6 +69,15 @@ public class TreeObject implements IAdaptable {
 
     public boolean hasChildren() {
         return children.size() > 0;
+    }
+
+    public TreeLabelUpdater getLabelUpdater() {
+        return labelUpdater;
+    }
+
+    public void setLabelUpdateListener(
+            TreeLabelUpdater labelUpdater) {
+        this.labelUpdater = labelUpdater;
     }
 
 }
