@@ -1,16 +1,8 @@
 package checker.framework.errorcentric.view.views;
 
-import java.util.Set;
-
-import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-
-import checker.framework.change.propagator.ActionableMarkerResolution;
-import checker.framework.change.propagator.ShadowProject;
-import checker.framework.change.propagator.ShadowProjectFactory;
-import checker.framework.errorcentric.propagator.commands.InferCommandHandler;
 
 /**
  * The content provider class is responsible for providing objects to the view.
@@ -21,17 +13,6 @@ import checker.framework.errorcentric.propagator.commands.InferCommandHandler;
 public class ViewContentProvider implements IStructuredContentProvider,
         ITreeContentProvider {
 
-    private TreeObject invisibleRoot;
-
-    private IJavaProject javaProject;
-
-    private TreeLabelUpdater labelUpdater;
-
-    public ViewContentProvider(TreeLabelUpdater treeUpdateListener) {
-        super();
-        this.labelUpdater = treeUpdateListener;
-    }
-
     public void inputChanged(Viewer v, Object oldInput, Object newInput) {
     }
 
@@ -39,10 +20,6 @@ public class ViewContentProvider implements IStructuredContentProvider,
     }
 
     public Object[] getElements(Object parent) {
-        if (invisibleRoot == null) {
-            initialize();
-            return getChildren(invisibleRoot);
-        }
         return getChildren(parent);
     }
 
@@ -57,27 +34,4 @@ public class ViewContentProvider implements IStructuredContentProvider,
     public boolean hasChildren(Object parent) {
         return ((TreeObject) parent).hasChildren();
     }
-
-    public void clearView() {
-        invisibleRoot = null;
-    }
-
-    private void initialize() {
-        invisibleRoot = new TreeObject("");
-        if (InferCommandHandler.checkerID == null) {
-            return;
-        }
-        if (!InferCommandHandler.selectedJavaProject.isPresent()) {
-            return;
-        }
-        javaProject = InferCommandHandler.selectedJavaProject.get();
-        ShadowProject shadowProject = new ShadowProjectFactory(javaProject)
-                .get();
-        shadowProject.runChecker(InferCommandHandler.checkerID);
-        Set<ActionableMarkerResolution> resolutions = shadowProject
-                .getResolutions();
-        invisibleRoot.addChildren(AddedErrorTreeNode.createTreeNodesFrom(
-                resolutions, labelUpdater));
-    }
-
 }

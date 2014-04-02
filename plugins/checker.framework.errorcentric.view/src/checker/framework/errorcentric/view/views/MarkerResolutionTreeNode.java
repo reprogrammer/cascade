@@ -108,9 +108,11 @@ public class MarkerResolutionTreeNode extends TreeObject {
                         historicallyNewResolutions, thisNode.getLabelUpdater()));
                 monitor.worked(1);
                 monitor.done();
-                thisNode.setName(thisNode.getName() + " ("
-                        + resolution.getMarkersToBeResolvedByFixer().size()
-                        + ")");
+                JobManager.done(thisNode);
+                // thisNode.setName(thisNode.getName() + " ("
+                // + resolution.getMarkersToBeResolvedByFixer().size()
+                // + ")");
+                thisNode.getLabelUpdater().update(thisNode);
                 return Status.OK_STATUS;
             }
         };

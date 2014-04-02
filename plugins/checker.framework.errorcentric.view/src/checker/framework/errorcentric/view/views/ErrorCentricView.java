@@ -1,5 +1,7 @@
 package checker.framework.errorcentric.view.views;
 
+import java.util.Set;
+
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -8,6 +10,7 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.viewers.DecoratingLabelProvider;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
@@ -26,6 +29,10 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.DrillDownAdapter;
 import org.eclipse.ui.part.ViewPart;
 
+import checker.framework.change.propagator.ActionableMarkerResolution;
+import checker.framework.change.propagator.ShadowProject;
+import checker.framework.change.propagator.ShadowProjectFactory;
+import checker.framework.errorcentric.propagator.commands.InferCommandHandler;
 import checker.framework.errorcentric.propagator.commands.InferNullnessCommandHandler;
 import checker.framework.quickfixes.descriptors.Fixer;
 
@@ -58,11 +65,32 @@ public class ErrorCentricView extends ViewPart implements TreeLabelUpdater {
     private Action refreshAction;
     private Action action2;
     private Action doubleClickAction;
+    private TreeObject invisibleRoot;
+    private IJavaProject javaProject;
 
     /**
      * The constructor.
      */
     public ErrorCentricView() {
+    }
+
+    private TreeObject initializeInput() {
+        invisibleRoot = new TreeObject("");
+        if (InferCommandHandler.checkerID == null) {
+            return null;
+        }
+        if (!InferCommandHandler.selectedJavaProject.isPresent()) {
+            return null;
+        }
+        javaProject = InferCommandHandler.selectedJavaProject.get();
+        ShadowProject shadowProject = new ShadowProjectFactory(javaProject)
+                .get();
+        shadowProject.runChecker(InferCommandHandler.checkerID);
+        Set<ActionableMarkerResolution> resolutions = shadowProject
+                .getResolutions();
+        invisibleRoot.addChildren(AddedErrorTreeNode.createTreeNodesFrom(
+                resolutions, this));
+        return invisibleRoot;
     }
 
     /**
@@ -72,10 +100,11 @@ public class ErrorCentricView extends ViewPart implements TreeLabelUpdater {
     public void createPartControl(Composite parent) {
         viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
         drillDownAdapter = new DrillDownAdapter(viewer);
-        viewer.setContentProvider(new ViewContentProvider(this));
-        viewer.setLabelProvider(new ViewLabelProvider());
+        viewer.setContentProvider(new ViewContentProvider());
+        viewer.setLabelProvider(new DecoratingLabelProvider(
+                new ViewLabelProvider(), new FixedErrorsDecorator()));
         viewer.setSorter(new NameSorter());
-        viewer.setInput(getViewSite());
+        viewer.setInput(initializeInput());
         viewer.getTree().setLinesVisible(true);
         makeActions();
         hookContextMenu();
@@ -128,7 +157,6 @@ public class ErrorCentricView extends ViewPart implements TreeLabelUpdater {
     private void makeActions() {
         refreshAction = new Action() {
             public void run() {
-                ((ViewContentProvider) viewer.getContentProvider()).clearView();
                 viewer.refresh();
             }
         };
@@ -216,8 +244,16 @@ public class ErrorCentricView extends ViewPart implements TreeLabelUpdater {
         viewer.addPostSelectionChangedListener(new ISelectionChangedListener() {
             @Override
             public void selectionChanged(SelectionChangedEvent event) {
-                Optional<MarkerResolutionTreeNode> optionalResolution = getSelectedMarkResolution(getSelectedTreeObject(event
-                        .getSelection()));
+                Optional<TreeObject> selectedTreeObject = getSelectedTreeObject(event
+                        .getSelection());
+                if (selectedTreeObject.isPresent()) {
+                    viewer.setLabelProvider(new DecoratingLabelProvider(
+                            new ViewLabelProvider(), new SimpleDecorator(
+                                    selectedTreeObject.get().getClass())));
+
+                }
+
+                Optional<MarkerResolutionTreeNode> optionalResolution = getSelectedMarkResolution(selectedTreeObject);
                 if (optionalResolution.isPresent()) {
                     MarkerResolutionTreeNode resolution = optionalResolution
                             .get();
