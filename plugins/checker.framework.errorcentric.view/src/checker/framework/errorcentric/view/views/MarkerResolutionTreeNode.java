@@ -1,9 +1,5 @@
 package checker.framework.errorcentric.view.views;
 
-import static com.google.common.collect.Iterables.filter;
-import static com.google.common.collect.Sets.difference;
-import static com.google.common.collect.Sets.newHashSet;
-
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -24,9 +20,15 @@ import checker.framework.quickfixes.descriptors.FixerDescriptor;
 
 import com.google.common.base.Predicate;
 
+import static com.google.common.collect.Iterables.filter;
+
+import static com.google.common.collect.Sets.difference;
+import static com.google.common.collect.Sets.newHashSet;
+
 public class MarkerResolutionTreeNode extends TreeObject {
 
     private ActionableMarkerResolution resolution;
+
     private Job job;
 
     public MarkerResolutionTreeNode(ActionableMarkerResolution resolution) {
@@ -109,9 +111,9 @@ public class MarkerResolutionTreeNode extends TreeObject {
                 monitor.worked(1);
                 monitor.done();
                 JobManager.done(thisNode);
-                // thisNode.setName(thisNode.getName() + " ("
-                // + resolution.getMarkersToBeResolvedByFixer().size()
-                // + ")");
+                thisNode.setName(thisNode.getName() + " ("
+                        + resolution.getMarkersToBeResolvedByFixer().size()
+                        + ")");
                 thisNode.getLabelUpdater().update(thisNode);
                 return Status.OK_STATUS;
             }

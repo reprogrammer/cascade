@@ -101,8 +101,7 @@ public class ErrorCentricView extends ViewPart implements TreeLabelUpdater {
         viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
         drillDownAdapter = new DrillDownAdapter(viewer);
         viewer.setContentProvider(new ViewContentProvider());
-        viewer.setLabelProvider(new DecoratingLabelProvider(
-                new ViewLabelProvider(), new FixedErrorsDecorator()));
+        viewer.setLabelProvider(new ViewLabelProvider());
         viewer.setSorter(new NameSorter());
         viewer.setInput(initializeInput());
         viewer.getTree().setLinesVisible(true);
@@ -247,22 +246,21 @@ public class ErrorCentricView extends ViewPart implements TreeLabelUpdater {
                 Optional<TreeObject> selectedTreeObject = getSelectedTreeObject(event
                         .getSelection());
                 if (selectedTreeObject.isPresent()) {
-                    viewer.setLabelProvider(new DecoratingLabelProvider(
-                            new ViewLabelProvider(), new SimpleDecorator(
-                                    selectedTreeObject.get().getClass())));
-
-                }
-
-                Optional<MarkerResolutionTreeNode> optionalResolution = getSelectedMarkResolution(selectedTreeObject);
-                if (optionalResolution.isPresent()) {
-                    MarkerResolutionTreeNode resolution = optionalResolution
-                            .get();
-                    IJavaProject javaProject = InferNullnessCommandHandler.selectedJavaProject
-                            .get();
-                    Fixer fixer = resolution.getResolution().createFixer(
-                            javaProject);
-                    selectAndReveal(fixer);
-
+                    Optional<MarkerResolutionTreeNode> optionalResolution = getSelectedMarkResolution(selectedTreeObject);
+                    if (optionalResolution.isPresent()) {
+                        MarkerResolutionTreeNode resolutionTreeNode = optionalResolution
+                                .get();
+                        IJavaProject javaProject = InferNullnessCommandHandler.selectedJavaProject
+                                .get();
+                        Fixer fixer = resolutionTreeNode.getResolution()
+                                .createFixer(javaProject);
+                        selectAndReveal(fixer);
+                        viewer.setLabelProvider(new DecoratingLabelProvider(
+                                new ViewLabelProvider(),
+                                new FixedErrorDecorator(resolutionTreeNode)));
+                    } else {
+                        viewer.setLabelProvider(new ViewLabelProvider());
+                    }
                 }
             }
 

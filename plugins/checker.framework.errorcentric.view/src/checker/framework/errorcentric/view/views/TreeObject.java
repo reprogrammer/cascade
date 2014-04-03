@@ -18,6 +18,7 @@ public class TreeObject implements IAdaptable {
     public TreeObject(String name) {
         this.name = name;
         this.children = new ArrayList<>();
+        this.labelUpdater = new NoOpTreeLabelUpdater();
     }
 
     public String getName() {
@@ -26,9 +27,7 @@ public class TreeObject implements IAdaptable {
 
     public void setName(String name) {
         this.name = name;
-        if (labelUpdater != null) {
-            labelUpdater.update(this);
-        }
+        labelUpdater.update(this);
     }
 
     public void setParent(TreeObject parent) {
@@ -75,8 +74,7 @@ public class TreeObject implements IAdaptable {
         return labelUpdater;
     }
 
-    public void setLabelUpdateListener(
-            TreeLabelUpdater labelUpdater) {
+    public void setLabelUpdateListener(TreeLabelUpdater labelUpdater) {
         this.labelUpdater = labelUpdater;
     }
 
