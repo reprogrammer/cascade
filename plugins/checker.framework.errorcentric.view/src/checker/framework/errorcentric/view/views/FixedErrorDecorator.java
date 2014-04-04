@@ -5,8 +5,8 @@ import java.util.Collection;
 import org.eclipse.jface.viewers.ILabelDecorator;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
+
+import checker.framework.errorcentric.view.Activator;
 
 import static com.google.common.collect.Sets.newHashSet;
 
@@ -25,12 +25,9 @@ public class FixedErrorDecorator implements ILabelDecorator {
                             newHashSet(markerResolutionTreeNode.getResolution()),
                             new NoOpTreeLabelUpdater(), false);
             if (nodesFixedByMarkerNode.contains(object)) {
-                Image overlayImage = PlatformUI.getWorkbench()
-                        .getSharedImages()
-                        .getImage(ISharedImages.IMG_DEC_FIELD_ERROR);
-                OverlayImageIcon newImage = new OverlayImageIcon(image,
-                        overlayImage);
-                return newImage.createImage();
+                return Activator
+                        .getImageDescriptor("icons/green_checkmark.gif")
+                        .createImage();
             }
         }
         return null;

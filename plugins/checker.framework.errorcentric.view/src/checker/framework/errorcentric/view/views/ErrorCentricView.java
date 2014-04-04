@@ -10,6 +10,7 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.DecoratingLabelProvider;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -23,9 +24,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IActionBars;
-import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchActionConstants;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.DrillDownAdapter;
 import org.eclipse.ui.part.ViewPart;
 
@@ -34,6 +33,7 @@ import checker.framework.change.propagator.ShadowProject;
 import checker.framework.change.propagator.ShadowProjectFactory;
 import checker.framework.errorcentric.propagator.commands.InferCommandHandler;
 import checker.framework.errorcentric.propagator.commands.InferNullnessCommandHandler;
+import checker.framework.errorcentric.view.Activator;
 import checker.framework.quickfixes.descriptors.Fixer;
 
 import com.google.common.base.Optional;
@@ -63,7 +63,6 @@ public class ErrorCentricView extends ViewPart implements TreeLabelUpdater {
     private TreeViewer viewer;
     private DrillDownAdapter drillDownAdapter;
     private Action refreshAction;
-    private Action action2;
     private Action doubleClickAction;
     private TreeObject invisibleRoot;
     private IJavaProject javaProject;
@@ -133,13 +132,10 @@ public class ErrorCentricView extends ViewPart implements TreeLabelUpdater {
 
     private void fillLocalPullDown(IMenuManager manager) {
         manager.add(refreshAction);
-        manager.add(new Separator());
-        manager.add(action2);
     }
 
     private void fillContextMenu(IMenuManager manager) {
         manager.add(refreshAction);
-        manager.add(action2);
         manager.add(new Separator());
         drillDownAdapter.addNavigationActions(manager);
         // Other plug-ins can contribute there actions here
@@ -148,7 +144,6 @@ public class ErrorCentricView extends ViewPart implements TreeLabelUpdater {
 
     private void fillLocalToolBar(IToolBarManager manager) {
         manager.add(refreshAction);
-        manager.add(action2);
         manager.add(new Separator());
         drillDownAdapter.addNavigationActions(manager);
     }
@@ -161,19 +156,10 @@ public class ErrorCentricView extends ViewPart implements TreeLabelUpdater {
         };
         refreshAction.setText("Refresh");
         refreshAction.setToolTipText("Recomputes the error/change tree.");
-        refreshAction.setImageDescriptor(PlatformUI.getWorkbench()
-                .getSharedImages()
-                .getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
+        refreshAction.setImageDescriptor(ImageDescriptor
+                .createFromImage(Activator.getImageDescriptor(
+                        "icons/refresh.gif").createImage()));
 
-        action2 = new Action() {
-            public void run() {
-                showMessage("Action 2 executed");
-            }
-        };
-        action2.setText("Action 2");
-        action2.setToolTipText("Action 2 tooltip");
-        action2.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
-                .getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
         doubleClickAction = new Action() {
             public void run() {
                 Optional<TreeObject> selectedTreeObject = getSelectedTreeObject(viewer
