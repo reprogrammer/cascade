@@ -9,7 +9,6 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.DecoratingLabelProvider;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -23,6 +22,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.part.DrillDownAdapter;
@@ -37,6 +37,8 @@ import checker.framework.errorcentric.view.Activator;
 import checker.framework.quickfixes.descriptors.Fixer;
 
 import com.google.common.base.Optional;
+
+import static com.google.common.collect.Sets.newHashSet;
 
 /**
  * This sample class demonstrates how to plug-in a new workbench view. The view
@@ -66,6 +68,7 @@ public class ErrorCentricView extends ViewPart implements TreeLabelUpdater {
     private Action doubleClickAction;
     private TreeObject invisibleRoot;
     private IJavaProject javaProject;
+    private Set<TreeObject> disabledNodes;
 
     /**
      * The constructor.
@@ -109,6 +112,7 @@ public class ErrorCentricView extends ViewPart implements TreeLabelUpdater {
         hookDoubleClickAction();
         hookSelectionAction();
         contributeToActionBars();
+        disabledNodes = newHashSet();
     }
 
     private void hookContextMenu() {
@@ -164,9 +168,23 @@ public class ErrorCentricView extends ViewPart implements TreeLabelUpdater {
             public void run() {
                 Optional<TreeObject> selectedTreeObject = getSelectedTreeObject(viewer
                         .getSelection());
+                if (selectedTreeObject.isPresent()
+                        && disabledNodes.contains(selectedTreeObject.get())) {
+                    return;
+                }
                 Optional<MarkerResolutionTreeNode> resolution = getSelectedMarkResolution(selectedTreeObject);
                 if (resolution.isPresent()) {
-                    resolution.get().getResolution().run();
+                    MarkerResolutionTreeNode resolutionTreeNode = resolution
+                            .get();
+                    resolutionTreeNode.getResolution().run();
+                    Set<TreeObject> nodesToBeDisabled = newHashSet();
+                    nodesToBeDisabled.add(resolutionTreeNode);
+                    nodesToBeDisabled.addAll(ErrorTreeNode.createTreeNodesFrom(
+                            newHashSet(resolutionTreeNode.getResolution()),
+                            new NoOpTreeLabelUpdater(), false));
+                    grayOutNodes(nodesToBeDisabled);
+                    disabledNodes.addAll(nodesToBeDisabled);
+
                 }
                 Optional<ErrorTreeNode> error = getSelectedError(selectedTreeObject);
                 if (error.isPresent()) {
@@ -175,6 +193,23 @@ public class ErrorCentricView extends ViewPart implements TreeLabelUpdater {
             }
 
         };
+    }
+
+    private void grayOutNodes(Set<TreeObject> nodesToGray) {
+        grayOutNodes(viewer.getTree().getItems(), nodesToGray);
+    }
+
+    private void grayOutNodes(TreeItem[] items, Set<TreeObject> nodesToGray) {
+        for (TreeItem item : items) {
+            if (nodesToGray.contains(item.getData())) {
+                grayOutNode(item);
+            }
+            grayOutNodes(item.getItems(), nodesToGray);
+        }
+    }
+
+    private void grayOutNode(TreeItem item) {
+        item.setForeground(Colors.GRAY);
     }
 
     private Optional<MarkerResolutionTreeNode> getSelectedMarkResolution(
@@ -232,6 +267,9 @@ public class ErrorCentricView extends ViewPart implements TreeLabelUpdater {
                 Optional<TreeObject> selectedTreeObject = getSelectedTreeObject(event
                         .getSelection());
                 if (selectedTreeObject.isPresent()) {
+                    if (disabledNodes.contains(selectedTreeObject.get())) {
+                        return;
+                    }
                     Optional<MarkerResolutionTreeNode> optionalResolution = getSelectedMarkResolution(selectedTreeObject);
                     if (optionalResolution.isPresent()) {
                         MarkerResolutionTreeNode resolutionTreeNode = optionalResolution
@@ -256,11 +294,6 @@ public class ErrorCentricView extends ViewPart implements TreeLabelUpdater {
             }
 
         });
-    }
-
-    private void showMessage(String message) {
-        MessageDialog.openInformation(viewer.getControl().getShell(),
-                "Changes View", message);
     }
 
     /**
