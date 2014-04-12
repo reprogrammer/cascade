@@ -7,6 +7,11 @@ import org.eclipse.core.commands.operations.IOperationHistory;
 import org.eclipse.core.commands.operations.IOperationHistoryListener;
 import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.commands.operations.OperationHistoryEvent;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -224,12 +229,25 @@ public class ErrorCentricView extends ViewPart implements TreeLabelUpdater {
                 }
                 Optional<MarkerResolutionTreeNode> resolution = getSelectedMarkResolution(selectedTreeObject);
                 if (resolution.isPresent()) {
-                    MarkerResolutionTreeNode resolutionTreeNode = resolution
+                    final MarkerResolutionTreeNode resolutionTreeNode = resolution
                             .get();
-                    view.selectedResolutionTreeNode = resolutionTreeNode;
-                    resolutionTreeNode.getResolution().run();
-                    view.selectedResolutionTreeNode = null;
-                    disableChange(resolutionTreeNode);
+                    Job job = new Job("Applying resolution") {
+                        @Override
+                        protected IStatus run(IProgressMonitor monitor) {
+                            Display.getDefault().asyncExec(new Runnable() {
+                                @Override
+                                public void run() {
+                                    view.selectedResolutionTreeNode = resolutionTreeNode;
+                                    resolutionTreeNode.getResolution().run();
+                                    view.selectedResolutionTreeNode = null;
+                                    disableChange(resolutionTreeNode);
+                                }
+                            });
+                            return Status.OK_STATUS;
+                        }
+                    };
+                    job.setRule(ResourcesPlugin.getWorkspace().getRoot());
+                    job.schedule();
                 }
                 Optional<ErrorTreeNode> error = getSelectedError(selectedTreeObject);
                 if (error.isPresent()) {
