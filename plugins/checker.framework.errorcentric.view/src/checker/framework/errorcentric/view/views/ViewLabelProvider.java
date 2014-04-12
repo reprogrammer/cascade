@@ -10,7 +10,15 @@ import checker.framework.errorcentric.view.Activator;
 public class ViewLabelProvider extends LabelProvider {
 
     public String getText(Object obj) {
-        return obj.toString();
+        if (obj instanceof ErrorTreeNode) {
+            String[] lines = obj.toString().split("\n");
+            for (int i = 0; i < lines.length; ++i) {
+                lines[i] = lines[i].trim();
+            }
+            return String.join("\n", lines);
+        } else {
+            return obj.toString();
+        }
     }
 
     public Image getImage(Object obj) {
