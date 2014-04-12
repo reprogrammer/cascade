@@ -15,7 +15,6 @@ import checker.framework.change.propagator.ActionableMarkerResolution;
 import checker.framework.change.propagator.ComparableMarker;
 import checker.framework.change.propagator.ShadowProject;
 import checker.framework.errorcentric.propagator.commands.InferCommandHandler;
-import checker.framework.quickfixes.WorkspaceUtils;
 import checker.framework.quickfixes.descriptors.FixerDescriptor;
 
 import com.google.common.base.Predicate;
@@ -72,7 +71,7 @@ public class MarkerResolutionTreeNode extends TreeObject {
                 resolution.apply();
 
                 monitor.worked(3);
-                WorkspaceUtils.saveAllEditors();
+                // WorkspaceUtils.saveAllEditors();
                 monitor.worked(3);
                 ShadowProject shadowProject = resolution.getShadowProject();
                 shadowProject.runChecker(InferCommandHandler.checkerID);

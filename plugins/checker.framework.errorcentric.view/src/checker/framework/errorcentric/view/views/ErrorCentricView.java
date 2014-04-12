@@ -1,7 +1,12 @@
 package checker.framework.errorcentric.view.views;
 
+import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.commands.operations.IOperationHistory;
+import org.eclipse.core.commands.operations.IOperationHistoryListener;
+import org.eclipse.core.commands.operations.IUndoableOperation;
+import org.eclipse.core.commands.operations.OperationHistoryEvent;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -19,11 +24,13 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.part.DrillDownAdapter;
 import org.eclipse.ui.part.ViewPart;
@@ -37,6 +44,8 @@ import checker.framework.errorcentric.view.Activator;
 import checker.framework.quickfixes.descriptors.Fixer;
 
 import com.google.common.base.Optional;
+
+import static com.google.common.collect.Maps.newHashMap;
 
 import static com.google.common.collect.Sets.newHashSet;
 
@@ -69,6 +78,9 @@ public class ErrorCentricView extends ViewPart implements TreeLabelUpdater {
     private TreeObject invisibleRoot;
     private IJavaProject javaProject;
     private Set<TreeObject> disabledNodes;
+
+    private MarkerResolutionTreeNode selectedResolutionTreeNode;
+    private Map<IUndoableOperation, MarkerResolutionTreeNode> operationMap;
 
     /**
      * The constructor.
@@ -113,6 +125,43 @@ public class ErrorCentricView extends ViewPart implements TreeLabelUpdater {
         hookSelectionAction();
         contributeToActionBars();
         disabledNodes = newHashSet();
+        operationMap = newHashMap();
+        registerOperationHistoryListeners();
+    }
+
+    private void registerOperationHistoryListeners() {
+        IWorkbench workbench = getSite().getWorkbenchWindow().getWorkbench();
+        IOperationHistory operationHistory = workbench.getOperationSupport()
+                .getOperationHistory();
+        operationHistory
+                .addOperationHistoryListener(new IOperationHistoryListener() {
+                    @Override
+                    public void historyNotification(OperationHistoryEvent event) {
+                        if (event.getEventType() == OperationHistoryEvent.UNDONE) {
+                            MarkerResolutionTreeNode markerResolutionTreeNode = operationMap
+                                    .get(event.getOperation());
+                            if (markerResolutionTreeNode != null) {
+                                enableChange(markerResolutionTreeNode);
+                            }
+                        } else if (event.getEventType() == OperationHistoryEvent.REDONE) {
+                            MarkerResolutionTreeNode markerResolutionTreeNode = operationMap
+                                    .get(event.getOperation());
+                            if (markerResolutionTreeNode != null) {
+                                disableChange(markerResolutionTreeNode);
+
+                            }
+                        } else if (event.getEventType() == OperationHistoryEvent.ABOUT_TO_EXECUTE) {
+                            if (selectedResolutionTreeNode != null) {
+                                operationMap.put(event.getOperation(),
+                                        selectedResolutionTreeNode);
+                            }
+                        } else if (event.getEventType() == OperationHistoryEvent.DONE) {
+                            if (selectedResolutionTreeNode != null) {
+                                selectedResolutionTreeNode = null;
+                            }
+                        }
+                    }
+                });
     }
 
     private void hookContextMenu() {
@@ -164,6 +213,7 @@ public class ErrorCentricView extends ViewPart implements TreeLabelUpdater {
                 .createFromImage(Activator.getImageDescriptor(
                         "icons/refresh.gif").createImage()));
 
+        final ErrorCentricView view = this;
         doubleClickAction = new Action() {
             public void run() {
                 Optional<TreeObject> selectedTreeObject = getSelectedTreeObject(viewer
@@ -176,40 +226,58 @@ public class ErrorCentricView extends ViewPart implements TreeLabelUpdater {
                 if (resolution.isPresent()) {
                     MarkerResolutionTreeNode resolutionTreeNode = resolution
                             .get();
+                    view.selectedResolutionTreeNode = resolutionTreeNode;
                     resolutionTreeNode.getResolution().run();
-                    Set<TreeObject> nodesToBeDisabled = newHashSet();
-                    nodesToBeDisabled.add(resolutionTreeNode);
-                    nodesToBeDisabled.addAll(ErrorTreeNode.createTreeNodesFrom(
-                            newHashSet(resolutionTreeNode.getResolution()),
-                            new NoOpTreeLabelUpdater(), false));
-                    grayOutNodes(nodesToBeDisabled);
-                    disabledNodes.addAll(nodesToBeDisabled);
-
+                    view.selectedResolutionTreeNode = null;
+                    disableChange(resolutionTreeNode);
                 }
                 Optional<ErrorTreeNode> error = getSelectedError(selectedTreeObject);
                 if (error.isPresent()) {
-                    error.get().reveal();
+                    ErrorTreeNode errorTreeNode = error.get();
+                    errorTreeNode.reveal();
                 }
+
             }
 
         };
     }
 
-    private void grayOutNodes(Set<TreeObject> nodesToGray) {
-        grayOutNodes(viewer.getTree().getItems(), nodesToGray);
+    private void disableChange(MarkerResolutionTreeNode resolutionTreeNode) {
+        Set<TreeObject> nodesToBeDisabled = newHashSet();
+        nodesToBeDisabled.add(resolutionTreeNode);
+        nodesToBeDisabled.addAll(ErrorTreeNode.createTreeNodesFrom(
+                newHashSet(resolutionTreeNode.getResolution()),
+                new NoOpTreeLabelUpdater(), false));
+        setNodeColor(nodesToBeDisabled, Colors.GRAY);
+        disabledNodes.addAll(nodesToBeDisabled);
     }
 
-    private void grayOutNodes(TreeItem[] items, Set<TreeObject> nodesToGray) {
+    private void enableChange(MarkerResolutionTreeNode resolutionTreeNode) {
+        Set<TreeObject> nodesToBeEnabled = newHashSet();
+        nodesToBeEnabled.add(resolutionTreeNode);
+        nodesToBeEnabled.addAll(ErrorTreeNode.createTreeNodesFrom(
+                newHashSet(resolutionTreeNode.getResolution()),
+                new NoOpTreeLabelUpdater(), false));
+        setNodeColor(nodesToBeEnabled, viewer.getTree().getForeground());
+        disabledNodes.removeAll(nodesToBeEnabled);
+    }
+
+    private void setNodeColor(Set<TreeObject> nodes, Color color) {
+        setNodeColor(viewer.getTree().getItems(), nodes, color);
+    }
+
+    private void setNodeColor(TreeItem[] items, Set<TreeObject> nodes,
+            Color color) {
         for (TreeItem item : items) {
-            if (nodesToGray.contains(item.getData())) {
-                grayOutNode(item);
+            if (nodes.contains(item.getData())) {
+                setNodeColor(item, color);
             }
-            grayOutNodes(item.getItems(), nodesToGray);
+            setNodeColor(item.getItems(), nodes, color);
         }
     }
 
-    private void grayOutNode(TreeItem item) {
-        item.setForeground(Colors.GRAY);
+    private void setNodeColor(TreeItem item, Color color) {
+        item.setForeground(color);
     }
 
     private Optional<MarkerResolutionTreeNode> getSelectedMarkResolution(
