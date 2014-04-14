@@ -11,14 +11,18 @@ public class ViewLabelProvider extends LabelProvider {
 
     public String getText(Object obj) {
         if (obj instanceof ErrorTreeNode) {
-            String[] lines = obj.toString().split("\n");
-            for (int i = 0; i < lines.length; ++i) {
-                lines[i] = lines[i].trim();
-            }
-            return String.join("\n", lines);
+            return removeLeadingWhiteSpaces(obj.toString());
         } else {
             return obj.toString();
         }
+    }
+
+    private String removeLeadingWhiteSpaces(String s) {
+        String[] lines = s.split("\n");
+        for (int i = 0; i < lines.length; ++i) {
+            lines[i] = lines[i].trim();
+        }
+        return String.join("\n", lines);
     }
 
     public Image getImage(Object obj) {
