@@ -224,7 +224,7 @@ public class ErrorCentricView extends ViewPart implements TreeLabelUpdater {
                 Optional<TreeObject> selectedTreeObject = getSelectedTreeObject(viewer
                         .getSelection());
                 if (selectedTreeObject.isPresent()
-                        && disabledNodes.contains(selectedTreeObject.get())) {
+                        && isDisabled(selectedTreeObject.get())) {
                     return;
                 }
                 Optional<MarkerResolutionTreeNode> resolution = getSelectedMarkResolution(selectedTreeObject);
@@ -353,7 +353,7 @@ public class ErrorCentricView extends ViewPart implements TreeLabelUpdater {
                 Optional<TreeObject> selectedTreeObject = getSelectedTreeObject(event
                         .getSelection());
                 if (selectedTreeObject.isPresent()) {
-                    if (disabledNodes.contains(selectedTreeObject.get())) {
+                    if (isDisabled(selectedTreeObject.get())) {
                         return;
                     }
                     Optional<MarkerResolutionTreeNode> optionalResolution = getSelectedMarkResolution(selectedTreeObject);
@@ -396,5 +396,9 @@ public class ErrorCentricView extends ViewPart implements TreeLabelUpdater {
                 viewer.update(node, null);
             }
         });
+    }
+
+    private boolean isDisabled(TreeObject treeObject) {
+        return disabledNodes.contains(treeObject);
     }
 }
