@@ -1,12 +1,8 @@
 package checker.framework.errorcentric.view.views;
 
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.commands.operations.IOperationHistory;
-import org.eclipse.core.commands.operations.IOperationHistoryListener;
-import org.eclipse.core.commands.operations.IUndoableOperation;
-import org.eclipse.core.commands.operations.OperationHistoryEvent;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -29,11 +25,9 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchActionConstants;
@@ -49,10 +43,6 @@ import checker.framework.errorcentric.view.Activator;
 import checker.framework.quickfixes.descriptors.Fixer;
 
 import com.google.common.base.Optional;
-
-import static com.google.common.collect.Maps.newHashMap;
-
-import static com.google.common.collect.Sets.newHashSet;
 
 /**
  * This sample class demonstrates how to plug-in a new workbench view. The view
@@ -82,10 +72,9 @@ public class ErrorCentricView extends ViewPart implements TreeLabelUpdater {
     private Action doubleClickAction;
     private TreeObject invisibleRoot;
     private IJavaProject javaProject;
-    private Set<TreeObject> disabledNodes;
 
-    private MarkerResolutionTreeNode selectedResolutionTreeNode;
-    private Map<IUndoableOperation, MarkerResolutionTreeNode> operationMap;
+    private ChangeUndoRedoSupporter changeUndoRedoSupporter;
+    private ChangeStateViewer changeStateViewer;
 
     /**
      * The constructor.
@@ -129,44 +118,17 @@ public class ErrorCentricView extends ViewPart implements TreeLabelUpdater {
         hookDoubleClickAction();
         hookSelectionAction();
         contributeToActionBars();
-        disabledNodes = newHashSet();
-        operationMap = newHashMap();
-        registerOperationHistoryListeners();
+        changeStateViewer = new ChangeStateViewer(viewer);
+        initializeChangeUndoRedoSupporter();
     }
 
-    private void registerOperationHistoryListeners() {
+    private void initializeChangeUndoRedoSupporter() {
         IWorkbench workbench = getSite().getWorkbenchWindow().getWorkbench();
         IOperationHistory operationHistory = workbench.getOperationSupport()
                 .getOperationHistory();
-        operationHistory
-                .addOperationHistoryListener(new IOperationHistoryListener() {
-                    @Override
-                    public void historyNotification(OperationHistoryEvent event) {
-                        if (event.getEventType() == OperationHistoryEvent.UNDONE) {
-                            MarkerResolutionTreeNode markerResolutionTreeNode = operationMap
-                                    .get(event.getOperation());
-                            if (markerResolutionTreeNode != null) {
-                                enableChange(markerResolutionTreeNode);
-                            }
-                        } else if (event.getEventType() == OperationHistoryEvent.REDONE) {
-                            MarkerResolutionTreeNode markerResolutionTreeNode = operationMap
-                                    .get(event.getOperation());
-                            if (markerResolutionTreeNode != null) {
-                                disableChange(markerResolutionTreeNode);
-
-                            }
-                        } else if (event.getEventType() == OperationHistoryEvent.ABOUT_TO_EXECUTE) {
-                            if (selectedResolutionTreeNode != null) {
-                                operationMap.put(event.getOperation(),
-                                        selectedResolutionTreeNode);
-                            }
-                        } else if (event.getEventType() == OperationHistoryEvent.DONE) {
-                            if (selectedResolutionTreeNode != null) {
-                                selectedResolutionTreeNode = null;
-                            }
-                        }
-                    }
-                });
+        changeUndoRedoSupporter = new ChangeUndoRedoSupporter(operationHistory,
+                changeStateViewer);
+        changeUndoRedoSupporter.initialize();
     }
 
     private void hookContextMenu() {
@@ -218,13 +180,13 @@ public class ErrorCentricView extends ViewPart implements TreeLabelUpdater {
                 .createFromImage(Activator.getImageDescriptor(
                         "icons/refresh.gif").createImage()));
 
-        final ErrorCentricView view = this;
         doubleClickAction = new Action() {
             public void run() {
                 Optional<TreeObject> selectedTreeObject = getSelectedTreeObject(viewer
                         .getSelection());
                 if (selectedTreeObject.isPresent()
-                        && isDisabled(selectedTreeObject.get())) {
+                        && changeStateViewer.isDisabled(selectedTreeObject
+                                .get())) {
                     return;
                 }
                 Optional<MarkerResolutionTreeNode> resolution = getSelectedMarkResolution(selectedTreeObject);
@@ -237,10 +199,8 @@ public class ErrorCentricView extends ViewPart implements TreeLabelUpdater {
                             Display.getDefault().asyncExec(new Runnable() {
                                 @Override
                                 public void run() {
-                                    view.selectedResolutionTreeNode = resolutionTreeNode;
-                                    resolutionTreeNode.getResolution().run();
-                                    view.selectedResolutionTreeNode = null;
-                                    disableChange(resolutionTreeNode);
+                                    changeUndoRedoSupporter
+                                            .applyUndoableChange(resolutionTreeNode);
                                 }
                             });
                             return Status.OK_STATUS;
@@ -258,44 +218,6 @@ public class ErrorCentricView extends ViewPart implements TreeLabelUpdater {
             }
 
         };
-    }
-
-    private void disableChange(MarkerResolutionTreeNode resolutionTreeNode) {
-        Set<TreeObject> nodesToBeDisabled = newHashSet();
-        nodesToBeDisabled.add(resolutionTreeNode);
-        nodesToBeDisabled.addAll(ErrorTreeNode.createTreeNodesFrom(
-                newHashSet(resolutionTreeNode.getResolution()),
-                new NoOpTreeLabelUpdater(), false));
-        setNodeColor(nodesToBeDisabled, Colors.GRAY);
-        disabledNodes.addAll(nodesToBeDisabled);
-    }
-
-    private void enableChange(MarkerResolutionTreeNode resolutionTreeNode) {
-        Set<TreeObject> nodesToBeEnabled = newHashSet();
-        nodesToBeEnabled.add(resolutionTreeNode);
-        nodesToBeEnabled.addAll(ErrorTreeNode.createTreeNodesFrom(
-                newHashSet(resolutionTreeNode.getResolution()),
-                new NoOpTreeLabelUpdater(), false));
-        setNodeColor(nodesToBeEnabled, viewer.getTree().getForeground());
-        disabledNodes.removeAll(nodesToBeEnabled);
-    }
-
-    private void setNodeColor(Set<TreeObject> nodes, Color color) {
-        setNodeColor(viewer.getTree().getItems(), nodes, color);
-    }
-
-    private void setNodeColor(TreeItem[] items, Set<TreeObject> nodes,
-            Color color) {
-        for (TreeItem item : items) {
-            if (nodes.contains(item.getData())) {
-                setNodeColor(item, color);
-            }
-            setNodeColor(item.getItems(), nodes, color);
-        }
-    }
-
-    private void setNodeColor(TreeItem item, Color color) {
-        item.setForeground(color);
     }
 
     private Optional<MarkerResolutionTreeNode> getSelectedMarkResolution(
@@ -353,7 +275,7 @@ public class ErrorCentricView extends ViewPart implements TreeLabelUpdater {
                 Optional<TreeObject> selectedTreeObject = getSelectedTreeObject(event
                         .getSelection());
                 if (selectedTreeObject.isPresent()) {
-                    if (isDisabled(selectedTreeObject.get())) {
+                    if (changeStateViewer.isDisabled(selectedTreeObject.get())) {
                         return;
                     }
                     Optional<MarkerResolutionTreeNode> optionalResolution = getSelectedMarkResolution(selectedTreeObject);
@@ -398,7 +320,4 @@ public class ErrorCentricView extends ViewPart implements TreeLabelUpdater {
         });
     }
 
-    private boolean isDisabled(TreeObject treeObject) {
-        return disabledNodes.contains(treeObject);
-    }
 }
