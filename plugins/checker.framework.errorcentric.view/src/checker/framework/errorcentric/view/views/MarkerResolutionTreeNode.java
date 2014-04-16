@@ -118,6 +118,7 @@ public class MarkerResolutionTreeNode extends TreeObject {
             }
         };
         job.setRule(ResourcesPlugin.getWorkspace().getRoot());
+        job.setPriority(Job.LONG);
         job.schedule();
     }
 

@@ -196,7 +196,7 @@ public class ErrorCentricView extends ViewPart implements TreeUpdater {
                     Job job = new Job("Applying resolution") {
                         @Override
                         protected IStatus run(IProgressMonitor monitor) {
-                            Display.getDefault().asyncExec(new Runnable() {
+                            Display.getDefault().syncExec(new Runnable() {
                                 @Override
                                 public void run() {
                                     changeUndoRedoSupporter
@@ -207,6 +207,7 @@ public class ErrorCentricView extends ViewPart implements TreeUpdater {
                         }
                     };
                     job.setRule(ResourcesPlugin.getWorkspace().getRoot());
+                    job.setPriority(Job.INTERACTIVE);
                     job.schedule();
                 }
                 Optional<ErrorTreeNode> error = getSelectedError(selectedTreeObject);
@@ -313,7 +314,7 @@ public class ErrorCentricView extends ViewPart implements TreeUpdater {
 
     @Override
     public void update(final TreeObject node) {
-        Display.getDefault().asyncExec(new Runnable() {
+        Display.getDefault().syncExec(new Runnable() {
             public void run() {
                 viewer.refresh();
             }
