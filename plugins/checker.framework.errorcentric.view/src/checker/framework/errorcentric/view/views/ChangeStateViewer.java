@@ -22,7 +22,7 @@ public class ChangeStateViewer {
         nodesToBeDisabled.add(resolutionTreeNode);
         nodesToBeDisabled.addAll(ErrorTreeNode.createTreeNodesFrom(
                 newHashSet(resolutionTreeNode.getResolution()),
-                new NoOpTreeLabelUpdater(), false));
+                new NoOpTreeUpdater(), false));
         setNodeColor(nodesToBeDisabled, Colors.GRAY);
         disabledNodes.addAll(nodesToBeDisabled);
     }
@@ -32,7 +32,7 @@ public class ChangeStateViewer {
         nodesToBeEnabled.add(resolutionTreeNode);
         nodesToBeEnabled.addAll(ErrorTreeNode.createTreeNodesFrom(
                 newHashSet(resolutionTreeNode.getResolution()),
-                new NoOpTreeLabelUpdater(), false));
+                new NoOpTreeUpdater(), false));
         setNodeColor(nodesToBeEnabled, viewer.getTree().getForeground());
         disabledNodes.removeAll(nodesToBeEnabled);
     }

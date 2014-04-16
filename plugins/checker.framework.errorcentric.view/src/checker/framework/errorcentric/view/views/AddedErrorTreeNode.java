@@ -14,9 +14,9 @@ public class AddedErrorTreeNode extends ErrorTreeNode {
 
     public static Collection<ErrorTreeNode> createTreeNodesFrom(
             Set<ActionableMarkerResolution> resolutions,
-            TreeLabelUpdater labelUpdater) {
+            TreeUpdater treeUpdater) {
         return ErrorTreeNode.createTreeNodesFrom(
-                new AddedErrorTreeNodeFactory(), resolutions, labelUpdater);
+                new AddedErrorTreeNodeFactory(), resolutions, treeUpdater);
     }
 
 }

@@ -23,7 +23,7 @@ public class FixedErrorDecorator implements ILabelDecorator {
             Collection<ErrorTreeNode> nodesFixedByMarkerNode = ErrorTreeNode
                     .createTreeNodesFrom(
                             newHashSet(markerResolutionTreeNode.getResolution()),
-                            new NoOpTreeLabelUpdater(), false);
+                            new NoOpTreeUpdater(), false);
             if (nodesFixedByMarkerNode.contains(object)) {
                 return Activator
                         .getImageDescriptor("icons/green_checkmark.gif")

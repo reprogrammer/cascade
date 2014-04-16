@@ -29,6 +29,7 @@ public class MarkerResolutionTreeNode extends TreeObject {
     private ActionableMarkerResolution resolution;
 
     private Job job;
+    private volatile int errorsFixed;
 
     public MarkerResolutionTreeNode(ActionableMarkerResolution resolution) {
         super(resolution.getLabel());
@@ -106,14 +107,13 @@ public class MarkerResolutionTreeNode extends TreeObject {
                         }));
                 monitor.worked(1);
                 addChildren(AddedErrorTreeNode.createTreeNodesFrom(
-                        historicallyNewResolutions, thisNode.getLabelUpdater()));
+                        historicallyNewResolutions, thisNode.getTreeUpdater()));
                 monitor.worked(1);
                 monitor.done();
                 JobManager.done(thisNode);
-                thisNode.setName(thisNode.getName() + " ("
-                        + resolution.getMarkersToBeResolvedByFixer().size()
-                        + ")");
-                thisNode.getLabelUpdater().update(thisNode);
+                errorsFixed = resolution.getMarkersToBeResolvedByFixer().size();
+                thisNode.setName(thisNode.getName() + " (" + errorsFixed + ")");
+                thisNode.getTreeUpdater().update(thisNode);
                 return Status.OK_STATUS;
             }
         };
@@ -130,4 +130,12 @@ public class MarkerResolutionTreeNode extends TreeObject {
         return super.getChildren();
     }
 
+    @Override
+    public int getRank() {
+        return getErrorsFixed();
+    }
+
+    public int getErrorsFixed() {
+        return errorsFixed;
+    }
 }

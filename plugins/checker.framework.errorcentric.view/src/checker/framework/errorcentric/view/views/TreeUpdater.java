@@ -1,6 +1,6 @@
 package checker.framework.errorcentric.view.views;
 
-public interface TreeLabelUpdater {
+public interface TreeUpdater {
 
     void update(TreeObject node);
 

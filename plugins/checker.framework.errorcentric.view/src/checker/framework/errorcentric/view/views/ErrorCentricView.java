@@ -59,7 +59,7 @@ import com.google.common.base.Optional;
  * <p>
  */
 
-public class ErrorCentricView extends ViewPart implements TreeLabelUpdater {
+public class ErrorCentricView extends ViewPart implements TreeUpdater {
 
     /**
      * The ID of the view as specified by the extension.
@@ -315,7 +315,7 @@ public class ErrorCentricView extends ViewPart implements TreeLabelUpdater {
     public void update(final TreeObject node) {
         Display.getDefault().asyncExec(new Runnable() {
             public void run() {
-                viewer.update(node, null);
+                viewer.refresh();
             }
         });
     }

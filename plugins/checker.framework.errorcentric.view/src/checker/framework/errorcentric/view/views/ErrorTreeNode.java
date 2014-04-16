@@ -46,13 +46,29 @@ public class ErrorTreeNode extends TreeObject {
     }
 
     public void addResolution(ActionableMarkerResolution resolution,
-            TreeLabelUpdater labelUpdater) {
+            TreeUpdater treeUpdater) {
         resolutions.add(resolution);
         MarkerResolutionTreeNode child = new MarkerResolutionTreeNode(
                 resolution);
-        child.setLabelUpdateListener(labelUpdater);
+        child.setLabelUpdateListener(treeUpdater);
         child.computeChangeEffectAsync();
         addChild(child);
+    }
+
+    @Override
+    public int getRank() {
+        return getMaxErrorsFixedByChildren();
+    }
+
+    private int getMaxErrorsFixedByChildren() {
+        int maxErrorsFixed = 0;
+        for (TreeObject child : getChildren()) {
+            if (child instanceof MarkerResolutionTreeNode) {
+                maxErrorsFixed = Integer.max(maxErrorsFixed,
+                        ((MarkerResolutionTreeNode) child).getErrorsFixed());
+            }
+        }
+        return maxErrorsFixed;
     }
 
     @Override
@@ -67,7 +83,7 @@ public class ErrorTreeNode extends TreeObject {
     public static Collection<ErrorTreeNode> createTreeNodesFrom(
             ErrorTreeNodeFactory errorTreeNodeFactory,
             Set<ActionableMarkerResolution> resolutions,
-            TreeLabelUpdater labelUpdater, boolean computeResolutionEffects) {
+            TreeUpdater treeUpdater, boolean computeResolutionEffects) {
         Map<ComparableMarker, ErrorTreeNode> allNodes = new HashMap<>();
         for (ActionableMarkerResolution resolution : resolutions) {
             Set<ComparableMarker> markersToBeResolved = resolution
@@ -80,7 +96,7 @@ public class ErrorTreeNode extends TreeObject {
                 }
                 if (computeResolutionEffects) {
                     allNodes.get(comparableMarker).addResolution(resolution,
-                            labelUpdater);
+                            treeUpdater);
                 }
             }
         }
@@ -90,16 +106,16 @@ public class ErrorTreeNode extends TreeObject {
     public static Collection<ErrorTreeNode> createTreeNodesFrom(
             ErrorTreeNodeFactory errorTreeNodeFactory,
             Set<ActionableMarkerResolution> resolutions,
-            TreeLabelUpdater labelUpdater) {
+            TreeUpdater treeUpdater) {
         return createTreeNodesFrom(errorTreeNodeFactory, resolutions,
-                labelUpdater, true);
+                treeUpdater, true);
     }
 
     public static Collection<ErrorTreeNode> createTreeNodesFrom(
             Set<ActionableMarkerResolution> resolutions,
-            TreeLabelUpdater labelUpdater, boolean computeResolutionEffects) {
+            TreeUpdater treeUpdater, boolean computeResolutionEffects) {
         return ErrorTreeNode.createTreeNodesFrom(new ErrorTreeNodeFactory(),
-                resolutions, labelUpdater, computeResolutionEffects);
+                resolutions, treeUpdater, computeResolutionEffects);
     }
 
 }
