@@ -5,11 +5,11 @@
    <extension
          point="org.eclipse.ui.views">
       <category
-            name="Error-Centric Category"
+            name="Type Qualifier Inference"
             id="checker.framework.errorcentric.view">
       </category>
       <view
-            name="Error-Centric View"
+            name="Cascade"
             icon="icons/sample.gif"
             category="checker.framework.errorcentric.view"
             class="checker.framework.errorcentric.view.views.ErrorCentricView"
