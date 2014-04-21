@@ -20,7 +20,6 @@ import checker.framework.quickfixes.descriptors.FixerDescriptor;
 import com.google.common.base.Predicate;
 
 import static com.google.common.collect.Iterables.filter;
-
 import static com.google.common.collect.Sets.difference;
 import static com.google.common.collect.Sets.newHashSet;
 
@@ -59,11 +58,13 @@ public class MarkerResolutionTreeNode extends TreeObject {
 
     public void computeChangeEffectAsync() {
         final MarkerResolutionTreeNode thisNode = this;
-        job = new Job("Computing the effect of the change") {
+        String progressBarLabel = String.format("Computing the effect of: %s",
+                resolution.getLabel());
+        job = new Job(progressBarLabel) {
             @Override
             protected IStatus run(IProgressMonitor monitor) {
 
-                monitor.beginTask("Computing the effect of the change", 25);
+                monitor.beginTask(progressBarLabel, 25);
                 final List<FixerDescriptor> parentFixerDescriptors = getParentFixerDescriptors();
                 resolution.getShadowProject()
                         .updateToPrimaryProjectWithChanges(
@@ -86,10 +87,6 @@ public class MarkerResolutionTreeNode extends TreeObject {
                 monitor.worked(1);
                 Set<ActionableMarkerResolution> newResolutions = shadowProject
                         .getResolutions(allMarkersAfterResolution, addedMarkers);
-                System.out.println(resolution + "\n" + "fixes "
-                        + resolution.getMarkersToBeResolvedByFixer().size()
-                        + " errors=n" + "introduces " + addedMarkers.size()
-                        + " errors");
                 monitor.worked(3);
                 HashSet<ActionableMarkerResolution> historicallyNewResolutions = newHashSet(filter(
                         newResolutions,
