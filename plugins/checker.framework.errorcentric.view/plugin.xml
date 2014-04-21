@@ -55,7 +55,7 @@
          label="Type Qualifier Inference">
          <command
            commandId="checker.framework.errorcentric.propagator.infernullness"
-           label="Infer Nullness Qualifiers (Error-Centric View)"
+           label="Infer Nullness Qualifiers"
            style="push">
          </command>
        </menu>

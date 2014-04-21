@@ -62,12 +62,12 @@
          label="Type Qualifier Inference">
          <command
            commandId="checker.framework.change.propagator.infernullness"
-           label="Infer Nullness Qualifiers"
+           label="Infer Nullness Qualifiers (Change-Centric View)"
            style="push">
          </command>
          <command
            commandId="checker.framework.change.propagator.inferjavari"
-           label="Infer Javari Qualifiers"
+           label="Infer Javari Qualifiers (Change-Centric View)"
            style="push">
          </command>
        </menu>
