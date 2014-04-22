@@ -169,11 +169,16 @@ public class ErrorCentricView extends ViewPart implements TreeUpdater {
         drillDownAdapter.addNavigationActions(manager);
     }
 
+    public void refreshView() {
+        viewer.setLabelProvider(new ViewLabelProvider());
+        viewer.setInput(initializeInput());
+    }
+
     private void makeActions() {
         refreshAction = new Action() {
+            @Override
             public void run() {
-                viewer.setLabelProvider(new ViewLabelProvider());
-                viewer.setInput(initializeInput());
+                refreshView();
             }
         };
         refreshAction.setText("Refresh");

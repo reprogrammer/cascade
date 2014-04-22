@@ -6,6 +6,8 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
@@ -27,8 +29,14 @@ public abstract class InferCommandHandler extends CheckerHandler {
             selectedJavaProject = getSelectedProject(getSelection(event));
             if (selectedJavaProject.isPresent()) {
                 // Adapted from http://stackoverflow.com/a/172082
-                PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-                        .getActivePage().showView(ErrorCentricView.ID);
+                IWorkbenchPage activePage = PlatformUI.getWorkbench()
+                        .getActiveWorkbenchWindow().getActivePage();
+                IViewPart view = activePage.findView(ErrorCentricView.ID);
+                if (view != null) {
+                    ((ErrorCentricView) view).refreshView();
+                } else {
+                    activePage.showView(ErrorCentricView.ID);
+                }
             }
         } catch (PartInitException e) {
             throw new RuntimeException(e);
