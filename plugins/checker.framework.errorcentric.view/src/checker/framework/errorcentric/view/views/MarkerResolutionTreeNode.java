@@ -35,10 +35,6 @@ public class MarkerResolutionTreeNode extends TreeObject {
         return resolution;
     }
 
-    public boolean hasChildren() {
-        return true;
-    }
-
     public List<FixerDescriptor> getParentFixerDescriptors() {
         LinkedList<FixerDescriptor> fixerDescriptors = new LinkedList<>();
         TreeObject parent = getParent();

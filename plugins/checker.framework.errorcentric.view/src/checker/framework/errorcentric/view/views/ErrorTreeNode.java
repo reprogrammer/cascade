@@ -71,11 +71,6 @@ public class ErrorTreeNode extends TreeObject {
         return maxErrorsFixed;
     }
 
-    @Override
-    public boolean hasChildren() {
-        return true;
-    }
-
     public TreeObject[] getChildren() {
         return super.getChildren();
     }
