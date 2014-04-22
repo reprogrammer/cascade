@@ -2,8 +2,8 @@ package checker.framework.change.propagator;
 
 public enum CheckerID {
 
-    NULLNESS("checkers.nullness.NullnessChecker"), JAVARI(
-            "checkers.javari.JavariChecker");
+    NULLNESS("org.checkerframework.checker.nullness.NullnessChecker"), JAVARI(
+            "org.checkerframework.checker.javari.JavariChecker");
 
     private final String id;
 

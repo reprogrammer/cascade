@@ -2,6 +2,7 @@ package checker.framework.quickfixes;
 
 import java.util.ArrayList;
 
+import org.checkerframework.eclipse.marker.MarkerReporter;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -15,8 +16,6 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
-
-import checkers.eclipse.marker.MarkerReporter;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;

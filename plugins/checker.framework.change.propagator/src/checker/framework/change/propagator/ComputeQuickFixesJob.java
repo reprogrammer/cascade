@@ -1,18 +1,17 @@
 package checker.framework.change.propagator;
 
+import org.checkerframework.eclipse.actions.CheckerWorker;
+import org.checkerframework.eclipse.util.MutexSchedulingRule;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 
-import checkers.eclipse.actions.CheckerWorker;
-import checkers.eclipse.util.MutexSchedulingRule;
-
 public class ComputeQuickFixesJob extends Job {
 
-    public static final String NULLNESS_CHECKER = "checkers.nullness.NullnessChecker";
+    public static final String NULLNESS_CHECKER = "org.checkerframework.checker.nullness.NullnessChecker";
 
-    public static final String JAVARI_CHECKER = "checkers.javari.NullnessChecker";
+    public static final String JAVARI_CHECKER = "org.checkerframework.checker.javari.NullnessChecker";
 
     private ShadowProject shadowProject;
 

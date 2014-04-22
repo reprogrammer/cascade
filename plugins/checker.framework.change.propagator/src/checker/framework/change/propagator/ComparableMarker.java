@@ -2,11 +2,10 @@ package checker.framework.change.propagator;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.checkerframework.eclipse.marker.MarkerReporter;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-
-import checkers.eclipse.marker.MarkerReporter;
 
 import com.google.common.base.Optional;
 

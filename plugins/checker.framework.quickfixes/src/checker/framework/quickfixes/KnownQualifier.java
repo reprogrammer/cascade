@@ -6,54 +6,75 @@ import java.util.Set;
 
 public enum KnownQualifier {
 
-    Initialized("checkers.initialization.quals", QualifierLocation.TYPE),
-
-    UnknownInitialization("checkers.initialization.quals",
+    Initialized("org.checkerframework.checker.initialization.qual",
             QualifierLocation.TYPE),
 
-    UnderInitialization("checkers.initialization.quals", QualifierLocation.TYPE),
+    UnknownInitialization("org.checkerframework.checker.initialization.qual",
+            QualifierLocation.TYPE),
 
-    AssertNonNullIfNonNull("checkers.nullness.quals", QualifierLocation.METHOD),
+    UnderInitialization("org.checkerframework.checker.initialization.qual",
+            QualifierLocation.TYPE),
 
-    EnsuresNonNullIfNonNull("checkers.nullness.quals", QualifierLocation.METHOD),
+    AssertNonNullIfNonNull("org.checkerframework.checker.nullness.qual",
+            QualifierLocation.METHOD),
 
-    Covariant("checkers.nullness.quals", QualifierLocation.TYPE),
+    EnsuresNonNullIfNonNull("org.checkerframework.checker.nullness.qual",
+            QualifierLocation.METHOD),
 
-    EnsuresNonNull("checkers.nullness.quals", QualifierLocation.METHOD),
+    Covariant("org.checkerframework.checker.nullness.qual",
+            QualifierLocation.TYPE),
 
-    KeyFor("checkers.nullness.quals", QualifierLocation.TYPE),
+    EnsuresNonNull("org.checkerframework.checker.nullness.qual",
+            QualifierLocation.METHOD),
 
-    KeyForBottom("checkers.nullness.quals", QualifierLocation.TYPE),
+    KeyFor("org.checkerframework.checker.nullness.qual",
+            QualifierLocation.TYPE),
 
-    LazyNonNull("checkers.nullness.quals", QualifierLocation.TYPE),
+    KeyForBottom("org.checkerframework.checker.nullness.qual",
+            QualifierLocation.TYPE),
 
-    MonotonicNonNull("checkers.nullness.quals", QualifierLocation.TYPE),
+    LazyNonNull("org.checkerframework.checker.nullness.qual",
+            QualifierLocation.TYPE),
 
-    NonNull("checkers.nullness.quals", QualifierLocation.TYPE),
+    MonotonicNonNull("org.checkerframework.checker.nullness.qual",
+            QualifierLocation.TYPE),
 
-    NonRaw("checkers.nullness.quals", QualifierLocation.TYPE),
+    NonNull("org.checkerframework.checker.nullness.qual",
+            QualifierLocation.TYPE),
 
-    Nullable("checkers.nullness.quals", QualifierLocation.TYPE),
+    NonRaw("org.checkerframework.checker.nullness.qual",
+            QualifierLocation.TYPE),
 
-    PolyNull("checkers.nullness.quals", QualifierLocation.TYPE),
+    Nullable("org.checkerframework.checker.nullness.qual",
+            QualifierLocation.TYPE),
 
-    PolyRaw("checkers.nullness.quals", QualifierLocation.TYPE),
+    PolyNull("org.checkerframework.checker.nullness.qual",
+            QualifierLocation.TYPE),
 
-    Raw("checkers.nullness.quals", QualifierLocation.TYPE),
+    PolyRaw("org.checkerframework.checker.nullness.qual",
+            QualifierLocation.TYPE),
 
-    RequiresNonNull("checkers.nullness.quals", QualifierLocation.METHOD),
+    Raw("org.checkerframework.checker.nullness.qual", QualifierLocation.TYPE),
 
-    Assignable("checkers.javari.quals", QualifierLocation.TYPE),
+    RequiresNonNull("org.checkerframework.checker.nullness.qual",
+            QualifierLocation.METHOD),
 
-    Mutable("checkers.javari.quals", QualifierLocation.TYPE),
+    Assignable("org.checkerframework.checker.javari.qual",
+            QualifierLocation.TYPE),
 
-    PolyRead("checkers.javari.quals", QualifierLocation.TYPE),
+    Mutable("org.checkerframework.checker.javari.qual", QualifierLocation.TYPE),
 
-    QReadOnly("checkers.javari.quals", QualifierLocation.TYPE),
+    PolyRead("org.checkerframework.checker.javari.qual",
+            QualifierLocation.TYPE),
 
-    ReadOnly("checkers.javari.quals", QualifierLocation.TYPE),
+    QReadOnly("org.checkerframework.checker.javari.qual",
+            QualifierLocation.TYPE),
 
-    ThisMutable("checkers.javari.quals", QualifierLocation.TYPE);
+    ReadOnly("org.checkerframework.checker.javari.qual",
+            QualifierLocation.TYPE),
+
+    ThisMutable("org.checkerframework.checker.javari.qual",
+            QualifierLocation.TYPE);
 
     private final String declaredPackage;
 

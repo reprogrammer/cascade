@@ -1,5 +1,6 @@
 package checker.framework.quickfixes;
 
+import org.checkerframework.eclipse.marker.MarkerReporter;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
@@ -15,8 +16,6 @@ import org.eclipse.jdt.internal.ui.text.correction.ProblemLocation;
 import org.eclipse.jdt.ui.text.java.IInvocationContext;
 import org.eclipse.jdt.ui.text.java.IProblemLocation;
 import org.eclipse.ui.IEditorInput;
-
-import checkers.eclipse.marker.MarkerReporter;
 
 import com.google.common.base.Optional;
 

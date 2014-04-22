@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.checkerframework.eclipse.util.ResourceUtils;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.jobs.Job;
@@ -19,7 +20,6 @@ import checker.framework.quickfixes.MarkerContextFactory;
 import checker.framework.quickfixes.WorkspaceUtils;
 import checker.framework.quickfixes.descriptors.FixerDescriptor;
 import checker.framework.quickfixes.descriptors.FixerProposalFactory;
-import checkers.eclipse.util.ResourceUtils;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.HashMultimap;
