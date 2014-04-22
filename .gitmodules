@@ -1,3 +1,6 @@
 [submodule "deps/checker-framework"]
 	path = deps/checker-framework
 	url = https://github.com/reprogrammer/checker-framework.git
+[submodule "deps/checker-framework-releases"]
+	path = deps/checker-framework-releases
+	url = https://reprogrammer@bitbucket.org/reprogrammer/checker-framework-releases.git
