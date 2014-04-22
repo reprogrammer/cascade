@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/checker.framework.cascade_1.0.0.qualifier.jar" id="checker.framework.cascade" version="1.0.0.qualifier">
+   <feature url="features/checker.framework.cascade_1.0.0.201404221308.jar" id="checker.framework.cascade" version="1.0.0.201404221308">
       <category name="Cascade"/>
    </feature>
    <category-def name="Cascade" label="Cascade"/>
