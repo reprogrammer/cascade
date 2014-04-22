@@ -51,7 +51,7 @@ public class ErrorTreeNode extends TreeObject {
         MarkerResolutionTreeNode child = new MarkerResolutionTreeNode(
                 resolution);
         child.setLabelUpdateListener(treeUpdater);
-        child.computeChangeEffectAsync();
+        child.computeChangeEffect();
         addChild(child);
     }
 

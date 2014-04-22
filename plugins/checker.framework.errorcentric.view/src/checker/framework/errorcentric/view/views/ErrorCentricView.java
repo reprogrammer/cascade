@@ -98,7 +98,7 @@ public class ErrorCentricView extends ViewPart implements TreeUpdater {
                 shadowProject, new IdentityMarkerResolution(), new HashSet<>(),
                 new IdentityFixerDescriptor(), new HashSet<>());
         invisibleRoot = new MarkerResolutionTreeNode(identityResolution);
-        invisibleRoot.computeChangeEffectAsync();
+        invisibleRoot.computeChangeEffect();
         return invisibleRoot;
     }
 
