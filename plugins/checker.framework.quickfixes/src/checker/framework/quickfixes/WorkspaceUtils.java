@@ -13,6 +13,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.internal.ui.JavaPluginImages;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
@@ -132,6 +135,15 @@ public class WorkspaceUtils {
                 .getActiveWorkbenchWindow();
         IWorkbenchPage activePage = window.getActivePage();
         activePage.closeEditor(activePage.getActiveEditor(), true);
+    }
+
+    public static Image loadProposalImage(String imageKey) {
+        Image[] images = new Image[] { null };
+        Display.getDefault().syncExec(() -> {
+            images[0] = JavaPluginImages.get(imageKey);
+        });
+        Image image = images[0];
+        return image;
     }
 
 }

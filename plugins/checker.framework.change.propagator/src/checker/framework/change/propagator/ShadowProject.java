@@ -1,7 +1,5 @@
 package checker.framework.change.propagator;
 
-import static com.google.common.collect.Iterables.getFirst;
-
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -13,23 +11,12 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jdt.core.IJavaProject;
 
-import checker.framework.quickfixes.CheckerMarkerResolution;
-import checker.framework.quickfixes.CheckerResolutionGenerator;
-import checker.framework.quickfixes.MarkerContext;
-import checker.framework.quickfixes.MarkerContextFactory;
 import checker.framework.quickfixes.WorkspaceUtils;
 import checker.framework.quickfixes.descriptors.FixerDescriptor;
-import checker.framework.quickfixes.descriptors.FixerProposalFactory;
-
-import com.google.common.base.Optional;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.SetMultimap;
 
 public class ShadowProject {
 
     private final IJavaProject shadowProject;
-
-    private final CheckerResolutionGenerator checkerResolutionGenerator = new CheckerResolutionGenerator();
 
     public ShadowProject(IJavaProject shadowProject) {
         this.shadowProject = shadowProject;
@@ -91,56 +78,7 @@ public class ShadowProject {
 
     public Set<ActionableMarkerResolution> getResolutions(
             Set<ComparableMarker> baseMarkers, Set<ComparableMarker> markers) {
-        SetMultimap<FixerDescriptor, ComparableMarker> fixersMap = createFixerDescriptors(markers);
-        Set<ActionableMarkerResolution> resolutions = new HashSet<>();
-        for (FixerDescriptor fixerDescriptor : fixersMap.keySet()) {
-            resolutions.addAll(createActionableResolutions(fixerDescriptor,
-                    fixersMap.get(fixerDescriptor), baseMarkers).asSet());
-        }
-        return resolutions;
-    }
-
-    private Set<FixerDescriptor> createFixerDescriptor(ComparableMarker marker) {
-        return checkerResolutionGenerator.getFixerDescriptors(marker
-                .getMarker());
-    }
-
-    private SetMultimap<FixerDescriptor, ComparableMarker> createFixerDescriptors(
-            Set<ComparableMarker> markers) {
-        HashMultimap<FixerDescriptor, ComparableMarker> multimap = HashMultimap
-                .create();
-        for (ComparableMarker marker : markers) {
-            Set<FixerDescriptor> fixerDescriptors = createFixerDescriptor(marker);
-            for (FixerDescriptor fixerDescriptor : fixerDescriptors) {
-                multimap.put(fixerDescriptor, marker);
-            }
-        }
-        return multimap;
-    }
-
-    private Optional<ActionableMarkerResolution> createActionableResolutions(
-            FixerDescriptor fixerDescriptor,
-            Set<ComparableMarker> markersToBeResolvedByFixer,
-            Set<ComparableMarker> baseMarkers) {
-        Optional<ActionableMarkerResolution> optionalResolution = Optional
-                .absent();
-        ComparableMarker marker = getFirst(markersToBeResolvedByFixer, null);
-        if (marker == null) {
-            return optionalResolution;
-        }
-        MarkerContextFactory factory = new MarkerContextFactory(
-                marker.getMarker());
-        Optional<MarkerContext> optionalContext = factory.get();
-        if (optionalContext.isPresent()) {
-            FixerProposalFactory proposalFactory = fixerDescriptor
-                    .createProposalFactory(optionalContext.get());
-            CheckerMarkerResolution resolution = proposalFactory
-                    .createResolution(marker.getMarker());
-            optionalResolution = Optional.of(new ActionableMarkerResolution(
-                    this, resolution, markersToBeResolvedByFixer,
-                    fixerDescriptor, baseMarkers));
-        }
-        return optionalResolution;
+        return ResolutionHelper.getResolutions(this, baseMarkers, markers);
     }
 
     public void updateToPrimaryProjectWithChanges(

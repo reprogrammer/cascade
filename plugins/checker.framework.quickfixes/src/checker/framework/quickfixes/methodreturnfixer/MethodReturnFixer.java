@@ -1,7 +1,5 @@
 package checker.framework.quickfixes.methodreturnfixer;
 
-import static com.google.common.collect.Iterables.getLast;
-
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Annotation;
@@ -19,9 +17,12 @@ import checker.framework.quickfixes.ASTParsingUtils;
 import checker.framework.quickfixes.ImportRewriter;
 import checker.framework.quickfixes.KnownQualifier;
 import checker.framework.quickfixes.QualifierLocation;
+import checker.framework.quickfixes.WorkspaceUtils;
 import checker.framework.quickfixes.descriptors.Fixer;
 
 import com.google.common.base.Splitter;
+
+import static com.google.common.collect.Iterables.getLast;
 
 @SuppressWarnings("restriction")
 public class MethodReturnFixer implements Fixer {
@@ -61,8 +62,7 @@ public class MethodReturnFixer implements Fixer {
         String label = String.format("Change return type of %s to %s",
                 methodDeclaration.getName().getIdentifier(),
                 sanitizedTypeString);
-        Image image = JavaPluginImages
-                .get(JavaPluginImages.IMG_CORRECTION_CHANGE);
+        Image image = WorkspaceUtils.loadProposalImage(JavaPluginImages.IMG_CORRECTION_CHANGE);
         LinkedCorrectionProposal proposal = new LinkedCorrectionProposal(label,
                 (ICompilationUnit) compilationUnit.getJavaElement(), rewrite,
                 IProposalRelevance.CHANGE_METHOD_RETURN_TYPE, image);

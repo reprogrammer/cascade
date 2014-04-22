@@ -13,8 +13,7 @@ public class AddedErrorTreeNode extends ErrorTreeNode {
     }
 
     public static Collection<ErrorTreeNode> createTreeNodesFrom(
-            Set<ActionableMarkerResolution> resolutions,
-            TreeUpdater treeUpdater) {
+            Set<ActionableMarkerResolution> resolutions, TreeUpdater treeUpdater) {
         return ErrorTreeNode.createTreeNodesFrom(
                 new AddedErrorTreeNodeFactory(), resolutions, treeUpdater);
     }

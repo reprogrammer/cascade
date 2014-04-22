@@ -1,4 +1,5 @@
 package checker.framework.errorcentric.view.views;
+
 import java.util.Set;
 
 import org.eclipse.jface.viewers.TreeViewer;

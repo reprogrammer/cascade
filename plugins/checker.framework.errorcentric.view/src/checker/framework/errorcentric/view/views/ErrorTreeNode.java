@@ -105,8 +105,7 @@ public class ErrorTreeNode extends TreeObject {
 
     public static Collection<ErrorTreeNode> createTreeNodesFrom(
             ErrorTreeNodeFactory errorTreeNodeFactory,
-            Set<ActionableMarkerResolution> resolutions,
-            TreeUpdater treeUpdater) {
+            Set<ActionableMarkerResolution> resolutions, TreeUpdater treeUpdater) {
         return createTreeNodesFrom(errorTreeNodeFactory, resolutions,
                 treeUpdater, true);
     }

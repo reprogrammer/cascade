@@ -1,6 +1,6 @@
 package checker.framework.errorcentric.view.views;
 
-import java.util.Set;
+import java.util.HashSet;
 
 import org.eclipse.core.commands.operations.IOperationHistory;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -70,7 +70,7 @@ public class ErrorCentricView extends ViewPart implements TreeUpdater {
     private DrillDownAdapter drillDownAdapter;
     private Action refreshAction;
     private Action doubleClickAction;
-    private TreeObject invisibleRoot;
+    private MarkerResolutionTreeNode invisibleRoot;
     private IJavaProject javaProject;
 
     private ChangeUndoRedoSupporter changeUndoRedoSupporter;
@@ -83,7 +83,6 @@ public class ErrorCentricView extends ViewPart implements TreeUpdater {
     }
 
     private TreeObject initializeInput() {
-        invisibleRoot = new TreeObject("");
         if (InferCommandHandler.checkerID == null) {
             return null;
         }
@@ -94,10 +93,12 @@ public class ErrorCentricView extends ViewPart implements TreeUpdater {
         ShadowProject shadowProject = new ShadowProjectFactory(javaProject)
                 .get();
         shadowProject.runChecker(InferCommandHandler.checkerID);
-        Set<ActionableMarkerResolution> resolutions = shadowProject
-                .getResolutions();
-        invisibleRoot.addChildren(AddedErrorTreeNode.createTreeNodesFrom(
-                resolutions, this));
+
+        ActionableMarkerResolution identityResolution = new ActionableMarkerResolution(
+                shadowProject, new IdentityMarkerResolution(), new HashSet<>(),
+                new IdentityFixerDescriptor(), new HashSet<>());
+        invisibleRoot = new MarkerResolutionTreeNode(identityResolution);
+        invisibleRoot.computeChangeEffectAsync();
         return invisibleRoot;
     }
 

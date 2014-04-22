@@ -26,6 +26,7 @@ import org.eclipse.swt.graphics.Image;
 
 import checker.framework.quickfixes.ASTParsingUtils;
 import checker.framework.quickfixes.ImportRewriter;
+import checker.framework.quickfixes.WorkspaceUtils;
 import checker.framework.quickfixes.descriptors.Fixer;
 
 @SuppressWarnings("restriction")
@@ -90,8 +91,8 @@ public class VariableDeclarationFixer implements Fixer {
     private static LinkedCorrectionProposal createProposal(
             CompilationUnit astRoot, ASTRewrite rewrite, String identifier,
             String newType, String variableKind) {
-        Image image = JavaPluginImages
-                .get(JavaPluginImages.IMG_CORRECTION_CHANGE);
+        Image image = WorkspaceUtils
+                .loadProposalImage(JavaPluginImages.IMG_CORRECTION_CHANGE);
         LinkedCorrectionProposal proposal = new LinkedCorrectionProposal(
                 String.format("Change " + variableKind + " %s to %s",
                         identifier, newType),

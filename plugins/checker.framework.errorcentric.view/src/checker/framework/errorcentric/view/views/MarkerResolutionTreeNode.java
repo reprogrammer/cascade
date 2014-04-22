@@ -20,8 +20,11 @@ import checker.framework.quickfixes.descriptors.FixerDescriptor;
 import com.google.common.base.Predicate;
 
 import static com.google.common.collect.Iterables.filter;
+import static com.google.common.collect.Iterables.transform;
+
 import static com.google.common.collect.Sets.difference;
 import static com.google.common.collect.Sets.newHashSet;
+import static com.google.common.collect.Sets.union;
 
 public class MarkerResolutionTreeNode extends TreeObject {
 
@@ -29,10 +32,12 @@ public class MarkerResolutionTreeNode extends TreeObject {
 
     private Job job;
     private volatile int errorsFixed;
+    private Set<ComparableMarker> unresolvableMarkers;
 
     public MarkerResolutionTreeNode(ActionableMarkerResolution resolution) {
         super(resolution.getLabel());
         this.resolution = resolution;
+        this.unresolvableMarkers = new HashSet<>();
     }
 
     public ActionableMarkerResolution getResolution() {
@@ -56,10 +61,12 @@ public class MarkerResolutionTreeNode extends TreeObject {
         return fixerDescriptors;
     }
 
+    // TODO(amarin): Remove Async from the name of the method.
     public void computeChangeEffectAsync() {
         final MarkerResolutionTreeNode thisNode = this;
         String progressBarLabel = String.format("Computing the effect of: %s",
                 resolution.getLabel());
+        // TODO(amarin): Convert this anon. class into a top-level class.
         job = new Job(progressBarLabel) {
             @Override
             protected IStatus run(IProgressMonitor monitor) {
@@ -103,8 +110,22 @@ public class MarkerResolutionTreeNode extends TreeObject {
                             }
                         }));
                 monitor.worked(1);
-                addChildren(AddedErrorTreeNode.createTreeNodesFrom(
-                        historicallyNewResolutions, thisNode.getTreeUpdater()));
+
+                Set<ComparableMarker> fixedMarkers = newHashSet();
+                for (ActionableMarkerResolution resolution : historicallyNewResolutions) {
+                    fixedMarkers.addAll(resolution
+                            .getMarkersToBeResolvedByFixer());
+                }
+                Set<ComparableMarker> unresolvedMarkers = difference(
+                        addedMarkers, fixedMarkers);
+                Set<ErrorTreeNode> errorTreeNodesWithoutResolutions = newHashSet(transform(
+                        unresolvedMarkers, marker -> new AddedErrorTreeNode(
+                                marker)));
+                HashSet<ErrorTreeNode> errorTreeNodesWithResolutions = newHashSet(AddedErrorTreeNode
+                        .createTreeNodesFrom(historicallyNewResolutions,
+                                thisNode.getTreeUpdater()));
+                addChildren(union(errorTreeNodesWithResolutions,
+                        errorTreeNodesWithoutResolutions));
                 monitor.worked(1);
                 monitor.done();
                 JobManager.done(thisNode);
@@ -135,5 +156,9 @@ public class MarkerResolutionTreeNode extends TreeObject {
 
     public int getErrorsFixed() {
         return errorsFixed;
+    }
+
+    public Set<ComparableMarker> getUnresolvableMarkers() {
+        return unresolvableMarkers;
     }
 }
