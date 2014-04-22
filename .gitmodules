@@ -1,0 +1,3 @@
+[submodule "deps/checker-framework"]
+	path = deps/checker-framework
+	url = https://github.com/reprogrammer/checker-framework.git
