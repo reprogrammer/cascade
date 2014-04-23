@@ -37,7 +37,8 @@ public class MarkerLocationFactory {
     private Optional<MarkerLocation> findBestMatch(
             ICompilationUnit compilationUnit, String text) {
         Set<MarkerLocation> matches = new HashSet<>();
-        Pattern p = Pattern.compile(markerLocationDescriptor.getCodeSnippet());
+        Pattern p = Pattern.compile(Pattern.quote(markerLocationDescriptor
+                .getCodeSnippet()));
         Matcher m = p.matcher(text);
         while (m.find()) {
             matches.add(new MarkerLocation(compilationUnit, m.start(), m.end()
