@@ -9,8 +9,6 @@ import checker.framework.quickfixes.descriptors.Fixer;
 import checker.framework.quickfixes.descriptors.FixerDescriptor;
 import checker.framework.quickfixes.descriptors.FixerResolutionFactory;
 
-import static com.google.common.collect.Sets.difference;
-
 @SuppressWarnings("restriction")
 public class ActionableMarkerResolution {
 
@@ -24,8 +22,6 @@ public class ActionableMarkerResolution {
 
     private final Set<ComparableMarker> allMarkersBeforeResolution;
 
-    private Set<ComparableMarker> markersUnresolvedByFixer;
-
     public ActionableMarkerResolution(ShadowProject shadowProject,
             IMarkerResolution resolution,
             Set<ComparableMarker> markersToBeResolvedByFixer,
@@ -36,9 +32,6 @@ public class ActionableMarkerResolution {
         this.markersToBeResolvedByFixer = markersToBeResolvedByFixer;
         this.fixerDescriptor = fixerDescriptor;
         this.allMarkersBeforeResolution = allMarkersBeforeResolution;
-        this.markersUnresolvedByFixer = difference(
-                this.allMarkersBeforeResolution,
-                this.markersToBeResolvedByFixer);
     }
 
     // TODO(reprogrammer): Compute the label without relying on marker
@@ -87,4 +80,16 @@ public class ActionableMarkerResolution {
         return fixerDescriptor.toString();
     }
 
+    @Override
+    public int hashCode() {
+        return fixerDescriptor.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return (obj instanceof ActionableMarkerResolution)
+                && fixerDescriptor.toString().equals(
+                        ((ActionableMarkerResolution) obj).fixerDescriptor
+                                .toString());
+    }
 }

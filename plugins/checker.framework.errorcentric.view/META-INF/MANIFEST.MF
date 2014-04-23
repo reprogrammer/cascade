@@ -18,3 +18,4 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jdt.ui,
  org.eclipse.ui.workbench.texteditor
 Bundle-ActivationPolicy: lazy
+Import-Package: org.apache.commons.lang3.builder

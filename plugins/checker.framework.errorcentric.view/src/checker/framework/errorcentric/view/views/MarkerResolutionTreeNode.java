@@ -79,4 +79,21 @@ public class MarkerResolutionTreeNode extends TreeObject {
         return unresolvableMarkers;
     }
 
+    @Override
+    public int hashCode() {
+        return resolution.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof MarkerResolutionTreeNode)) {
+            return false;
+        }
+        ErrorTreeNode myParent = (ErrorTreeNode) getParent();
+        MarkerResolutionTreeNode theirNode = (MarkerResolutionTreeNode) obj;
+        ErrorTreeNode theirParent = (ErrorTreeNode) theirNode.getParent();
+        return resolution.equals(theirNode.resolution)
+                && ((myParent == null && theirParent == null) || myParent
+                        .equals(theirParent));
+    }
 }
