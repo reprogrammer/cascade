@@ -182,7 +182,8 @@ public class ErrorCentricView extends ViewPart implements TreeUpdater {
             }
         };
         refreshAction.setText(Messages.ErrorCentricView_refresh_text);
-        refreshAction.setToolTipText(Messages.ErrorCentricView_refresh_tool_tip);
+        refreshAction
+                .setToolTipText(Messages.ErrorCentricView_refresh_tool_tip);
         refreshAction.setImageDescriptor(ImageDescriptor
                 .createFromImage(Activator.getImageDescriptor(
                         Messages.ErrorCentricView_refresh_icon).createImage()));
@@ -191,16 +192,15 @@ public class ErrorCentricView extends ViewPart implements TreeUpdater {
             public void run() {
                 Optional<TreeObject> selectedTreeObject = getSelectedTreeObject(viewer
                         .getSelection());
-                if (selectedTreeObject.isPresent()
-                        && changeStateViewer.isDisabled(selectedTreeObject
-                                .get())) {
-                    return;
-                }
                 Optional<MarkerResolutionTreeNode> resolution = getSelectedMarkResolution(selectedTreeObject);
                 if (resolution.isPresent()) {
+                    if (changeStateViewer.isDisabled(selectedTreeObject.get())) {
+                        return;
+                    }
                     final MarkerResolutionTreeNode resolutionTreeNode = resolution
                             .get();
-                    Job job = new Job(Messages.ErrorCentricView_resolution_application_job_name) {
+                    Job job = new Job(
+                            Messages.ErrorCentricView_resolution_application_job_name) {
                         @Override
                         protected IStatus run(IProgressMonitor monitor) {
                             Display.getDefault().syncExec(new Runnable() {
@@ -283,9 +283,6 @@ public class ErrorCentricView extends ViewPart implements TreeUpdater {
                 Optional<TreeObject> selectedTreeObject = getSelectedTreeObject(event
                         .getSelection());
                 if (selectedTreeObject.isPresent()) {
-                    if (changeStateViewer.isDisabled(selectedTreeObject.get())) {
-                        return;
-                    }
                     Optional<MarkerResolutionTreeNode> optionalResolution = getSelectedMarkResolution(selectedTreeObject);
                     if (optionalResolution.isPresent()) {
                         MarkerResolutionTreeNode resolutionTreeNode = optionalResolution
