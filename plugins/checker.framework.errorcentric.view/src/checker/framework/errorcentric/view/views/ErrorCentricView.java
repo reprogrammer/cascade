@@ -16,7 +16,6 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.DecoratingLabelProvider;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
@@ -110,8 +109,9 @@ public class ErrorCentricView extends ViewPart implements TreeUpdater {
     public void createPartControl(Composite parent) {
         viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
         drillDownAdapter = new DrillDownAdapter(viewer);
+        changeStateViewer = new ChangeStateViewer(viewer);
         viewer.setContentProvider(new ViewContentProvider());
-        viewer.setLabelProvider(new ViewLabelProvider());
+        resetLabelProvider();
         viewer.setSorter(new NameSorter());
         viewer.setInput(initializeInput());
         viewer.getTree().setLinesVisible(true);
@@ -120,7 +120,6 @@ public class ErrorCentricView extends ViewPart implements TreeUpdater {
         hookDoubleClickAction();
         hookSelectionAction();
         contributeToActionBars();
-        changeStateViewer = new ChangeStateViewer(viewer);
         initializeChangeUndoRedoSupporter();
     }
 
@@ -296,11 +295,13 @@ public class ErrorCentricView extends ViewPart implements TreeUpdater {
                         Fixer fixer = resolutionTreeNode.getResolution()
                                 .createFixer(javaProject);
                         selectAndReveal(fixer);
-                        viewer.setLabelProvider(new DecoratingLabelProvider(
+                        viewer.setLabelProvider(new DisabledNodesLabelProvider(
                                 new ViewLabelProvider(),
-                                new FixedErrorDecorator(resolutionTreeNode)));
+                                new FixedErrorDecorator(resolutionTreeNode),
+                                changeStateViewer));
+
                     } else {
-                        viewer.setLabelProvider(new ViewLabelProvider());
+                        resetLabelProvider();
                     }
                 }
             }
@@ -311,6 +312,11 @@ public class ErrorCentricView extends ViewPart implements TreeUpdater {
             }
 
         });
+    }
+
+    private void resetLabelProvider() {
+        viewer.setLabelProvider(new DisabledNodesLabelProvider(
+                new ViewLabelProvider(), null, changeStateViewer));
     }
 
     /**

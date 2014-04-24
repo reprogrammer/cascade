@@ -16,7 +16,6 @@ public class ChangeStateViewer {
     public ChangeStateViewer(TreeViewer viewer) {
         this.disabledNodes = newHashSet();
         this.viewer = viewer;
-
     }
 
     public void disableChange(MarkerResolutionTreeNode resolutionTreeNode) {
@@ -28,6 +27,7 @@ public class ChangeStateViewer {
         nodesToBeDisabled.addAll(relatedNodes);
         setNodeColor(nodesToBeDisabled, Colors.GRAY);
         disabledNodes.addAll(nodesToBeDisabled);
+        viewer.refresh();
     }
 
     public void enableChange(MarkerResolutionTreeNode resolutionTreeNode) {
@@ -39,6 +39,7 @@ public class ChangeStateViewer {
         nodesToBeEnabled.addAll(relatedNodes);
         setNodeColor(nodesToBeEnabled, viewer.getTree().getForeground());
         disabledNodes.removeAll(nodesToBeEnabled);
+        viewer.refresh();
     }
 
     private Set<TreeObject> getRelatedNodes(Set<TreeObject> nodes) {
@@ -94,8 +95,7 @@ public class ChangeStateViewer {
                     .createTreeNodesFrom(
                             newHashSet(resolutionTreeNode.getResolution()),
                             new NoOpTreeUpdater(), false));
-            errorsFixedByResolution.removeAll(nodes);
-            return errorsFixedByResolution.isEmpty();
+            return nodes.containsAll(errorsFixedByResolution);
         }
         return false;
     }
