@@ -40,6 +40,7 @@ import checker.framework.change.propagator.ShadowProjectFactory;
 import checker.framework.errorcentric.propagator.commands.InferCommandHandler;
 import checker.framework.errorcentric.propagator.commands.InferNullnessCommandHandler;
 import checker.framework.errorcentric.view.Activator;
+import checker.framework.errorcentric.view.Messages;
 import checker.framework.quickfixes.descriptors.Fixer;
 
 import com.google.common.base.Optional;
@@ -64,7 +65,7 @@ public class ErrorCentricView extends ViewPart implements TreeUpdater {
     /**
      * The ID of the view as specified by the extension.
      */
-    public static final String ID = "checker.framework.errorcentric.view.views.ErrorCentricView";
+    public static final String ID = "checker.framework.errorcentric.view.views.ErrorCentricView"; //$NON-NLS-1$
 
     private TreeViewer viewer;
     private DrillDownAdapter drillDownAdapter;
@@ -133,7 +134,7 @@ public class ErrorCentricView extends ViewPart implements TreeUpdater {
     }
 
     private void hookContextMenu() {
-        MenuManager menuMgr = new MenuManager("#PopupMenu");
+        MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
         menuMgr.setRemoveAllWhenShown(true);
         menuMgr.addMenuListener(new IMenuListener() {
             public void menuAboutToShow(IMenuManager manager) {
@@ -181,11 +182,11 @@ public class ErrorCentricView extends ViewPart implements TreeUpdater {
                 refreshView();
             }
         };
-        refreshAction.setText("Refresh");
-        refreshAction.setToolTipText("Recomputes the error/change tree.");
+        refreshAction.setText(Messages.ErrorCentricView_refresh_text);
+        refreshAction.setToolTipText(Messages.ErrorCentricView_refresh_tool_tip);
         refreshAction.setImageDescriptor(ImageDescriptor
                 .createFromImage(Activator.getImageDescriptor(
-                        "icons/refresh.gif").createImage()));
+                        Messages.ErrorCentricView_refresh_icon).createImage()));
 
         doubleClickAction = new Action() {
             public void run() {
@@ -200,7 +201,7 @@ public class ErrorCentricView extends ViewPart implements TreeUpdater {
                 if (resolution.isPresent()) {
                     final MarkerResolutionTreeNode resolutionTreeNode = resolution
                             .get();
-                    Job job = new Job("Applying resolution") {
+                    Job job = new Job(Messages.ErrorCentricView_resolution_application_job_name) {
                         @Override
                         protected IStatus run(IProgressMonitor monitor) {
                             Display.getDefault().syncExec(new Runnable() {
