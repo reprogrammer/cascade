@@ -86,14 +86,8 @@ public class MarkerResolutionTreeNode extends TreeObject {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof MarkerResolutionTreeNode)) {
-            return false;
-        }
-        ErrorTreeNode myParent = (ErrorTreeNode) getParent();
-        MarkerResolutionTreeNode theirNode = (MarkerResolutionTreeNode) obj;
-        ErrorTreeNode theirParent = (ErrorTreeNode) theirNode.getParent();
-        return resolution.equals(theirNode.resolution)
-                && ((myParent == null && theirParent == null) || myParent
-                        .equals(theirParent));
+        return (obj instanceof MarkerResolutionTreeNode)
+                && resolution
+                        .equals(((MarkerResolutionTreeNode) obj).resolution);
     }
 }
