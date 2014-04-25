@@ -18,6 +18,10 @@ public class ChangeStateViewer {
         this.viewer = viewer;
     }
 
+    public void resetState() {
+        disabledNodes.clear();
+    }
+
     public void disableChange(MarkerResolutionTreeNode resolutionTreeNode) {
         Set<TreeObject> nodesToBeDisabled = newHashSet();
         nodesToBeDisabled.addAll(ErrorTreeNode.createTreeNodesFrom(

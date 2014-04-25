@@ -170,7 +170,8 @@ public class ErrorCentricView extends ViewPart implements TreeUpdater {
     }
 
     public void refreshView() {
-        viewer.setLabelProvider(new ViewLabelProvider());
+        changeStateViewer.resetState();
+        resetLabelProvider();
         viewer.setInput(initializeInput());
     }
 
