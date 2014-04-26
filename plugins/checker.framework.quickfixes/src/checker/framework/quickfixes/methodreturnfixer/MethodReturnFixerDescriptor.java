@@ -8,7 +8,6 @@ import checker.framework.quickfixes.descriptors.BindingBasedMethodDescriptor;
 import checker.framework.quickfixes.descriptors.CompilationUnitDescriptor;
 import checker.framework.quickfixes.descriptors.FixerDescriptor;
 import checker.framework.quickfixes.descriptors.FixerFactory;
-import checker.framework.quickfixes.descriptors.MethodDescriptor;
 
 public class MethodReturnFixerDescriptor extends FixerDescriptor {
 
@@ -29,11 +28,6 @@ public class MethodReturnFixerDescriptor extends FixerDescriptor {
 
     BindingBasedMethodDescriptor getMethodDescriptor() {
         return methodDescriptor;
-    }
-
-    @Deprecated
-    MethodDescriptor getOldMethodDescriptor() {
-        throw new UnsupportedOperationException();
     }
 
     CompilationUnitDescriptor getCompilationUnitDescriptor() {
