@@ -2,55 +2,40 @@ package checker.framework.quickfixes.methodparameterfixer;
 
 import static com.google.common.collect.Sets.newHashSet;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ConstructorInvocation;
 import org.eclipse.jdt.core.dom.Expression;
-import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
-import org.eclipse.jdt.core.dom.ITypeBinding;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Name;
-import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.SuperConstructorInvocation;
 import org.eclipse.jdt.core.dom.SuperMethodInvocation;
-import org.eclipse.jdt.internal.corext.dom.ScopeAnalyzer;
-import org.eclipse.jdt.internal.ui.text.correction.ASTResolving;
 
 import checker.framework.quickfixes.ErrorKey;
 import checker.framework.quickfixes.Flags;
 import checker.framework.quickfixes.MarkerContext;
-import checker.framework.quickfixes.descriptors.MethodDescriptorFactory;
 import checker.framework.quickfixes.descriptors.CompilationUnitDescriptor;
 import checker.framework.quickfixes.descriptors.CompilationUnitDescriptorFactory;
 import checker.framework.quickfixes.descriptors.CompilationUnitFactory;
 import checker.framework.quickfixes.descriptors.DescriptorUtils;
-import checker.framework.quickfixes.descriptors.FixerDescriptor;
 import checker.framework.quickfixes.descriptors.FixerDescriptorFactory;
 import checker.framework.quickfixes.variabledeclarationfixer.VariableDeclarationDescriptor;
 import checker.framework.quickfixes.variabledeclarationfixer.VariableDeclarationFixerDescriptor;
 import checker.framework.quickfixes.variabledeclarationfixer.VariableDeclarationFixerUtils;
 
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
 
-@SuppressWarnings("restriction")
 public class MethodParameterFixerDescriptorFactory extends
         FixerDescriptorFactory<VariableDeclarationFixerDescriptor> {
 
     private final CompilationUnitDescriptorFactory compilationUnitDescriptorFactory = new CompilationUnitDescriptorFactory();
-
-    private final MethodDescriptorFactory methodDescriptorFactory = new MethodDescriptorFactory();
 
     public MethodParameterFixerDescriptorFactory(MarkerContext context) {
         super(context);
@@ -162,140 +147,6 @@ public class MethodParameterFixerDescriptorFactory extends
                     new VariableDeclarationDescriptor(parameterBindingKey)));
         }
         return new HashSet<>();
-    }
-
-    @Deprecated
-    private Set<FixerDescriptor> createFixerDescriptorForSingleVariableDeclaration(
-            ASTNode selectedNode) {
-        final MethodDeclaration methodDeclaration = (MethodDeclaration) selectedNode
-                .getParent();
-        @SuppressWarnings("unchecked")
-        Optional<Integer> optionalSelectedArgumentPosition = MethodInvocationInfo
-                .getNodePositionInList(selectedNode,
-                        methodDeclaration.parameters());
-        CompilationUnit compilationUnitNode = ASTResolving
-                .findParentCompilationUnit(methodDeclaration);
-        final ICompilationUnit compilationUnit = (ICompilationUnit) compilationUnitNode
-                .getJavaElement();
-        return optionalSelectedArgumentPosition.transform(
-                new Function<Integer, FixerDescriptor>() {
-                    @Override
-                    public FixerDescriptor apply(
-                            Integer selectedArgumentPosition) {
-                        return new MethodParameterFixerDescriptor(
-                                compilationUnitDescriptorFactory
-                                        .get(compilationUnit),
-                                methodDescriptorFactory.get(methodDeclaration
-                                        .resolveBinding()),
-                                selectedArgumentPosition, context
-                                        .getRequiredTypeString());
-                    }
-                }).asSet();
-    }
-
-    @Deprecated
-    private Set<FixerDescriptor> createFixerDescriptorForMethodInvocation(
-            ASTNode selectedNode, ASTNode invocationNode,
-            MethodInvocation methodInvocation) {
-        List<Expression> arguments = methodInvocation.arguments();
-        Optional<Integer> optionalSelectedArgumentPosition = MethodInvocationInfo
-                .getNodePositionInList(selectedNode, arguments);
-        if (optionalSelectedArgumentPosition.isPresent()) {
-            SimpleName methodNameNode = ((MethodInvocation) invocationNode)
-                    .getName();
-            ArrayList<IMethodBinding> matchingMethods = getMatchingMethodBindings(methodNameNode);
-            return addParameterMissmatchProposals(context, matchingMethods,
-                    invocationNode, arguments,
-                    optionalSelectedArgumentPosition.get());
-        }
-        return new HashSet<>();
-    }
-
-    @Deprecated
-    private ArrayList<IMethodBinding> getMatchingMethodBindings(
-            SimpleName methodNameNode) {
-        String methodName = methodNameNode.getIdentifier();
-        // TODO(reprogrammer): Does the following call return only similar
-        // methods that are declared in the same compilation unit? How can we
-        // get the methods declared elsewhere?
-        IBinding[] bindings = (new ScopeAnalyzer(
-                context.getCompilationUnitNode())).getDeclarationsInScope(
-                methodNameNode, ScopeAnalyzer.METHODS);
-        ArrayList<IMethodBinding> matchingMethods = new ArrayList<>();
-        for (int i = 0; i < bindings.length; i++) {
-            IMethodBinding binding = (IMethodBinding) bindings[i];
-            if (binding.getName().equals(methodName)) {
-                matchingMethods.add(binding);
-            }
-        }
-        return matchingMethods;
-    }
-
-    @Deprecated
-    private Set<FixerDescriptor> addParameterMissmatchProposals(
-            MarkerContext context, List<IMethodBinding> similarElements,
-            ASTNode invocationNode, List<Expression> arguments,
-            int selectedArgumentPosition) {
-        int nSimilarElements = similarElements.size();
-        if (nSimilarElements == 0) {
-            return new HashSet<>();
-        }
-        for (int i = 0; i < nSimilarElements; i++) {
-            IMethodBinding elem = similarElements.get(i);
-            int diff = elem.getParameterTypes().length - arguments.size();
-            if (diff == 0) {
-                Optional<FixerDescriptor> descriptor = doEqualNumberOfParameters(
-                        context, invocationNode, arguments,
-                        selectedArgumentPosition, elem);
-                return descriptor.asSet();
-            }
-        }
-        return new HashSet<>();
-    }
-
-    @Deprecated
-    private Optional<FixerDescriptor> doEqualNumberOfParameters(
-            MarkerContext context, ASTNode invocationNode,
-            List<Expression> arguments, int selectedArgumentPosition,
-            IMethodBinding methodBinding) {
-        ITypeBinding declaringTypeDecl = methodBinding.getDeclaringClass()
-                .getTypeDeclaration();
-
-        CompilationUnit astRoot = context.getCompilationUnitNode();
-
-        ASTNode nameNode = context.getProblemLocation()
-                .getCoveringNode(astRoot);
-        if (nameNode == null) {
-            return Optional.absent();
-        }
-
-        if (declaringTypeDecl.isFromSource()) {
-            ICompilationUnit targetCU = findCompilationUnitForTypeBinding(
-                    declaringTypeDecl, astRoot);
-
-            if (targetCU != null) {
-                // TODO(reprogrammer): Remove the following cast.
-                return Optional
-                        .of((FixerDescriptor) new MethodParameterFixerDescriptor(
-                                compilationUnitDescriptorFactory.get(targetCU),
-                                methodDescriptorFactory.get(methodBinding),
-                                selectedArgumentPosition, context
-                                        .getFoundTypeString()));
-            }
-        }
-        return Optional.absent();
-    }
-
-    @Deprecated
-    private ICompilationUnit findCompilationUnitForTypeBinding(
-            ITypeBinding declaringTypeDecl, CompilationUnit astRoot) {
-        try {
-            return ASTResolving.findCompilationUnitForBinding(
-                    (ICompilationUnit) astRoot.getJavaElement(), astRoot,
-                    declaringTypeDecl);
-        } catch (JavaModelException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 }

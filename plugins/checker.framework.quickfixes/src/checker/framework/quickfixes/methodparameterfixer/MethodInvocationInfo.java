@@ -16,11 +16,13 @@ public class MethodInvocationInfo {
 
     private IMethodBinding methodBinding;
 
+    @SuppressWarnings("rawtypes")
     private List arguments;
 
     private ASTNode selectedASTNode;
 
-    public MethodInvocationInfo(IMethodBinding methodBinding, List arguments,
+    public MethodInvocationInfo(IMethodBinding methodBinding,
+            @SuppressWarnings("rawtypes") List arguments,
             ASTNode selectedASTNode) {
         this.methodBinding = methodBinding;
         this.arguments = arguments;
@@ -36,6 +38,7 @@ public class MethodInvocationInfo {
             CompilationUnit compilationUnitNode) {
         MethodDeclaration methodDeclarationNode = (MethodDeclaration) compilationUnitNode
                 .findDeclaringNode(methodBinding.getKey());
+        @SuppressWarnings("unchecked")
         Optional<Integer> optionalSelectedArgumentPosition = getNodePositionInList(
                 selectedASTNode, arguments);
         if (optionalSelectedArgumentPosition.isPresent()) {
