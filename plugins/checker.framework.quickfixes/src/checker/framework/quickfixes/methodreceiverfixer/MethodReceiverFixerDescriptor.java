@@ -4,7 +4,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.eclipse.jdt.core.IJavaProject;
 
-import checker.framework.quickfixes.descriptors.BindingBasedMethodDescriptor;
+import checker.framework.quickfixes.descriptors.MethodDescriptor;
 import checker.framework.quickfixes.descriptors.CompilationUnitDescriptor;
 import checker.framework.quickfixes.descriptors.FixerDescriptor;
 import checker.framework.quickfixes.descriptors.FixerFactory;
@@ -13,13 +13,13 @@ public class MethodReceiverFixerDescriptor extends FixerDescriptor {
 
     private final CompilationUnitDescriptor compilationUnitDescriptor;
 
-    private final BindingBasedMethodDescriptor methodDescriptor;
+    private final MethodDescriptor methodDescriptor;
 
     private final String newTypeString;
 
     public MethodReceiverFixerDescriptor(
             CompilationUnitDescriptor compilationUnitDescriptor,
-            BindingBasedMethodDescriptor methodDescriptor, String newTypeString) {
+            MethodDescriptor methodDescriptor, String newTypeString) {
         this.compilationUnitDescriptor = compilationUnitDescriptor;
         this.methodDescriptor = methodDescriptor;
         this.newTypeString = newTypeString;
@@ -34,7 +34,7 @@ public class MethodReceiverFixerDescriptor extends FixerDescriptor {
         return compilationUnitDescriptor;
     }
 
-    BindingBasedMethodDescriptor getMethodDescriptor() {
+    MethodDescriptor getMethodDescriptor() {
         return methodDescriptor;
     }
 

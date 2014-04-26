@@ -3,11 +3,11 @@ package checker.framework.quickfixes.descriptors;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public class BindingBasedMethodDescriptor {
+public class MethodDescriptor {
 
     private final String bindingKey;
 
-    public BindingBasedMethodDescriptor(String bindingKey) {
+    public MethodDescriptor(String bindingKey) {
         this.bindingKey = bindingKey;
     }
 

@@ -62,7 +62,8 @@ public class MethodReturnFixer implements Fixer {
         String label = String.format("Change return type of %s to %s",
                 methodDeclaration.getName().getIdentifier(),
                 sanitizedTypeString);
-        Image image = WorkspaceUtils.loadProposalImage(JavaPluginImages.IMG_CORRECTION_CHANGE);
+        Image image = WorkspaceUtils
+                .loadProposalImage(JavaPluginImages.IMG_CORRECTION_CHANGE);
         LinkedCorrectionProposal proposal = new LinkedCorrectionProposal(label,
                 (ICompilationUnit) compilationUnit.getJavaElement(), rewrite,
                 IProposalRelevance.CHANGE_METHOD_RETURN_TYPE, image);

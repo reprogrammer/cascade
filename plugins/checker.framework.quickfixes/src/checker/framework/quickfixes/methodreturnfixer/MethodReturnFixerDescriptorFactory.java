@@ -20,7 +20,7 @@ import org.eclipse.jdt.internal.ui.text.correction.ASTResolving;
 import checker.framework.quickfixes.ErrorKey;
 import checker.framework.quickfixes.Flags;
 import checker.framework.quickfixes.MarkerContext;
-import checker.framework.quickfixes.descriptors.BindingBasedMethodDescriptorFactory;
+import checker.framework.quickfixes.descriptors.MethodDescriptorFactory;
 import checker.framework.quickfixes.descriptors.CompilationUnitDescriptorFactory;
 import checker.framework.quickfixes.descriptors.DescriptorUtils;
 import checker.framework.quickfixes.descriptors.FixerDescriptorFactory;
@@ -33,7 +33,7 @@ public class MethodReturnFixerDescriptorFactory extends
 
     private final CompilationUnitDescriptorFactory compilationUnitDescriptorFactory = new CompilationUnitDescriptorFactory();
 
-    private final BindingBasedMethodDescriptorFactory methodDescriptorFactory = new BindingBasedMethodDescriptorFactory();
+    private final MethodDescriptorFactory methodDescriptorFactory = new MethodDescriptorFactory();
 
     public MethodReturnFixerDescriptorFactory(MarkerContext context) {
         super(context);

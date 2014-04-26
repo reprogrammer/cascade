@@ -27,8 +27,7 @@ public enum KnownQualifier {
     EnsuresNonNull("org.checkerframework.checker.nullness.qual",
             QualifierLocation.METHOD),
 
-    KeyFor("org.checkerframework.checker.nullness.qual",
-            QualifierLocation.TYPE),
+    KeyFor("org.checkerframework.checker.nullness.qual", QualifierLocation.TYPE),
 
     KeyForBottom("org.checkerframework.checker.nullness.qual",
             QualifierLocation.TYPE),
@@ -42,8 +41,7 @@ public enum KnownQualifier {
     NonNull("org.checkerframework.checker.nullness.qual",
             QualifierLocation.TYPE),
 
-    NonRaw("org.checkerframework.checker.nullness.qual",
-            QualifierLocation.TYPE),
+    NonRaw("org.checkerframework.checker.nullness.qual", QualifierLocation.TYPE),
 
     Nullable("org.checkerframework.checker.nullness.qual",
             QualifierLocation.TYPE),
@@ -64,14 +62,12 @@ public enum KnownQualifier {
 
     Mutable("org.checkerframework.checker.javari.qual", QualifierLocation.TYPE),
 
-    PolyRead("org.checkerframework.checker.javari.qual",
-            QualifierLocation.TYPE),
+    PolyRead("org.checkerframework.checker.javari.qual", QualifierLocation.TYPE),
 
     QReadOnly("org.checkerframework.checker.javari.qual",
             QualifierLocation.TYPE),
 
-    ReadOnly("org.checkerframework.checker.javari.qual",
-            QualifierLocation.TYPE),
+    ReadOnly("org.checkerframework.checker.javari.qual", QualifierLocation.TYPE),
 
     ThisMutable("org.checkerframework.checker.javari.qual",
             QualifierLocation.TYPE);

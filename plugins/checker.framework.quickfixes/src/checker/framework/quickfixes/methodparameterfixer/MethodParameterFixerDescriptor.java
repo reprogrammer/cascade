@@ -4,7 +4,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.eclipse.jdt.core.IJavaProject;
 
-import checker.framework.quickfixes.descriptors.BindingBasedMethodDescriptor;
+import checker.framework.quickfixes.descriptors.MethodDescriptor;
 import checker.framework.quickfixes.descriptors.CompilationUnitDescriptor;
 import checker.framework.quickfixes.descriptors.FixerDescriptor;
 import checker.framework.quickfixes.descriptors.FixerFactory;
@@ -14,7 +14,7 @@ public class MethodParameterFixerDescriptor extends FixerDescriptor {
 
     private final CompilationUnitDescriptor compilationUnitDescriptor;
 
-    private final BindingBasedMethodDescriptor methodDescriptor;
+    private final MethodDescriptor methodDescriptor;
 
     private final int selectedArgumentPosition;
 
@@ -22,8 +22,8 @@ public class MethodParameterFixerDescriptor extends FixerDescriptor {
 
     public MethodParameterFixerDescriptor(
             CompilationUnitDescriptor compilationUnitDescriptor,
-            BindingBasedMethodDescriptor methodDescriptor,
-            int selectedArgumentPosition, String newTypeString) {
+            MethodDescriptor methodDescriptor, int selectedArgumentPosition,
+            String newTypeString) {
         this.compilationUnitDescriptor = compilationUnitDescriptor;
         this.methodDescriptor = methodDescriptor;
         this.selectedArgumentPosition = selectedArgumentPosition;
@@ -39,7 +39,7 @@ public class MethodParameterFixerDescriptor extends FixerDescriptor {
         return compilationUnitDescriptor;
     }
 
-    BindingBasedMethodDescriptor getMethodDescriptor() {
+    MethodDescriptor getMethodDescriptor() {
         return methodDescriptor;
     }
 

@@ -3,15 +3,14 @@ package checker.framework.quickfixes.descriptors;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 
-public class BindingBasedMethodFactory {
+public class MethodFactory {
 
     private final CompilationUnitFactory compilationUnitFactory;
 
-    private final BindingBasedMethodDescriptor methodDescriptor;
+    private final MethodDescriptor methodDescriptor;
 
-    public BindingBasedMethodFactory(
-            CompilationUnitFactory compilationUnitFactory,
-            BindingBasedMethodDescriptor methodDescriptor) {
+    public MethodFactory(CompilationUnitFactory compilationUnitFactory,
+            MethodDescriptor methodDescriptor) {
         this.compilationUnitFactory = compilationUnitFactory;
         this.methodDescriptor = methodDescriptor;
     }

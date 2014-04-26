@@ -13,8 +13,8 @@ import org.eclipse.jdt.core.dom.MethodInvocation;
 
 import checker.framework.quickfixes.ErrorKey;
 import checker.framework.quickfixes.MarkerContext;
-import checker.framework.quickfixes.descriptors.BindingBasedMethodDescriptor;
-import checker.framework.quickfixes.descriptors.BindingBasedMethodDescriptorFactory;
+import checker.framework.quickfixes.descriptors.MethodDescriptor;
+import checker.framework.quickfixes.descriptors.MethodDescriptorFactory;
 import checker.framework.quickfixes.descriptors.CompilationUnitDescriptorFactory;
 import checker.framework.quickfixes.descriptors.FixerDescriptorFactory;
 
@@ -23,7 +23,7 @@ public class MethodReceiverFixerDescriptorFactory extends
 
     private final CompilationUnitDescriptorFactory compilationUnitDescriptorFactory = new CompilationUnitDescriptorFactory();
 
-    private final BindingBasedMethodDescriptorFactory methodDescriptorFactory = new BindingBasedMethodDescriptorFactory();
+    private final MethodDescriptorFactory methodDescriptorFactory = new MethodDescriptorFactory();
 
     public MethodReceiverFixerDescriptorFactory(MarkerContext context) {
         super(context);
@@ -46,7 +46,7 @@ public class MethodReceiverFixerDescriptorFactory extends
             ICompilationUnit compilationUnit = (ICompilationUnit) methodBinding
                     .getMethodDeclaration().getJavaElement()
                     .getAncestor(IJavaElement.COMPILATION_UNIT);
-            BindingBasedMethodDescriptor methodDescriptor = methodDescriptorFactory
+            MethodDescriptor methodDescriptor = methodDescriptorFactory
                     .get(methodBinding);
             return newHashSet(new MethodReceiverFixerDescriptor(
                     compilationUnitDescriptorFactory.get(compilationUnit),

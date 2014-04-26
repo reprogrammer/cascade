@@ -2,7 +2,7 @@ package checker.framework.quickfixes.methodparameterfixer;
 
 import org.eclipse.jdt.core.IJavaProject;
 
-import checker.framework.quickfixes.descriptors.BindingBasedMethodFactory;
+import checker.framework.quickfixes.descriptors.MethodFactory;
 import checker.framework.quickfixes.descriptors.CompilationUnitDescriptor;
 import checker.framework.quickfixes.descriptors.CompilationUnitFactory;
 import checker.framework.quickfixes.descriptors.Fixer;
@@ -15,7 +15,7 @@ public class MethodParameterFixerFactory extends FixerFactory {
 
     private final CompilationUnitFactory compilationUnitFactory;
 
-    private final BindingBasedMethodFactory methodFactory;
+    private final MethodFactory methodFactory;
 
     private final CompilationUnitDescriptor compilationUnitDescriptor;
 
@@ -26,8 +26,8 @@ public class MethodParameterFixerFactory extends FixerFactory {
         compilationUnitDescriptor = descriptor.getCompilationUnitDescriptor();
         this.compilationUnitFactory = new CompilationUnitFactory(javaProject,
                 compilationUnitDescriptor);
-        this.methodFactory = new BindingBasedMethodFactory(
-                compilationUnitFactory, descriptor.getMethodDescriptor());
+        this.methodFactory = new MethodFactory(compilationUnitFactory,
+                descriptor.getMethodDescriptor());
     }
 
     @Override
