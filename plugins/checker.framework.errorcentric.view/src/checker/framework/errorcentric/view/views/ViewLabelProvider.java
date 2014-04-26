@@ -2,8 +2,6 @@ package checker.framework.errorcentric.view.views;
 
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
 
 import checker.framework.errorcentric.view.Activator;
 
@@ -40,8 +38,8 @@ public class ViewLabelProvider extends LabelProvider {
             return Activator.getImageDescriptor("icons/green_checkmark.gif")
                     .createImage();
         }
-        return PlatformUI.getWorkbench().getSharedImages()
-                .getImage(ISharedImages.IMG_OBJ_ELEMENT);
+        return Activator.getImageDescriptor("icons/annotation_obj.gif")
+                .createImage();
     }
 
 }
