@@ -1,5 +1,7 @@
 package checker.framework.quickfixes.variabledeclarationfixer;
 
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.dom.Name;
 
 import checker.framework.quickfixes.descriptors.CompilationUnitDescriptor;
@@ -10,11 +12,14 @@ import com.google.common.base.Optional;
 public class VariableDeclarationFixerUtils {
 
     static Optional<String> getNodeBindingKey(Optional<Name> receiverNode) {
-        return receiverNode.transform(new Function<Name, String>() {
-            @Override
-            public String apply(Name node) {
-                return node.resolveBinding().getKey();
-            }
+        return receiverNode.transform(node -> node.resolveBinding().getKey());
+    }
+
+    static Optional<ICompilationUnit> getCompilationUnit(
+            Optional<Name> receiverNode) {
+        return receiverNode.transform(node -> {
+            return (ICompilationUnit) node.resolveBinding().getJavaElement()
+                    .getAncestor(IJavaElement.COMPILATION_UNIT);
         });
     }
 
@@ -31,15 +36,8 @@ public class VariableDeclarationFixerUtils {
     private static Function<String, VariableDeclarationFixerDescriptor> getBindingKeyToDescriptorFunction(
             final CompilationUnitDescriptor compilationUnitDescriptor,
             final String newTypeString) {
-        return new Function<String, VariableDeclarationFixerDescriptor>() {
-            @Override
-            public VariableDeclarationFixerDescriptor apply(
-                    String receiverNodeBindingKey) {
-                return new VariableDeclarationFixerDescriptor(
-                        compilationUnitDescriptor, newTypeString,
-                        new VariableDeclarationDescriptor(
-                                receiverNodeBindingKey));
-            }
-        };
+        return receiverNodeBindingKey -> new VariableDeclarationFixerDescriptor(
+                compilationUnitDescriptor, newTypeString,
+                new VariableDeclarationDescriptor(receiverNodeBindingKey));
     }
 }

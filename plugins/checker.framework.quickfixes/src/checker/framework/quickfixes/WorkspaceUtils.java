@@ -25,6 +25,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
+@SuppressWarnings("restriction")
 public class WorkspaceUtils {
 
     private static final String JAVA_PROJECT_NATURE = "org.eclipse.jdt.core.javanature";

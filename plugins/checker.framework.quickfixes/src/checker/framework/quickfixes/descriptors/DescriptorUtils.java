@@ -33,6 +33,18 @@ public class DescriptorUtils {
         return Optional.fromNullable(identifier);
     }
 
+    public static Optional<Expression> findSideNode(ASTNode selectedNode,
+            Side side) {
+        switch (side) {
+        case LEFT:
+            return findLeftHandSideNode(selectedNode);
+        case RIGHT:
+            return findRightHandSideNode(selectedNode);
+        default:
+            throw new IllegalArgumentException(side.name());
+        }
+    }
+
     public static Optional<Expression> findLeftHandSideNode(ASTNode selectedNode) {
         ASTNode parentNode = selectedNode.getParent();
         if (parentNode instanceof Assignment) {

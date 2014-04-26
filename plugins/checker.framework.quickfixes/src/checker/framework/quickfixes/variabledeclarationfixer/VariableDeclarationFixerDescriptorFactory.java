@@ -8,8 +8,8 @@ import java.util.Set;
 
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Expression;
+import org.eclipse.jdt.core.dom.Name;
 
 import checker.framework.quickfixes.ErrorKey;
 import checker.framework.quickfixes.Flags;
@@ -18,6 +18,7 @@ import checker.framework.quickfixes.descriptors.CompilationUnitDescriptor;
 import checker.framework.quickfixes.descriptors.CompilationUnitDescriptorFactory;
 import checker.framework.quickfixes.descriptors.DescriptorUtils;
 import checker.framework.quickfixes.descriptors.FixerDescriptorFactory;
+import checker.framework.quickfixes.descriptors.Side;
 
 import com.google.common.base.Optional;
 
@@ -42,38 +43,35 @@ public class VariableDeclarationFixerDescriptorFactory extends
         if (!(selectedNode instanceof Expression)) {
             return new HashSet<>();
         }
-        ICompilationUnit compilationUnit = getCompilationUnit(selectedNode);
-        Optional<VariableDeclarationFixerDescriptor> leftHandSideFixer = Optional
-                .absent();
+        Optional<VariableDeclarationFixerDescriptor> leftHandSideFixer = createFixer(
+                Side.LEFT, selectedNode, context.getFoundTypeString());
         Optional<VariableDeclarationFixerDescriptor> rightHandSideFixer = Optional
                 .absent();
-        CompilationUnitDescriptor cuDescriptor = compilationUnitDescriptorFactory
-                .get(compilationUnit);
-        if (context.getFoundTypeString() != null) {
-            Optional<Expression> leftHandSideNode = DescriptorUtils
-                    .findLeftHandSideNode(selectedNode);
-            leftHandSideFixer = VariableDeclarationFixerUtils
-                    .createVariableDeclarationFixerDescriptor(
-                            context.getFoundTypeString(), cuDescriptor,
-                            DescriptorUtils.extractIdentifier(leftHandSideNode));
-        }
         if (Flags.propagateQualifiersFromLeftToRight) {
-            if (context.getRequiredTypeString() != null) {
-                Optional<Expression> rightHandSideNode = DescriptorUtils
-                        .findRightHandSideNode(selectedNode);
-                rightHandSideFixer = VariableDeclarationFixerUtils
-                        .createVariableDeclarationFixerDescriptor(context
-                                .getRequiredTypeString(), cuDescriptor,
-                                DescriptorUtils
-                                        .extractIdentifier(rightHandSideNode));
-            }
+            rightHandSideFixer = createFixer(Side.RIGHT, selectedNode,
+                    context.getRequiredTypeString());
         }
         return union(leftHandSideFixer.asSet(), rightHandSideFixer.asSet());
     }
 
-    private static ICompilationUnit getCompilationUnit(ASTNode astNode) {
-        return (ICompilationUnit) ((CompilationUnit) astNode.getRoot())
-                .getTypeRoot();
+    private Optional<VariableDeclarationFixerDescriptor> createFixer(Side side,
+            ASTNode selectedNode, String newTypeString) {
+        Optional<VariableDeclarationFixerDescriptor> fixer = Optional.absent();
+        if (newTypeString != null) {
+            Optional<Expression> node = DescriptorUtils.findSideNode(
+                    selectedNode, side);
+            Optional<Name> identifier = DescriptorUtils.extractIdentifier(node);
+            Optional<ICompilationUnit> optionalCompilationUnit = VariableDeclarationFixerUtils
+                    .getCompilationUnit(identifier);
+            if (optionalCompilationUnit.isPresent()) {
+                CompilationUnitDescriptor cuDescriptor = compilationUnitDescriptorFactory
+                        .get(optionalCompilationUnit.get());
+                fixer = VariableDeclarationFixerUtils
+                        .createVariableDeclarationFixerDescriptor(
+                                newTypeString, cuDescriptor, identifier);
+            }
+        }
+        return fixer;
     }
 
 }
