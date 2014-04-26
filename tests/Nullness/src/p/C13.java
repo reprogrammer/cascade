@@ -3,19 +3,19 @@ package p;
 // This tests type qualifier inference for the SingleVariableDeclaration case.
 // It propagates @Nullable from a method to another method it overrides.
 abstract class C13 {
-	abstract void c13m1(Object c13o1);
+    abstract void c13m1(Object c13o1);
 }
 
 class C14 extends C13 {
-	@Override
-	void c13m1(Object c14o1) {
-	}
+    @Override
+    void c13m1(Object c14o1) {
+    }
 }
 
 class C15 {
-	C13 c15f1;
+    C13 c15f1;
 
-	void c15m1() {
-		c15f1.c13m1(null);
-	}
+    void c15m1() {
+        c15f1.c13m1(null);
+    }
 }

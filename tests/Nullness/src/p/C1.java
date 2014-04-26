@@ -1,45 +1,49 @@
 package p;
 
-import checkers.nullness.quals.*;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
- * This class illustrates use of nullness type annotations.
- * The class doesn't do anything -- it is merely meant to be compiled.
- * Compilation will produce warning messages.
+ * This class illustrates use of nullness type annotations. The class doesn't do
+ * anything -- it is merely meant to be compiled. Compilation will produce
+ * warning messages.
  * <p>
  *
  * There are two related files that differ only slightly:
- * {@link NullnessExample}, an example of correct use, and {@link
- * C1}, an example of incorrect use.
- * See the Nullness Checker documentation for larger examples of annotated code.
+ * {@link NullnessExample}, an example of correct use, and {@link C1}, an
+ * example of incorrect use. See the Nullness Checker documentation for larger
+ * examples of annotated code.
  **/
 class C1 {
 
-  public void example() {
+    public void example() {
 
-    // In general, you do not have to annotate local variables, because the
-    // Nullness Checker infers such annotations.  It is written here in the
-    // example for emhpasis.
-    @NonNull String foo = "foo";
-    String bar = null;
+        // In general, you do not have to annotate local variables, because the
+        // Nullness Checker infers such annotations. It is written here in the
+        // example for emhpasis.
+        @NonNull
+        String foo = "foo";
+        String bar = null;
 
-    foo = bar;
-    bar = foo;
+        foo = bar;
+        bar = foo;
 
-  }
+    }
 
-  public /*@NonNull*/ String exampleGenerics() {
+    public/* @NonNull */String exampleGenerics() {
 
-    List<@NonNull String> foo = new LinkedList</*@NonNull*/ String>();
-    List<String> bar = foo;
+        List<@NonNull String> foo = new LinkedList</* @NonNull */String>();
+        List<String> bar = foo;
 
-    String quux = null;
-    foo.add(quux);
-    foo.add("quux");
-    @NonNull String baz = foo.get(0);
-    return baz;
+        String quux = null;
+        foo.add(quux);
+        foo.add("quux");
+        @NonNull
+        String baz = foo.get(0);
+        return baz;
 
-  }
+    }
 
 }
