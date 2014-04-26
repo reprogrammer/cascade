@@ -40,6 +40,7 @@ import checker.framework.errorcentric.propagator.commands.InferCommandHandler;
 import checker.framework.errorcentric.propagator.commands.InferNullnessCommandHandler;
 import checker.framework.errorcentric.view.Activator;
 import checker.framework.errorcentric.view.Messages;
+import checker.framework.quickfixes.WorkspaceUtils;
 import checker.framework.quickfixes.descriptors.Fixer;
 
 import com.google.common.base.Optional;
@@ -170,6 +171,7 @@ public class ErrorCentricView extends ViewPart implements TreeUpdater {
     }
 
     public void refreshView() {
+        WorkspaceUtils.saveAllEditors();
         changeStateViewer.resetState();
         resetLabelProvider();
         viewer.setInput(initializeInput());
