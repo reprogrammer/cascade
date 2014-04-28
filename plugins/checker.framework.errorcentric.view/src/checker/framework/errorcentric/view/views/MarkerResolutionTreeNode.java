@@ -20,14 +20,10 @@ public class MarkerResolutionTreeNode extends TreeObject {
 
     private volatile int errorsFixed;
 
-    public void setErrorsFixed(int errorsFixed) {
-        this.errorsFixed = errorsFixed;
-    }
-
     private Set<ComparableMarker> unresolvableMarkers;
 
-    public MarkerResolutionTreeNode(ActionableMarkerResolution resolution) {
-        super(resolution.getLabel());
+    public MarkerResolutionTreeNode(ActionableMarkerResolution resolution, TreeUpdater treeUpdater) {
+        super(resolution.getLabel(), treeUpdater);
         this.resolution = resolution;
         this.unresolvableMarkers = new HashSet<>();
     }
@@ -77,6 +73,10 @@ public class MarkerResolutionTreeNode extends TreeObject {
         return errorsFixed;
     }
 
+    public void setErrorsFixed(int errorsFixed) {
+        this.errorsFixed = errorsFixed;
+    }
+    
     public Set<ComparableMarker> getUnresolvableMarkers() {
         return unresolvableMarkers;
     }

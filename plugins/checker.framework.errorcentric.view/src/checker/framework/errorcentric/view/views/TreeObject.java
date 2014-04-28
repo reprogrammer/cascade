@@ -11,14 +11,18 @@ public class TreeObject implements IAdaptable {
 
     private TreeObject parent;
 
-    protected ArrayList<TreeObject> children;
+    private ArrayList<TreeObject> children;
 
     private TreeUpdater treeUpdater;
 
-    public TreeObject(String name) {
-        this.name = name;
+    public TreeObject(String name, TreeUpdater treeUpdater) {
         this.children = new ArrayList<>();
-        this.treeUpdater = new NoOpTreeUpdater();
+        this.name = name;
+        this.treeUpdater = treeUpdater;
+    }
+
+    public TreeObject(String name) {
+        this(name, new NoOpTreeUpdater());
     }
 
     public String getName() {

@@ -25,7 +25,7 @@ import com.google.common.base.Predicate;
 
 public class ChangeComputationJob extends Job {
 
-    MarkerResolutionTreeNode markerResolutionTreeNode;
+    private MarkerResolutionTreeNode markerResolutionTreeNode;
 
     public ChangeComputationJob(String name,
             MarkerResolutionTreeNode markerResolutionTreeNode) {
