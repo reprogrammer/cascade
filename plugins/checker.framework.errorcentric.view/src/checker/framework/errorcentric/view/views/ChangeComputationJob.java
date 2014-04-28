@@ -1,5 +1,11 @@
 package checker.framework.errorcentric.view.views;
 
+import static com.google.common.collect.Iterables.filter;
+import static com.google.common.collect.Iterables.transform;
+import static com.google.common.collect.Sets.difference;
+import static com.google.common.collect.Sets.newHashSet;
+import static com.google.common.collect.Sets.union;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -17,13 +23,6 @@ import checker.framework.quickfixes.descriptors.FixerDescriptor;
 
 import com.google.common.base.Predicate;
 
-import static com.google.common.collect.Iterables.filter;
-import static com.google.common.collect.Iterables.transform;
-
-import static com.google.common.collect.Sets.difference;
-import static com.google.common.collect.Sets.newHashSet;
-import static com.google.common.collect.Sets.union;
-
 public class ChangeComputationJob extends Job {
 
     MarkerResolutionTreeNode markerResolutionTreeNode;
@@ -34,6 +33,8 @@ public class ChangeComputationJob extends Job {
         this.markerResolutionTreeNode = markerResolutionTreeNode;
     }
 
+    // TODO(reprogrammer): I suggest that we break this method into several
+    // smaller ones.
     @Override
     protected IStatus run(IProgressMonitor monitor) {
         monitor.beginTask(getName(), 25);
@@ -45,14 +46,12 @@ public class ChangeComputationJob extends Job {
                 parentFixerDescriptors);
         monitor.worked(3);
         resolution.apply();
-
         monitor.worked(3);
         // WorkspaceUtils.saveAllEditors();
         monitor.worked(3);
         ShadowProject shadowProject = resolution.getShadowProject();
         shadowProject.runChecker(InferCommandHandler.checkerID);
         monitor.worked(10);
-
         Set<ComparableMarker> allMarkersAfterResolution = shadowProject
                 .getMarkers();
         Set<ComparableMarker> addedMarkers = difference(
@@ -76,7 +75,6 @@ public class ChangeComputationJob extends Job {
                     }
                 }));
         monitor.worked(1);
-
         Set<ComparableMarker> fixedMarkers = newHashSet();
         for (ActionableMarkerResolution historicallyNewResolution : historicallyNewResolutions) {
             fixedMarkers.addAll(historicallyNewResolution
@@ -92,17 +90,19 @@ public class ChangeComputationJob extends Job {
         markerResolutionTreeNode
                 .addChildren(union(errorTreeNodesWithResolutions,
                         errorTreeNodesWithoutResolutions));
-        monitor.worked(1);
-        monitor.done();
-        JobManager.done(markerResolutionTreeNode);
         int errorsFixed = resolution.getMarkersToBeResolvedByFixer().size();
         markerResolutionTreeNode.setErrorsFixed(errorsFixed);
         markerResolutionTreeNode.setName(markerResolutionTreeNode.getName()
                 + " (" + errorsFixed + ")");
+        // TODO(reprogrammer): I suggest to redesign the classes such that the
+        // following statement doesn't duplicate the reference to
+        // markerResolutionTreeNode.
         markerResolutionTreeNode.getTreeUpdater().update(
                 markerResolutionTreeNode);
+        monitor.worked(1);
+        monitor.done();
+        JobManager.done(markerResolutionTreeNode);
         return Status.OK_STATUS;
-
     }
 
 }

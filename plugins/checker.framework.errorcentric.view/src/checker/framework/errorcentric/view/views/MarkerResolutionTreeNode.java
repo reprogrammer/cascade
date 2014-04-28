@@ -17,6 +17,7 @@ public class MarkerResolutionTreeNode extends TreeObject {
     private ActionableMarkerResolution resolution;
 
     private Job job;
+
     private volatile int errorsFixed;
 
     public void setErrorsFixed(int errorsFixed) {
@@ -49,6 +50,7 @@ public class MarkerResolutionTreeNode extends TreeObject {
     }
 
     public void computeChangeEffect() {
+        // TODO(reprogrammer): Externalize this string.
         String progressBarLabel = String.format("Computing the effect of: %s",
                 resolution.getLabel());
         job = new ChangeComputationJob(progressBarLabel, this);
@@ -81,13 +83,17 @@ public class MarkerResolutionTreeNode extends TreeObject {
 
     @Override
     public int hashCode() {
+        // TODO(reprogrammer): Use HashCodeBuilder.
         return resolution.hashCode();
     }
 
     @Override
     public boolean equals(Object obj) {
+        // TODO(reprogrammer): Use EqualsBuilder and ensure the correctness with
+        // respect to the instanceof check.
         return (obj instanceof MarkerResolutionTreeNode)
                 && resolution
                         .equals(((MarkerResolutionTreeNode) obj).resolution);
     }
+
 }
