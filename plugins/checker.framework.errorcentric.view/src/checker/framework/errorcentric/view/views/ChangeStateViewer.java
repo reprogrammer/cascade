@@ -1,5 +1,6 @@
 package checker.framework.errorcentric.view.views;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -7,6 +8,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.TreeItem;
 
+import static com.google.common.collect.Sets.difference;
 import static com.google.common.collect.Sets.newHashSet;
 
 public class ChangeStateViewer {
@@ -22,46 +24,74 @@ public class ChangeStateViewer {
         disabledNodes.clear();
     }
 
-    public void disableChange(MarkerResolutionTreeNode resolutionTreeNode) {
-        Set<TreeObject> nodesToBeDisabled = newHashSet();
-        nodesToBeDisabled.addAll(ErrorTreeNode.createTreeNodesFrom(
+    public Set<TreeObject> disableChange(
+            MarkerResolutionTreeNode resolutionTreeNode) {
+        // init
+        Set<TreeObject> clonedDisabledNodes = newHashSet(disabledNodes);
+        clonedDisabledNodes.add(resolutionTreeNode);
+        clonedDisabledNodes.addAll(ErrorTreeNode.createTreeNodesFrom(
                 newHashSet(resolutionTreeNode.getResolution()),
                 new NoOpTreeUpdater(), false));
-        Set<TreeObject> relatedNodes = getRelatedNodes(nodesToBeDisabled);
-        nodesToBeDisabled.addAll(relatedNodes);
-        setNodeColor(nodesToBeDisabled, Colors.GRAY);
-        disabledNodes.addAll(nodesToBeDisabled);
+        // find fixed point
+        while (canAddRelatedNodes(clonedDisabledNodes)) {
+        }
+        Set<TreeObject> newDisabledNodes = newHashSet(difference(
+                clonedDisabledNodes, disabledNodes));
+        // swap the clone
+        disabledNodes = clonedDisabledNodes;
         viewer.refresh();
+        return newDisabledNodes;
     }
 
-    public void enableChange(MarkerResolutionTreeNode resolutionTreeNode) {
-        Set<TreeObject> nodesToBeEnabled = newHashSet();
-        nodesToBeEnabled.addAll(ErrorTreeNode.createTreeNodesFrom(
-                newHashSet(resolutionTreeNode.getResolution()),
-                new NoOpTreeUpdater(), false));
-        Set<TreeObject> relatedNodes = getRelatedNodes(nodesToBeEnabled);
-        nodesToBeEnabled.addAll(relatedNodes);
-        setNodeColor(nodesToBeEnabled, viewer.getTree().getForeground());
+    private boolean canAddRelatedNodes(Set<TreeObject> nodes) {
+        Set<TreeObject> relatedNodes = getRelatedNodes(nodes);
+        if (nodes.containsAll(relatedNodes)) {
+            return false;
+        } else {
+            Set<TreeObject> newNodes = difference(relatedNodes, nodes);
+            for (TreeObject newNode : newNodes) {
+                if (newNode instanceof MarkerResolutionTreeNode) {
+                    nodes.add(newNode);
+                    Collection<ErrorTreeNode> errorTreeNodes = ErrorTreeNode
+                            .createTreeNodesFrom(
+                                    newHashSet(((MarkerResolutionTreeNode) newNode)
+                                            .getResolution()),
+                                    new NoOpTreeUpdater(), false);
+                    nodes.addAll(errorTreeNodes);
+
+                }
+            }
+            return true;
+        }
+    }
+
+    public void enableChange(Set<TreeObject> nodesToBeEnabled) {
         disabledNodes.removeAll(nodesToBeEnabled);
         viewer.refresh();
     }
 
     private Set<TreeObject> getRelatedNodes(Set<TreeObject> nodes) {
         Set<TreeObject> relatedNodes = new HashSet<>();
-        relatedNodes
-                .addAll(getRelatedNodes(viewer.getTree().getItems(), nodes));
+        relatedNodes.addAll(getRelatedNodes(
+                ((MarkerResolutionTreeNode) viewer.getInput()).getChildren(),
+                nodes));
         return relatedNodes;
     }
 
-    private Set<TreeObject> getRelatedNodes(TreeItem[] items,
-            Set<TreeObject> nodes) {
+    private Set<TreeObject> getRelatedNodes(TreeObject[] candidates,
+            Set<TreeObject> existingNodes) {
         Set<TreeObject> relatedNodes = new HashSet<>();
-        for (TreeItem item : items) {
-            TreeObject node = (TreeObject) item.getData();
-            if (isRelated(node, nodes)) {
-                relatedNodes.add(node);
+        for (TreeObject candidate : candidates) {
+            if (isRelated(candidate, existingNodes)) {
+                relatedNodes.add(candidate);
+                if (candidate instanceof MarkerResolutionTreeNode) {
+                    Set<ErrorTreeNode> errorsFixed = ((MarkerResolutionTreeNode) candidate)
+                            .getErrorsFixed();
+                    relatedNodes.addAll(errorsFixed);
+                }
             }
-            relatedNodes.addAll(getRelatedNodes(item.getItems(), nodes));
+            relatedNodes.addAll(getRelatedNodes(candidate.getChildren(),
+                    existingNodes));
         }
         return relatedNodes;
     }
@@ -88,18 +118,22 @@ public class ChangeStateViewer {
         return disabledNodes.contains(treeObject);
     }
 
-    private boolean isRelated(TreeObject treeObject, Set<TreeObject> nodes) {
-        if (nodes.contains(treeObject)) {
-            return true;
-        }
-
-        if (treeObject instanceof MarkerResolutionTreeNode) {
-            MarkerResolutionTreeNode resolutionTreeNode = ((MarkerResolutionTreeNode) treeObject);
-            Set<ErrorTreeNode> errorsFixedByResolution = newHashSet(ErrorTreeNode
-                    .createTreeNodesFrom(
-                            newHashSet(resolutionTreeNode.getResolution()),
-                            new NoOpTreeUpdater(), false));
-            return nodes.containsAll(errorsFixedByResolution);
+    private boolean isRelated(TreeObject treeObject,
+            Set<TreeObject> existingNodes) {
+        if (treeObject instanceof ErrorTreeNode) {
+            return existingNodes.contains(treeObject);
+        } else if (treeObject instanceof MarkerResolutionTreeNode) {
+            MarkerResolutionTreeNode nodeToTest = ((MarkerResolutionTreeNode) treeObject);
+            for (TreeObject node : existingNodes) {
+                if (node instanceof MarkerResolutionTreeNode) {
+                    MarkerResolutionTreeNode existingNode = ((MarkerResolutionTreeNode) node);
+                    if (nodeToTest.hasSameResolution(existingNode)
+                            || existingNodes.containsAll(nodeToTest
+                                    .getErrorsFixed())) {
+                        return true;
+                    }
+                }
+            }
         }
         return false;
     }

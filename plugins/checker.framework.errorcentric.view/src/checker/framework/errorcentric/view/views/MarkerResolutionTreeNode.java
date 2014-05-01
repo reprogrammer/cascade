@@ -12,17 +12,19 @@ import checker.framework.change.propagator.ActionableMarkerResolution;
 import checker.framework.change.propagator.ComparableMarker;
 import checker.framework.quickfixes.descriptors.FixerDescriptor;
 
+import static com.google.common.collect.Sets.newHashSet;
+
 public class MarkerResolutionTreeNode extends TreeObject {
 
     private ActionableMarkerResolution resolution;
 
     private Job job;
-
-    private volatile int errorsFixed;
+    private volatile int fixedErrorsCount;
 
     private Set<ComparableMarker> unresolvableMarkers;
 
-    public MarkerResolutionTreeNode(ActionableMarkerResolution resolution, TreeUpdater treeUpdater) {
+    public MarkerResolutionTreeNode(ActionableMarkerResolution resolution,
+            TreeUpdater treeUpdater) {
         super(resolution.getLabel(), treeUpdater);
         this.resolution = resolution;
         this.unresolvableMarkers = new HashSet<>();
@@ -66,17 +68,17 @@ public class MarkerResolutionTreeNode extends TreeObject {
 
     @Override
     public int getRank() {
-        return getErrorsFixed();
+        return getFixedErrorsCount();
     }
 
-    public int getErrorsFixed() {
-        return errorsFixed;
+    public int getFixedErrorsCount() {
+        return fixedErrorsCount;
     }
 
-    public void setErrorsFixed(int errorsFixed) {
-        this.errorsFixed = errorsFixed;
+    public void setFixedErrorsCount(int fixedErrorsCount) {
+        this.fixedErrorsCount = fixedErrorsCount;
     }
-    
+
     public Set<ComparableMarker> getUnresolvableMarkers() {
         return unresolvableMarkers;
     }
@@ -91,9 +93,24 @@ public class MarkerResolutionTreeNode extends TreeObject {
     public boolean equals(Object obj) {
         // TODO(reprogrammer): Use EqualsBuilder and ensure the correctness with
         // respect to the instanceof check.
-        return (obj instanceof MarkerResolutionTreeNode)
-                && resolution
-                        .equals(((MarkerResolutionTreeNode) obj).resolution);
+        if (obj instanceof MarkerResolutionTreeNode) {
+            MarkerResolutionTreeNode otherNode = (MarkerResolutionTreeNode) obj;
+            return hasSameResolution(otherNode) && fixesSameErrors(otherNode);
+        }
+        return false;
+    }
+
+    public Set<ErrorTreeNode> getErrorsFixed() {
+        return newHashSet(ErrorTreeNode.createTreeNodesFrom(
+                newHashSet(resolution), new NoOpTreeUpdater(), false));
+    }
+
+    public boolean hasSameResolution(MarkerResolutionTreeNode other) {
+        return resolution.equals(other.resolution);
+    }
+
+    public boolean fixesSameErrors(MarkerResolutionTreeNode other) {
+        return getErrorsFixed().equals(other.getErrorsFixed());
     }
 
 }

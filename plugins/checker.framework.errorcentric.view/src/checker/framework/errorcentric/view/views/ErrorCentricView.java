@@ -335,4 +335,7 @@ public class ErrorCentricView extends ViewPart implements TreeUpdater {
         });
     }
 
+    public MarkerResolutionTreeNode getRoot() {
+        return invisibleRoot;
+    }
 }

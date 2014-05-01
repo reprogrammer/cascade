@@ -91,7 +91,7 @@ public class ChangeComputationJob extends Job {
                 .addChildren(union(errorTreeNodesWithResolutions,
                         errorTreeNodesWithoutResolutions));
         int errorsFixed = resolution.getMarkersToBeResolvedByFixer().size();
-        markerResolutionTreeNode.setErrorsFixed(errorsFixed);
+        markerResolutionTreeNode.setFixedErrorsCount(errorsFixed);
         markerResolutionTreeNode.setName(markerResolutionTreeNode.getName()
                 + " (" + errorsFixed + ")");
         // TODO(reprogrammer): I suggest to redesign the classes such that the
