@@ -3,6 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: checker.framework.change.propagator
 Bundle-SymbolicName: checker.framework.change.propagator
 Bundle-Version: 1.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Activator: checker.framework.change.propagator.Activator
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,

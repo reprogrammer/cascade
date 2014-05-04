@@ -3,6 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: checker.framework.errorcentric.view
 Bundle-SymbolicName: checker.framework.errorcentric.view;singleton:=true
 Bundle-Version: 1.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Activator: checker.framework.errorcentric.view.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
