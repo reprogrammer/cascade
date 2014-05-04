@@ -330,7 +330,9 @@ public class ErrorCentricView extends ViewPart implements TreeUpdater {
     public void update(final TreeObject node) {
         Display.getDefault().syncExec(new Runnable() {
             public void run() {
-                viewer.refresh();
+                if (!viewer.isBusy()) {
+                    viewer.refresh();
+                }
             }
         });
     }
