@@ -6,35 +6,59 @@ public class MarkerLocationDescriptor {
 
     private final CompilationUnitDescriptor compilationUnitDescriptor;
 
-    private final int initialOffset;
+    private final int codeSnippetOffsetRelativeToSurroundingCodeSnippet;
 
-    private final int initialLength;
+    private final int codeSnippetLength;
 
     private final String codeSnippet;
 
+    private final int surroundingCodeSnippetOffset;
+
+    private final int surroundingCodeSnippetLength;
+
+    private final String surroundingCodeSnippet;
+
     public MarkerLocationDescriptor(
             CompilationUnitDescriptor compilationUnitDescriptor,
-            int initialOffset, int initialLength, String codeSnippet) {
+            int codeSnippetOffsetRelativeToSurroundingCodeSnippet,
+            int codeSnippetLength, String codeSnippet,
+            String surroundingCodeSnippet, int surroundingCodeSnippetOffset,
+            int surroundingCodeSnippetLength) {
         this.compilationUnitDescriptor = compilationUnitDescriptor;
-        this.initialOffset = initialOffset;
-        this.initialLength = initialLength;
+        this.codeSnippetOffsetRelativeToSurroundingCodeSnippet = codeSnippetOffsetRelativeToSurroundingCodeSnippet;
+        this.codeSnippetLength = codeSnippetLength;
         this.codeSnippet = codeSnippet;
+        this.surroundingCodeSnippet = surroundingCodeSnippet;
+        this.surroundingCodeSnippetOffset = surroundingCodeSnippetOffset;
+        this.surroundingCodeSnippetLength = surroundingCodeSnippetLength;
     }
 
     CompilationUnitDescriptor getCompilationUnitDescriptor() {
         return compilationUnitDescriptor;
     }
 
-    int getInitialOffset() {
-        return initialOffset;
+    int getCodeSnippetOffsetRelativeToSurroundingCodeSnippet() {
+        return codeSnippetOffsetRelativeToSurroundingCodeSnippet;
     }
 
-    int getInitialLength() {
-        return initialLength;
+    int getCodeSnippetLength() {
+        return codeSnippetLength;
+    }
+
+    int getSurroundingCodeSnippetOffset() {
+        return surroundingCodeSnippetOffset;
+    }
+
+    int getSurroundingCodeSnippetLength() {
+        return surroundingCodeSnippetLength;
     }
 
     String getCodeSnippet() {
         return codeSnippet;
+    }
+
+    String getSurroundingCodeSnippet() {
+        return surroundingCodeSnippet;
     }
 
 }

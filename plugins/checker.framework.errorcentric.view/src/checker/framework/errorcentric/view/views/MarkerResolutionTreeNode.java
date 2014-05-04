@@ -1,5 +1,7 @@
 package checker.framework.errorcentric.view.views;
 
+import static com.google.common.collect.Sets.newHashSet;
+
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -11,8 +13,6 @@ import org.eclipse.core.runtime.jobs.Job;
 import checker.framework.change.propagator.ActionableMarkerResolution;
 import checker.framework.change.propagator.ComparableMarker;
 import checker.framework.quickfixes.descriptors.FixerDescriptor;
-
-import static com.google.common.collect.Sets.newHashSet;
 
 public class MarkerResolutionTreeNode extends TreeObject {
 

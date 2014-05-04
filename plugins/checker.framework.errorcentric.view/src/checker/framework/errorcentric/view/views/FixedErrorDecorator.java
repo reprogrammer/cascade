@@ -1,5 +1,7 @@
 package checker.framework.errorcentric.view.views;
 
+import static com.google.common.collect.Sets.newHashSet;
+
 import java.util.Collection;
 
 import org.eclipse.jface.viewers.ILabelDecorator;
@@ -7,8 +9,6 @@ import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
 
 import checker.framework.errorcentric.view.Activator;
-
-import static com.google.common.collect.Sets.newHashSet;
 
 public class FixedErrorDecorator implements ILabelDecorator {
 

@@ -1,5 +1,7 @@
 package checker.framework.change.propagator;
 
+import static com.google.common.collect.Iterables.getFirst;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,8 +15,6 @@ import checker.framework.quickfixes.descriptors.FixerProposalFactory;
 import com.google.common.base.Optional;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
-
-import static com.google.common.collect.Iterables.getFirst;
 
 public class ResolutionHelper {
     private static final CheckerResolutionGenerator checkerResolutionGenerator = new CheckerResolutionGenerator();

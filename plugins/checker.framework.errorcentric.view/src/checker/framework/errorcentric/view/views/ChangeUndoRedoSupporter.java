@@ -1,5 +1,7 @@
 package checker.framework.errorcentric.view.views;
 
+import static com.google.common.collect.Maps.newHashMap;
+
 import java.util.Map;
 import java.util.Set;
 
@@ -7,8 +9,6 @@ import org.eclipse.core.commands.operations.IOperationHistory;
 import org.eclipse.core.commands.operations.IOperationHistoryListener;
 import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.commands.operations.OperationHistoryEvent;
-
-import static com.google.common.collect.Maps.newHashMap;
 
 public class ChangeUndoRedoSupporter {
     private MarkerResolutionTreeNode resolutionTreeNode;

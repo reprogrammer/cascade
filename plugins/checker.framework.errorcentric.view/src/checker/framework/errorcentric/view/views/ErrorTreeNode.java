@@ -68,7 +68,8 @@ public class ErrorTreeNode extends TreeObject {
         for (TreeObject child : getChildren()) {
             if (child instanceof MarkerResolutionTreeNode) {
                 maxErrorsFixed = Integer.max(maxErrorsFixed,
-                        ((MarkerResolutionTreeNode) child).getFixedErrorsCount());
+                        ((MarkerResolutionTreeNode) child)
+                                .getFixedErrorsCount());
             }
         }
         return maxErrorsFixed;
