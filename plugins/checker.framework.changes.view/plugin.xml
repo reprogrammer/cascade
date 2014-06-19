@@ -9,7 +9,7 @@
             id="checker.framework.changes.view">
       </category>
       <view
-            name="Changes View"
+            name="Change-centric View"
             icon="icons/sample.gif"
             category="checker.framework.changes.view"
             class="checker.framework.changes.view.views.ChangesView"
