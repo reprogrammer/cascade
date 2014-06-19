@@ -6,10 +6,8 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
@@ -24,14 +22,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
-import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISelectionListener;
-import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.DrillDownAdapter;
 import org.eclipse.ui.part.ViewPart;
 
@@ -110,7 +105,6 @@ public class SeparatedChangesView extends ViewPart implements
         hookContextMenu();
         hookDoubleClickAction();
         hookSelectionAction();
-        contributeToActionBars();
 
         getSite().setSelectionProvider(viewer);
         getSite().getPage().addSelectionListener(SeparatedErrorsView.ID, this);
@@ -130,18 +124,6 @@ public class SeparatedChangesView extends ViewPart implements
         getSite().registerContextMenu(menuMgr, viewer);
     }
 
-    private void contributeToActionBars() {
-        IActionBars bars = getViewSite().getActionBars();
-        fillLocalPullDown(bars.getMenuManager());
-        fillLocalToolBar(bars.getToolBarManager());
-    }
-
-    private void fillLocalPullDown(IMenuManager manager) {
-        manager.add(computeFixesAction);
-        manager.add(new Separator());
-        manager.add(action2);
-    }
-
     private void fillContextMenu(IMenuManager manager) {
         manager.add(computeFixesAction);
         manager.add(action2);
@@ -151,35 +133,7 @@ public class SeparatedChangesView extends ViewPart implements
         manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
     }
 
-    private void fillLocalToolBar(IToolBarManager manager) {
-        manager.add(computeFixesAction);
-        manager.add(action2);
-        manager.add(new Separator());
-        drillDownAdapter.addNavigationActions(manager);
-    }
-
     private void makeActions() {
-        computeFixesAction = new Action() {
-            public void run() {
-                showMessage("Action 1 executed");
-            }
-        };
-        computeFixesAction.setText("Propose Fixes");
-        computeFixesAction
-                .setToolTipText("Proposes changes to fix type errors.");
-        computeFixesAction.setImageDescriptor(PlatformUI.getWorkbench()
-                .getSharedImages()
-                .getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
-
-        action2 = new Action() {
-            public void run() {
-                showMessage("Action 2 executed");
-            }
-        };
-        action2.setText("Action 2");
-        action2.setToolTipText("Action 2 tooltip");
-        action2.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
-                .getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
         doubleClickAction = new Action() {
             public void run() {
                 ISelection selection = viewer.getSelection();
@@ -263,11 +217,6 @@ public class SeparatedChangesView extends ViewPart implements
         });
     }
 
-    private void showMessage(String message) {
-        MessageDialog.openInformation(viewer.getControl().getShell(),
-                "Changes View", message);
-    }
-
     /**
      * Passing the focus request to the viewer's control.
      */
@@ -323,4 +272,5 @@ public class SeparatedChangesView extends ViewPart implements
     private void highlightTreeItem(TreeItem item) {
         item.setForeground(Colors.RED);
     }
+
 }
