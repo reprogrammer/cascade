@@ -1,6 +1,12 @@
 package checker.framework.quickfixes;
 
+import java.io.File;
+import java.lang.annotation.Annotation;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.checkerframework.eclipse.marker.MarkerReporter;
 import org.eclipse.core.resources.IMarker;
@@ -11,8 +17,12 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.jdt.core.IClasspathEntry;
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.JavaPluginImages;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
@@ -147,4 +157,97 @@ public class WorkspaceUtils {
         return image;
     }
 
+    private static List<IClasspathEntry> getClassPathEntries(
+            IJavaProject javaProject) {
+        try {
+            return Lists.newArrayList(javaProject.getResolvedClasspath(true));
+        } catch (JavaModelException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // private static void getAllChildren(
+    // IJavaElement javaElement) {
+    // List<IJavaElement> children = new ArrayList<>();
+    // children.add(javaElement);
+    // for (IJavaElement child : javaElement.getC) {
+    //
+    // }
+    // children.addAll(getAllChildren(javaElement);)
+    // }
+
+    public static String getFullyQualifiedName(IJavaProject javaProject,
+            String typeName) {
+        List<IClasspathEntry> classPathEntries = getClassPathEntries(javaProject);
+        List<URL> urls = Lists.transform(classPathEntries,
+                new Function<IClasspathEntry, URL>() {
+                    @Override
+                    public URL apply(IClasspathEntry classPathEntry) {
+                        try {
+                            File file = classPathEntry.getPath().toFile();
+                            if (file.exists()) {
+                                return file.toURI().toURL();
+                            } else {
+                                URI uri = getWorkspaceRoot().getFile(
+                                        classPathEntry.getPath())
+                                        .getLocationURI();
+                                return uri.toURL();
+                            }
+                            //
+                            // (classPathEntry.getPath()).toFile();
+                            // File file = classPathEntry.getPath().toFile();
+                            // if (!file.exists()) {
+                            // System.out.println(file.toString()
+                            // + " not found");
+                            // }
+                            // return file.toURI().toURL();
+                        } catch (MalformedURLException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                });
+        JarClassLoader jarClassLoader = new JarClassLoader(
+                urls.toArray(new URL[urls.size()]));
+        try {
+            Class<?> foundClass = jarClassLoader.loadClass(typeName);
+            return foundClass.getName();
+        } catch (ClassNotFoundException e1) {
+            // e.printStackTrace();
+            // List<Package> packages = jarClassLoader.getPackageList();
+            List<String> packages = getPackages(javaProject);
+            Iterable<String> filteredPackages = Iterables.filter(packages,
+                    aPackage -> !aPackage.startsWith("com.sun"));
+            // for (Package aPackage : packages) {
+            for (String aPackage : filteredPackages) {
+                // String fullName = aPackage.getName() + "." + typeName;
+                String fullName = aPackage + "." + typeName;
+                // System.out.println(fullName);
+                try {
+                    Class<?> foundClass = jarClassLoader.loadClass(fullName);
+                    Annotation[] declaredAnnotations = foundClass
+                            .getDeclaredAnnotations();
+                    return foundClass.getName();
+                } catch (ClassNotFoundException e2) {
+                }
+            }
+        }
+        return "Dummy";
+    }
+
+    private static List<String> getPackages(IJavaProject javaProject) {
+        try {
+            ArrayList<IPackageFragmentRoot> packageFragmentRoots = Lists
+                    .newArrayList(javaProject.getAllPackageFragmentRoots());
+            List<String> packageNames = new ArrayList<>();
+            for (IPackageFragmentRoot packageFragmentRoot : packageFragmentRoots) {
+                for (IJavaElement packageFragment : packageFragmentRoot
+                        .getChildren()) {
+                    packageNames.add(packageFragment.getElementName());
+                }
+            }
+            return packageNames;
+        } catch (JavaModelException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
