@@ -1,9 +1,10 @@
 package checker.framework.quickfixes;
 
-import static com.google.common.collect.Sets.newHashSet;
-
 import java.util.Set;
 
+import static com.google.common.collect.Sets.newHashSet;
+
+@Deprecated
 public enum KnownQualifier {
 
     Initialized("org.checkerframework.checker.initialization.qual",

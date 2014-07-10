@@ -6,9 +6,14 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 
 import checker.framework.change.propagator.CheckerID;
-import checker.framework.quickfixes.WorkspaceUtils;
+import checker.framework.errorcentric.view.views.ErrorCentricView;
+import checker.framework.quickfixes.InferredQualifier;
 
 import com.google.common.base.Optional;
 
@@ -22,24 +27,24 @@ public abstract class InferCommandHandler extends CheckerHandler {
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
 
-        // try {
-        selectedJavaProject = getSelectedProject(getSelection(event));
-        if (selectedJavaProject.isPresent()) {
-            System.out.println(WorkspaceUtils.getFullyQualifiedName(
-                    selectedJavaProject.get(), "Nullable"));
-            // // Adapted from http://stackoverflow.com/a/172082
-            // IWorkbenchPage activePage = PlatformUI.getWorkbench()
-            // .getActiveWorkbenchWindow().getActivePage();
-            // IViewPart view = activePage.findView(ErrorCentricView.ID);
-            // if (view != null) {
-            // ((ErrorCentricView) view).refreshView();
-            // } else {
-            // activePage.showView(ErrorCentricView.ID);
-            // }
+        try {
+            selectedJavaProject = getSelectedProject(getSelection(event));
+            if (selectedJavaProject.isPresent()) {
+                InferredQualifier.initialize(selectedJavaProject.get());
+
+                // Adapted from http://stackoverflow.com/a/172082
+                IWorkbenchPage activePage = PlatformUI.getWorkbench()
+                        .getActiveWorkbenchWindow().getActivePage();
+                IViewPart view = activePage.findView(ErrorCentricView.ID);
+                if (view != null) {
+                    ((ErrorCentricView) view).refreshView();
+                } else {
+                    activePage.showView(ErrorCentricView.ID);
+                }
+            }
+        } catch (PartInitException e) {
+            throw new RuntimeException(e);
         }
-        // } catch (PartInitException e) {
-        // throw new RuntimeException(e);
-        // }
         return null;
     }
 
