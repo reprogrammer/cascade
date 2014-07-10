@@ -36,6 +36,7 @@ public abstract class InferCommandHandler extends CheckerHandler {
                 IWorkbenchPage activePage = PlatformUI.getWorkbench()
                         .getActiveWorkbenchWindow().getActivePage();
                 IViewPart view = activePage.findView(ErrorCentricView.ID);
+
                 if (view != null) {
                     ((ErrorCentricView) view).refreshView();
                 } else {
