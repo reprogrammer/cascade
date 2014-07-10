@@ -2,11 +2,14 @@ package checker.framework.quickfixes;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Target;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import org.eclipse.jdt.core.IClasspathEntry;
@@ -22,6 +25,9 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
+import static com.google.common.collect.Sets.intersection;
+import static com.google.common.collect.Sets.newHashSet;
+
 public class InferredQualifier {
 
     public static void initialize(IJavaProject javaProject) {
@@ -30,24 +36,18 @@ public class InferredQualifier {
                     @Override
                     public InferredQualifier load(String typeName)
                             throws Exception {
-                        String fullyQualifiedName = InferredQualifier
-                                .getFullyQualifiedName(javaProject, typeName);
-                        return new InferredQualifier(fullyQualifiedName,
-                                QualifierLocation.TYPE);
+                        return new InferredQualifier(InferredQualifier
+                                .findTypeQualifierClass(javaProject, typeName));
                     }
                 });
     }
 
     private static LoadingCache<String, InferredQualifier> qualifiers;
 
-    private final String fullyQualifiedName;
+    private final Class<?> theClass;
 
-    private final QualifierLocation location;
-
-    private InferredQualifier(String fullyQualifiedName,
-            QualifierLocation location) {
-        this.fullyQualifiedName = fullyQualifiedName;
-        this.location = location;
+    private InferredQualifier(Class<?> theClass) {
+        this.theClass = theClass;
     }
 
     public static InferredQualifier infer(String shortName) {
@@ -59,11 +59,7 @@ public class InferredQualifier {
     }
 
     public String getFullyQualifiedName() {
-        return fullyQualifiedName;
-    }
-
-    public QualifierLocation getLocation() {
-        return location;
+        return theClass.getName();
     }
 
     static List<String> getPackages(IJavaProject javaProject) {
@@ -92,13 +88,13 @@ public class InferredQualifier {
         }
     }
 
-    public static String getFullyQualifiedName(IJavaProject javaProject,
+    private static Class<?> findTypeQualifierClass(IJavaProject javaProject,
             String typeQualifierName) throws ClassNotFoundException {
         JarClassLoader jarClassLoader = createJarClassLoader(javaProject);
         List<String> packages = getPackages(javaProject);
         try {
             return findTypeQualifierClass(typeQualifierName, jarClassLoader,
-                    packages).getName();
+                    packages);
         } catch (ClassNotFoundException e) {
             throw e;
         }
@@ -155,6 +151,19 @@ public class InferredQualifier {
         JarClassLoader jarClassLoader = new JarClassLoader(
                 urls.toArray(new URL[urls.size()]));
         return jarClassLoader;
+    }
+
+    public static Set<ElementType> getAnnotationTargets(Class<?> annotation) {
+        Target targetAnnotation = annotation
+                .getDeclaredAnnotation(Target.class);
+        return newHashSet(targetAnnotation.value());
+    }
+
+    public boolean isMethodAnnotation() {
+        Set<ElementType> methodAnnotations = newHashSet(ElementType.METHOD,
+                ElementType.CONSTRUCTOR);
+        return !intersection(methodAnnotations, getAnnotationTargets(theClass))
+                .isEmpty();
     }
 
 }

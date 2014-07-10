@@ -24,7 +24,7 @@ public class C19 {
 
 	@NonNull
 	@SuppressWarnings("rawtypes")
-	Object c19m4() {
+	Byte c19m4() {
 		return null;
 	}
 

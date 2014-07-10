@@ -16,7 +16,6 @@ import org.eclipse.swt.graphics.Image;
 import checker.framework.quickfixes.ASTParsingUtils;
 import checker.framework.quickfixes.ImportRewriter;
 import checker.framework.quickfixes.InferredQualifier;
-import checker.framework.quickfixes.QualifierLocation;
 import checker.framework.quickfixes.WorkspaceUtils;
 import checker.framework.quickfixes.descriptors.Fixer;
 
@@ -93,10 +92,7 @@ public class MethodReturnFixer implements Fixer {
                 String simpleName = getSimpleName(fullyQualifiedName);
                 InferredQualifier qualifier = InferredQualifier
                         .infer(simpleName);
-                // KnownQualifier qualifier =
-                // KnownQualifier.valueOf(simpleName);
-                if (qualifier != null
-                        && qualifier.getLocation() == QualifierLocation.TYPE) {
+                if (!qualifier.isMethodAnnotation()) {
                     listRewrite.remove(annotation, null);
                 }
             }
