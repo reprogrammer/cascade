@@ -44,7 +44,7 @@ public class ShadowProject {
         }
     }
 
-    public void runChecker(CheckerID checkerID) {
+    public void runChecker(String checkerID) {
         ComputeQuickFixesJob computeQuickFixesJob = new ComputeQuickFixesJob(
                 "ComputeQuickFixes of " + getProject().getElementName(), this,
                 checkerID);

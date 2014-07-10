@@ -1,9 +1,5 @@
 package checker.framework.changes.view.views;
 
-import static com.google.common.collect.Iterables.filter;
-import static com.google.common.collect.Sets.difference;
-import static com.google.common.collect.Sets.newHashSet;
-
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -17,6 +13,11 @@ import checker.framework.quickfixes.WorkspaceUtils;
 import checker.framework.quickfixes.descriptors.FixerDescriptor;
 
 import com.google.common.base.Predicate;
+
+import static com.google.common.collect.Iterables.filter;
+
+import static com.google.common.collect.Sets.difference;
+import static com.google.common.collect.Sets.newHashSet;
 
 public class MarkerResolutionTreeNode extends TreeObject {
 
@@ -66,10 +67,12 @@ public class MarkerResolutionTreeNode extends TreeObject {
         Set<ComparableMarker> allMarkersAfterResolution = shadowProject
                 .getMarkers();
         Set<ComparableMarker> removedMarkers = difference(
-                resolution.getAllMarkersBeforeResolution(), allMarkersAfterResolution);
+                resolution.getAllMarkersBeforeResolution(),
+                allMarkersAfterResolution);
         addChildren(RemovedErrorTreeNode.createTreeNodesFrom(removedMarkers));
         Set<ComparableMarker> addedMarkers = difference(
-                allMarkersAfterResolution, resolution.getAllMarkersBeforeResolution());
+                allMarkersAfterResolution,
+                resolution.getAllMarkersBeforeResolution());
         addChildren(AddedErrorTreeNode.createTreeNodesFrom(addedMarkers));
         Set<ActionableMarkerResolution> newResolutions = shadowProject
                 .getResolutions(allMarkersAfterResolution, addedMarkers);

@@ -11,7 +11,6 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
-import checker.framework.change.propagator.CheckerID;
 import checker.framework.separated.view.views.list.SeparatedErrorsView;
 import checker.framework.separated.view.views.tree.SeparatedChangesView;
 
@@ -19,7 +18,7 @@ import com.google.common.base.Optional;
 
 public abstract class InferCommandHandler extends CheckerHandler {
 
-    public static CheckerID checkerID;
+    public static String checkerID;
 
     public static Optional<IJavaProject> selectedJavaProject = Optional
             .absent();
@@ -30,11 +29,12 @@ public abstract class InferCommandHandler extends CheckerHandler {
             selectedJavaProject = getSelectedProject(getSelection(event));
             if (selectedJavaProject.isPresent()) {
                 // Adapted from http://stackoverflow.com/a/172082
-                IWorkbenchPage activePage = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-                        .getActivePage();
+                IWorkbenchPage activePage = PlatformUI.getWorkbench()
+                        .getActiveWorkbenchWindow().getActivePage();
                 activePage.showView(SeparatedChangesView.ID);
                 activePage.showView(SeparatedErrorsView.ID);
-                IViewPart findView = activePage.findView(SeparatedChangesView.ID);
+                IViewPart findView = activePage
+                        .findView(SeparatedChangesView.ID);
             }
         } catch (PartInitException e) {
             throw new RuntimeException(e);

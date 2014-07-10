@@ -9,7 +9,7 @@ public class InferJavariCommandHandler extends InferCommandHandler {
 
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
-        checkerID = CheckerID.JAVARI;
+        checkerID = CheckerID.JAVARI.getId();
         return super.execute(event);
     }
 

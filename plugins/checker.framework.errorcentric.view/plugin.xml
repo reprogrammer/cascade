@@ -61,4 +61,39 @@
      </menuContribution>
    </extension>
 
+   <extension
+     point="org.eclipse.ui.commands">
+
+     <category
+       id="checker.framework.errorcentric.propagator.category"
+       name="Type Qualifier Inference Category">
+     </category>
+   
+     <command
+       categoryId="checker.framework.errorcentric.propagator.category"
+       defaultHandler="checker.framework.errorcentric.propagator.commands.InferTypeQualifierCommandHandler"
+       id="checker.framework.errorcentric.propagator.infertypequalifier"
+       name="Infer Type Qualifiers">
+      </command>
+
+   </extension>
+   
+   <extension
+     point="org.eclipse.ui.menus">
+     <menuContribution
+       locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+       <menu
+         id="checker.framework.change.propagator.menu"
+         label="Type Qualifier Inference...">
+         <command
+           commandId="checker.framework.errorcentric.propagator.infertypequalifier"
+           label="Infer Type Qualifiers..."
+           style="push">
+         </command>
+       </menu>
+     </menuContribution>
+   </extension>
+
+
+
 </plugin>

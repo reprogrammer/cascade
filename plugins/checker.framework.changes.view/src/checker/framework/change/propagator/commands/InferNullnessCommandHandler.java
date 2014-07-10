@@ -9,7 +9,7 @@ public class InferNullnessCommandHandler extends InferCommandHandler {
 
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
-        checkerID = CheckerID.NULLNESS;
+        checkerID = CheckerID.NULLNESS.getId();
         return super.execute(event);
     }
 

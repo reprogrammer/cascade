@@ -9,16 +9,12 @@ import org.eclipse.core.runtime.jobs.Job;
 
 public class ComputeQuickFixesJob extends Job {
 
-    public static final String NULLNESS_CHECKER = "org.checkerframework.checker.nullness.NullnessChecker";
-
-    public static final String JAVARI_CHECKER = "org.checkerframework.checker.javari.NullnessChecker";
-
     private ShadowProject shadowProject;
 
-    private CheckerID checkerID;
+    private String checkerID;
 
     public ComputeQuickFixesJob(String name, ShadowProject shadowProject,
-            CheckerID checkerID) {
+            String checkerID) {
         super(name);
         this.shadowProject = shadowProject;
         this.checkerID = checkerID;
@@ -30,8 +26,7 @@ public class ComputeQuickFixesJob extends Job {
 
     private CheckerWorker getCheckerWorker() {
         CheckerWorker checkerJob = new CheckerWorker(
-                shadowProject.getProject(), getShadowSourceFiles(),
-                checkerID.getId());
+                shadowProject.getProject(), getShadowSourceFiles(), checkerID);
         checkerJob.setUser(true);
         checkerJob.setPriority(Job.BUILD);
         checkerJob.setRule(new MutexSchedulingRule());

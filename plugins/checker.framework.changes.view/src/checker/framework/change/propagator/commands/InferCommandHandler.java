@@ -9,14 +9,13 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
-import checker.framework.change.propagator.CheckerID;
 import checker.framework.changes.view.views.ChangesView;
 
 import com.google.common.base.Optional;
 
 public abstract class InferCommandHandler extends CheckerHandler {
 
-    public static CheckerID checkerID;
+    public static String checkerID;
 
     public static Optional<IJavaProject> selectedJavaProject = Optional
             .absent();
