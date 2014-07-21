@@ -1,7 +1,5 @@
 package checker.framework.errorcentric.view.views;
 
-import static com.google.common.collect.Maps.newHashMap;
-
 import java.util.Map;
 import java.util.Set;
 
@@ -9,6 +7,8 @@ import org.eclipse.core.commands.operations.IOperationHistory;
 import org.eclipse.core.commands.operations.IOperationHistoryListener;
 import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.commands.operations.OperationHistoryEvent;
+
+import static com.google.common.collect.Maps.newHashMap;
 
 public class ChangeUndoRedoSupporter {
     private MarkerResolutionTreeNode resolutionTreeNode;
@@ -62,11 +62,15 @@ public class ChangeUndoRedoSupporter {
                 });
     }
 
-    public void applyUndoableChange(MarkerResolutionTreeNode resolutionTreeNode) {
+    public void prepareToApplyUndoableChange(
+            MarkerResolutionTreeNode resolutionTreeNode) {
         this.resolutionTreeNode = resolutionTreeNode;
-        resolutionTreeNode.getResolution().run();
         Set<TreeObject> newDisabledNodes = changeStateViewer
                 .disableChange(resolutionTreeNode);
         disabledNodesMap.put(resolutionTreeNode, newDisabledNodes);
+    }
+
+    public void applyUndoableChange(MarkerResolutionTreeNode resolutionTreeNode) {
+        resolutionTreeNode.getResolution().run();
     }
 }
