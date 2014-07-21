@@ -10,6 +10,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
 import checker.framework.changes.view.views.ChangesView;
+import checker.framework.quickfixes.InferredQualifier;
 
 import com.google.common.base.Optional;
 
@@ -25,6 +26,8 @@ public abstract class InferCommandHandler extends CheckerHandler {
         try {
             selectedJavaProject = getSelectedProject(getSelection(event));
             if (selectedJavaProject.isPresent()) {
+                InferredQualifier.initialize(selectedJavaProject.get());
+
                 // Adapted from http://stackoverflow.com/a/172082
                 PlatformUI.getWorkbench().getActiveWorkbenchWindow()
                         .getActivePage().showView(ChangesView.ID);

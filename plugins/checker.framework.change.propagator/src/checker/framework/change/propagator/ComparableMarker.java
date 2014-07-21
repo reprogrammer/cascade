@@ -23,11 +23,11 @@ public class ComparableMarker {
 
     private MarkerLocationDescriptor markerLocationDescriptor;
 
-    private ShadowProject shadowProject;
+    private ShadowOfShadowProject shadowProject;
 
-    private ComparableMarker(ShadowProject shadowProject, IMarker marker,
-            MarkerLocationDescriptor markerLocationDescriptor, IPath fullPath,
-            String type, String message) {
+    private ComparableMarker(ShadowOfShadowProject shadowProject,
+            IMarker marker, MarkerLocationDescriptor markerLocationDescriptor,
+            IPath fullPath, String type, String message) {
         this.shadowProject = shadowProject;
         this.marker = marker;
         this.markerLocationDescriptor = markerLocationDescriptor;
@@ -36,7 +36,7 @@ public class ComparableMarker {
         this.message = message;
     }
 
-    public static ComparableMarker create(ShadowProject shadowProject,
+    public static ComparableMarker create(ShadowOfShadowProject shadowProject,
             IMarker marker) {
         try {
             MarkerLocationDescriptorFactory factory = new MarkerLocationDescriptorFactory(
@@ -63,7 +63,8 @@ public class ComparableMarker {
 
     public Optional<MarkerLocation> createMarkerLocation() {
         return new MarkerLocationFactory(markerLocationDescriptor)
-                .createMarkerLocation(shadowProject.getPrimaryProject());
+                .createMarkerLocation(shadowProject.getShadowProject()
+                        .getPrimaryProject());
     }
 
     @Override

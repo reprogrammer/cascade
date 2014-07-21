@@ -9,19 +9,24 @@ public class ShadowProjectFactory {
 
     static final String SHADOW_PROJECT_PREFIX = "ShadowOf";
 
-    final private IJavaProject javaProject;
+    final protected IJavaProject javaProject;
 
     public ShadowProjectFactory(IJavaProject project) {
         this.javaProject = project;
     }
 
-    public ShadowProject get() {
+    protected IJavaProject createShadowJavaProject() {
         IProject shadowProject = WorkspaceUtils
                 .createProject(SHADOW_PROJECT_PREFIX
                         + javaProject.getProject().getName());
         WorkspaceUtils.copyResource(javaProject.getProject(), shadowProject);
-        return new ShadowProject(WorkspaceUtils.createJavaProject(shadowProject
-                .getProject()));
+        IJavaProject shadowJavaProject = WorkspaceUtils
+                .createJavaProject(shadowProject.getProject());
+        return shadowJavaProject;
+    }
+
+    public ShadowProject get() {
+        return new ShadowProject(createShadowJavaProject());
     }
 
 }

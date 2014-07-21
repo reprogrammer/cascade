@@ -17,7 +17,7 @@ import org.eclipse.core.runtime.jobs.Job;
 
 import checker.framework.change.propagator.ActionableMarkerResolution;
 import checker.framework.change.propagator.ComparableMarker;
-import checker.framework.change.propagator.ShadowProject;
+import checker.framework.change.propagator.ShadowOfShadowProject;
 import checker.framework.errorcentric.propagator.commands.InferCommandHandler;
 import checker.framework.quickfixes.descriptors.FixerDescriptor;
 
@@ -49,7 +49,7 @@ public class ChangeComputationJob extends Job {
         monitor.worked(3);
         // WorkspaceUtils.saveAllEditors();
         monitor.worked(3);
-        ShadowProject shadowProject = resolution.getShadowProject();
+        ShadowOfShadowProject shadowProject = resolution.getShadowProject();
         shadowProject.runChecker(InferCommandHandler.checkerID);
         monitor.worked(10);
         Set<ComparableMarker> allMarkersAfterResolution = shadowProject

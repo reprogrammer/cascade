@@ -8,6 +8,8 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
 import checker.framework.change.propagator.ActionableMarkerResolution;
+import checker.framework.change.propagator.ShadowOfShadowProject;
+import checker.framework.change.propagator.ShadowOfShadowProjectFactory;
 import checker.framework.change.propagator.ShadowProject;
 import checker.framework.change.propagator.ShadowProjectFactory;
 import checker.framework.change.propagator.commands.InferCommandHandler;
@@ -62,8 +64,10 @@ public class ViewContentProvider implements IStructuredContentProvider,
         javaProject = InferCommandHandler.selectedJavaProject.get();
         ShadowProject shadowProject = new ShadowProjectFactory(javaProject)
                 .get();
-        shadowProject.runChecker(InferCommandHandler.checkerID);
-        Set<ActionableMarkerResolution> resolutions = shadowProject
+        ShadowOfShadowProject shadowOfShadowProject = new ShadowOfShadowProjectFactory(
+                shadowProject.getProject()).get();
+        shadowOfShadowProject.runChecker(InferCommandHandler.checkerID);
+        Set<ActionableMarkerResolution> resolutions = shadowOfShadowProject
                 .getResolutions();
         for (ActionableMarkerResolution resolution : resolutions) {
             TreeObject node = new MarkerResolutionTreeNode(resolution);

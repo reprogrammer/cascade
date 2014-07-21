@@ -34,6 +34,8 @@ import org.eclipse.ui.part.DrillDownAdapter;
 import org.eclipse.ui.part.ViewPart;
 
 import checker.framework.change.propagator.ActionableMarkerResolution;
+import checker.framework.change.propagator.ShadowOfShadowProject;
+import checker.framework.change.propagator.ShadowOfShadowProjectFactory;
 import checker.framework.change.propagator.ShadowProject;
 import checker.framework.change.propagator.ShadowProjectFactory;
 import checker.framework.errorcentric.propagator.commands.InferCommandHandler;
@@ -93,11 +95,13 @@ public class ErrorCentricView extends ViewPart implements TreeUpdater {
         javaProject = InferCommandHandler.selectedJavaProject.get();
         ShadowProject shadowProject = new ShadowProjectFactory(javaProject)
                 .get();
-        shadowProject.runChecker(InferCommandHandler.checkerID);
+        ShadowOfShadowProject shadowOfShadowProject = new ShadowOfShadowProjectFactory(
+                shadowProject.getProject()).get();
+        shadowOfShadowProject.runChecker(InferCommandHandler.checkerID);
 
         ActionableMarkerResolution identityResolution = new ActionableMarkerResolution(
-                shadowProject, new IdentityMarkerResolution(), new HashSet<>(),
-                new IdentityFixerDescriptor(), new HashSet<>());
+                shadowOfShadowProject, new IdentityMarkerResolution(),
+                new HashSet<>(), new IdentityFixerDescriptor(), new HashSet<>());
         invisibleRoot = new MarkerResolutionTreeNode(identityResolution, this);
         invisibleRoot.computeChangeEffect();
         return invisibleRoot;

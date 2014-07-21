@@ -12,7 +12,7 @@ import java.util.Set;
 
 import checker.framework.change.propagator.ActionableMarkerResolution;
 import checker.framework.change.propagator.ComparableMarker;
-import checker.framework.change.propagator.ShadowProject;
+import checker.framework.change.propagator.ShadowOfShadowProject;
 import checker.framework.quickfixes.WorkspaceUtils;
 import checker.framework.quickfixes.descriptors.FixerDescriptor;
 import checker.framework.separated.propagator.commands.InferCommandHandler;
@@ -83,7 +83,7 @@ public class MarkerResolutionTreeNode extends TreeObject {
 
     public TreeObject[] getChildren() {
         calculateAndCacheMarkers();
-        ShadowProject shadowProject = resolution.getShadowProject();
+        ShadowOfShadowProject shadowProject = resolution.getShadowProject();
         Set<ActionableMarkerResolution> newResolutions = shadowProject
                 .getResolutions(allMarkersAfterResolution,
                         allMarkersOnlyAfterResolution);

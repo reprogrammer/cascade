@@ -9,11 +9,11 @@ import org.eclipse.core.runtime.jobs.Job;
 
 public class ComputeQuickFixesJob extends Job {
 
-    private ShadowProject shadowProject;
+    private ShadowOfShadowProject shadowProject;
 
     private String checkerID;
 
-    public ComputeQuickFixesJob(String name, ShadowProject shadowProject,
+    public ComputeQuickFixesJob(String name, ShadowOfShadowProject shadowProject,
             String checkerID) {
         super(name);
         this.shadowProject = shadowProject;

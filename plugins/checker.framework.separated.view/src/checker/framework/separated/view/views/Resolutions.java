@@ -5,6 +5,8 @@ import java.util.Set;
 import org.eclipse.jdt.core.IJavaProject;
 
 import checker.framework.change.propagator.ActionableMarkerResolution;
+import checker.framework.change.propagator.ShadowOfShadowProject;
+import checker.framework.change.propagator.ShadowOfShadowProjectFactory;
 import checker.framework.change.propagator.ShadowProject;
 import checker.framework.change.propagator.ShadowProjectFactory;
 import checker.framework.separated.propagator.commands.InferCommandHandler;
@@ -28,8 +30,10 @@ public class Resolutions {
                     .get();
             ShadowProject shadowProject = new ShadowProjectFactory(javaProject)
                     .get();
-            shadowProject.runChecker(InferCommandHandler.checkerID);
-            resolutions = shadowProject.getResolutions();
+            ShadowOfShadowProject shadowOfShadowProject = new ShadowOfShadowProjectFactory(
+                    shadowProject.getProject()).get();
+            shadowOfShadowProject.runChecker(InferCommandHandler.checkerID);
+            resolutions = shadowOfShadowProject.getResolutions();
         }
         return resolutions;
     }

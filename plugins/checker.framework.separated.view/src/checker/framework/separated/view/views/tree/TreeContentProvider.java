@@ -2,7 +2,6 @@ package checker.framework.separated.view.views.tree;
 
 import java.util.Set;
 
-import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
@@ -20,8 +19,6 @@ public class TreeContentProvider implements IStructuredContentProvider,
         ITreeContentProvider {
 
     private TreeObject invisibleRoot;
-
-    private IJavaProject javaProject;
 
     public void inputChanged(Viewer v, Object oldInput, Object newInput) {
     }

@@ -29,7 +29,7 @@ public class ResolutionHelper {
      * @return
      */
     public static Set<ActionableMarkerResolution> getResolutions(
-            ShadowProject shadowProject, Set<ComparableMarker> baseMarkers,
+            ShadowOfShadowProject shadowProject, Set<ComparableMarker> baseMarkers,
             Set<ComparableMarker> markers) {
         SetMultimap<FixerDescriptor, ComparableMarker> fixersMap = createFixerDescriptors(markers);
         Set<ActionableMarkerResolution> resolutions = new HashSet<>();
@@ -61,7 +61,7 @@ public class ResolutionHelper {
     }
 
     public static Optional<ActionableMarkerResolution> createActionableResolutions(
-            ShadowProject shadowProject, FixerDescriptor fixerDescriptor,
+            ShadowOfShadowProject shadowProject, FixerDescriptor fixerDescriptor,
             Set<ComparableMarker> markersToBeResolvedByFixer,
             Set<ComparableMarker> baseMarkers) {
         Optional<ActionableMarkerResolution> optionalResolution = Optional

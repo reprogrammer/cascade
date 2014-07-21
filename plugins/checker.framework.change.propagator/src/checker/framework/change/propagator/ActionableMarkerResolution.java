@@ -12,7 +12,7 @@ import checker.framework.quickfixes.descriptors.FixerResolutionFactory;
 @SuppressWarnings("restriction")
 public class ActionableMarkerResolution {
 
-    private final ShadowProject shadowProject;
+    private final ShadowOfShadowProject shadowProject;
 
     private final IMarkerResolution resolution;
 
@@ -22,7 +22,7 @@ public class ActionableMarkerResolution {
 
     private final Set<ComparableMarker> allMarkersBeforeResolution;
 
-    public ActionableMarkerResolution(ShadowProject shadowProject,
+    public ActionableMarkerResolution(ShadowOfShadowProject shadowProject,
             IMarkerResolution resolution,
             Set<ComparableMarker> markersToBeResolvedByFixer,
             FixerDescriptor fixerDescriptor,
@@ -44,7 +44,7 @@ public class ActionableMarkerResolution {
         return fixerDescriptor;
     }
 
-    public ShadowProject getShadowProject() {
+    public ShadowOfShadowProject getShadowProject() {
         return shadowProject;
     }
 
@@ -71,8 +71,8 @@ public class ActionableMarkerResolution {
     }
 
     public void run() {
-        new FixerResolutionFactory(
-                createFixer(shadowProject.getPrimaryProject())).get().run(null);
+        new FixerResolutionFactory(createFixer(shadowProject.getShadowProject()
+                .getPrimaryProject())).get().run(null);
     }
 
     @Override

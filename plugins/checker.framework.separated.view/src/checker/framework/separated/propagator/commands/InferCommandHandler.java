@@ -11,6 +11,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
+import checker.framework.quickfixes.InferredQualifier;
 import checker.framework.separated.view.views.list.SeparatedErrorsView;
 import checker.framework.separated.view.views.tree.SeparatedChangesView;
 
@@ -28,6 +29,8 @@ public abstract class InferCommandHandler extends CheckerHandler {
         try {
             selectedJavaProject = getSelectedProject(getSelection(event));
             if (selectedJavaProject.isPresent()) {
+                InferredQualifier.initialize(selectedJavaProject.get());
+
                 // Adapted from http://stackoverflow.com/a/172082
                 IWorkbenchPage activePage = PlatformUI.getWorkbench()
                         .getActiveWorkbenchWindow().getActivePage();
