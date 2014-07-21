@@ -30,8 +30,7 @@ import static com.google.common.collect.Sets.newHashSet;
 
 public class InferredQualifier {
 
-    // TODO(reprogrammer): Refactor to Guava's Supplier.
-    public static void initialize(IJavaProject javaProject) {
+    static void initialize(IJavaProject javaProject) {
         qualifiers = CacheBuilder.newBuilder().build(
                 new CacheLoader<String, InferredQualifier>() {
                     @Override
