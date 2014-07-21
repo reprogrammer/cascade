@@ -12,7 +12,6 @@ import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.correction.ChangeCorrectionProposal;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.PerformChangeOperation;
-import org.eclipse.ltk.core.refactoring.RefactoringCore;
 
 import checker.framework.quickfixes.descriptors.FixerFactory;
 
@@ -73,7 +72,6 @@ public class FixerDescriptorApplier {
     private void performChangeOperation(Change change, String name) {
         change.initializeValidationData(new NullProgressMonitor());
         PerformChangeOperation operation = new PerformChangeOperation(change);
-        operation.setUndoManager(RefactoringCore.getUndoManager(), name);
         try {
             operation.run(new NullProgressMonitor());
         } catch (CoreException e) {

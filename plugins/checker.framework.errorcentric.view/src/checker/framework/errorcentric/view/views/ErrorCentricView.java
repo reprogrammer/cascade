@@ -3,7 +3,6 @@ package checker.framework.errorcentric.view.views;
 import java.util.HashSet;
 
 import org.eclipse.core.commands.operations.IOperationHistory;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -220,7 +219,6 @@ public class ErrorCentricView extends ViewPart implements TreeUpdater {
                             return Status.OK_STATUS;
                         }
                     };
-                    job.setRule(ResourcesPlugin.getWorkspace().getRoot());
                     job.setPriority(Job.INTERACTIVE);
                     job.schedule();
                 }
