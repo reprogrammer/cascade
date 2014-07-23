@@ -1,18 +1,18 @@
 package checker.framework.errorcentric.view.views;
 
-import static com.google.common.collect.Sets.newHashSet;
-
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.jobs.Job;
 
 import checker.framework.change.propagator.ActionableMarkerResolution;
 import checker.framework.change.propagator.ComparableMarker;
 import checker.framework.quickfixes.descriptors.FixerDescriptor;
+
+import static com.google.common.collect.Sets.newHashSet;
 
 public class MarkerResolutionTreeNode extends TreeObject {
 
@@ -52,8 +52,10 @@ public class MarkerResolutionTreeNode extends TreeObject {
         String progressBarLabel = String.format("Computing the effect of: %s",
                 resolution.getLabel());
         job = new ChangeComputationJob(progressBarLabel, this);
-        job.setRule(ResourcesPlugin.getWorkspace().getRoot());
-        job.setPriority(Job.LONG);
+        IProject project = resolution.getShadowProject().getProject()
+                .getProject();
+        job.setRule(project);
+        job.setPriority(Job.DECORATE);
         job.schedule();
     }
 

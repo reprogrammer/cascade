@@ -1,15 +1,16 @@
 package checker.framework.errorcentric.view.views;
 
-import static com.google.common.collect.Sets.difference;
-import static com.google.common.collect.Sets.newHashSet;
-
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TreeItem;
+
+import static com.google.common.collect.Sets.difference;
+import static com.google.common.collect.Sets.newHashSet;
 
 public class ChangeStateViewer {
     private Set<TreeObject> disabledNodes;

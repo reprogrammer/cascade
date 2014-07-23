@@ -12,4 +12,8 @@ public abstract class FixerFactory {
 
     public abstract Fixer get();
 
+    public IJavaProject getJavaProject() {
+        return javaProject;
+    }
+
 }

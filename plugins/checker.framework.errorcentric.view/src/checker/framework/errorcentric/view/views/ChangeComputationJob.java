@@ -1,11 +1,5 @@
 package checker.framework.errorcentric.view.views;
 
-import static com.google.common.collect.Iterables.filter;
-import static com.google.common.collect.Iterables.transform;
-import static com.google.common.collect.Sets.difference;
-import static com.google.common.collect.Sets.newHashSet;
-import static com.google.common.collect.Sets.union;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -22,6 +16,13 @@ import checker.framework.errorcentric.propagator.commands.InferCommandHandler;
 import checker.framework.quickfixes.descriptors.FixerDescriptor;
 
 import com.google.common.base.Predicate;
+
+import static com.google.common.collect.Sets.difference;
+import static com.google.common.collect.Sets.newHashSet;
+import static com.google.common.collect.Sets.union;
+
+import static com.google.common.collect.Iterables.filter;
+import static com.google.common.collect.Iterables.transform;
 
 public class ChangeComputationJob extends Job {
 

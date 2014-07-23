@@ -6,12 +6,15 @@ import org.eclipse.core.filebuffers.ITextFileBufferManager;
 import org.eclipse.core.filebuffers.LocationKind;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.correction.ChangeCorrectionProposal;
 import org.eclipse.ltk.core.refactoring.Change;
-import org.eclipse.ltk.core.refactoring.PerformChangeOperation;
+import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import checker.framework.quickfixes.descriptors.FixerFactory;
 
@@ -69,13 +72,36 @@ public class FixerDescriptorApplier {
         }
     }
 
+    // private void performChangeOperation(Change change, String name) {
+    // change.initializeValidationData(new NullProgressMonitor());
+    // PerformChangeOperation operation = new PerformChangeOperation(change);
+    // operation.setSchedulingRule(fixerFactory.getJavaProject().getProject());
+    // try {
+    // operation.run(new NullProgressMonitor());
+    // } catch (CoreException e) {
+    // throw new RuntimeException(e);
+    // }
+    // }
+
     private void performChangeOperation(Change change, String name) {
-        change.initializeValidationData(new NullProgressMonitor());
-        PerformChangeOperation operation = new PerformChangeOperation(change);
         try {
-            operation.run(new NullProgressMonitor());
-        } catch (CoreException e) {
+            IProgressMonitor pm = new NullProgressMonitor();
+            change.initializeValidationData(pm);
+            if (!change.isEnabled())
+                return;
+            RefactoringStatus valid = change.isValid(new SubProgressMonitor(pm,
+                    1));
+            if (valid.hasFatalError())
+                return;
+            Change undo = change.perform(new SubProgressMonitor(pm, 1));
+            if (undo != null) {
+                undo.initializeValidationData(new SubProgressMonitor(pm, 1));
+                // do something with the undo object
+            }
+        } catch (OperationCanceledException | CoreException e) {
             throw new RuntimeException(e);
+        } finally {
+            change.dispose();
         }
     }
 
