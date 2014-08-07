@@ -80,9 +80,9 @@ public class ChangeComputationJob extends Job {
                 fixedMarkers);
         Set<ErrorTreeNode> errorTreeNodesWithoutResolutions = newHashSet(transform(
                 unresolvedMarkers, marker -> new AddedErrorTreeNode(marker)));
+        TreeUpdater treeUpdater = markerResolutionTreeNode.getTreeUpdater();
         HashSet<ErrorTreeNode> errorTreeNodesWithResolutions = newHashSet(AddedErrorTreeNode
-                .createTreeNodesFrom(historicallyNewResolutions,
-                        markerResolutionTreeNode.getTreeUpdater()));
+                .createTreeNodesFrom(historicallyNewResolutions, treeUpdater));
         markerResolutionTreeNode
                 .addChildren(union(errorTreeNodesWithResolutions,
                         errorTreeNodesWithoutResolutions));
@@ -90,9 +90,10 @@ public class ChangeComputationJob extends Job {
         markerResolutionTreeNode.setFixedErrorsCount(errorsFixed);
         markerResolutionTreeNode.addErrorCountToLabel();
         monitor.worked(1);
-        monitor.subTask("Updating tree: " + getThread());
-        markerResolutionTreeNode.getTreeUpdater().update(
-                markerResolutionTreeNode);
+        treeUpdater.recomputeDisabledNodes();
+        // Since recomputeDisabledNodes makes a call to viewer.refresh(),
+        // we do not need to call update() any more.
+        // treeUpdater.update(markerResolutionTreeNode);
         monitor.worked(1);
     }
 

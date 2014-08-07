@@ -326,4 +326,9 @@ public class ErrorCentricView extends ViewPart implements TreeUpdater {
     public MarkerResolutionTreeNode getRoot() {
         return invisibleRoot;
     }
+
+    @Override
+    public void recomputeDisabledNodes() {
+        changeStateViewer.recomputeDisabledChanges();
+    }
 }

@@ -2,30 +2,49 @@ package checker.framework.errorcentric.view.views;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.swt.widgets.Display;
 
 import static com.google.common.collect.Sets.difference;
 import static com.google.common.collect.Sets.newHashSet;
 
+import static com.google.common.collect.Maps.newHashMap;
+
 public class ChangeStateViewer {
     private Set<TreeObject> disabledNodes;
     private TreeViewer viewer;
+    private Map<MarkerResolutionTreeNode, Set<TreeObject>> disabledNodesMap;
 
     public ChangeStateViewer(TreeViewer viewer) {
         this.disabledNodes = newHashSet();
         this.viewer = viewer;
+        this.disabledNodesMap = newHashMap();
     }
 
     public void resetState() {
         disabledNodes.clear();
     }
 
-    public Set<TreeObject> disableChange(
-            MarkerResolutionTreeNode resolutionTreeNode) {
+    public void recomputeDisabledChanges() {
+        Set<TreeObject> treeObjects = newHashSet(disabledNodes);
+        for (TreeObject treeObject : treeObjects) {
+            if (treeObject instanceof MarkerResolutionTreeNode) {
+                disableChange((MarkerResolutionTreeNode) treeObject);
+            }
+        }
+    }
+
+    /**
+     * Disables a change node and (1) all the errors it fixes (2) all the other
+     * "equivalent" change node in the tree, i.e. is the same change and fixes
+     * the same set of errors (3) all the errors that (2) fixes
+     * 
+     * @param resolutionTreeNode
+     */
+    public void disableChange(MarkerResolutionTreeNode resolutionTreeNode) {
         // init
         Set<TreeObject> clonedDisabledNodes = newHashSet(disabledNodes);
         clonedDisabledNodes.add(resolutionTreeNode);
@@ -39,8 +58,16 @@ public class ChangeStateViewer {
                 clonedDisabledNodes, disabledNodes));
         // swap the clone
         disabledNodes = clonedDisabledNodes;
-        viewer.refresh();
-        return newDisabledNodes;
+        Display.getDefault().syncExec(new Runnable() {
+            public void run() {
+                viewer.refresh();
+            }
+        });
+        if (disabledNodesMap.containsKey(resolutionTreeNode)) {
+            disabledNodesMap.get(resolutionTreeNode).addAll(newDisabledNodes);
+        } else {
+            disabledNodesMap.put(resolutionTreeNode, newDisabledNodes);
+        }
     }
 
     private boolean canAddRelatedNodes(Set<TreeObject> nodes) {
@@ -65,9 +92,15 @@ public class ChangeStateViewer {
         }
     }
 
-    public void enableChange(Set<TreeObject> nodesToBeEnabled) {
+    private void enableChange(Set<TreeObject> nodesToBeEnabled) {
         disabledNodes.removeAll(nodesToBeEnabled);
         viewer.refresh();
+    }
+
+    public void enableChange(MarkerResolutionTreeNode markerResolutionTreeNode) {
+        Set<TreeObject> disabledNodesToBeEnabled = disabledNodesMap
+                .get(markerResolutionTreeNode);
+        enableChange(disabledNodesToBeEnabled);
     }
 
     private Set<TreeObject> getRelatedNodes(Set<TreeObject> nodes) {
@@ -94,24 +127,6 @@ public class ChangeStateViewer {
                     candidate.getExistingChildren(), existingNodes));
         }
         return relatedNodes;
-    }
-
-    private void setNodeColor(Set<TreeObject> nodes, Color color) {
-        setNodeColor(viewer.getTree().getItems(), nodes, color);
-    }
-
-    private void setNodeColor(TreeItem[] items, Set<TreeObject> nodes,
-            Color color) {
-        for (TreeItem item : items) {
-            if (nodes.contains(item.getData())) {
-                setNodeColor(item, color);
-            }
-            setNodeColor(item.getItems(), nodes, color);
-        }
-    }
-
-    private void setNodeColor(TreeItem item, Color color) {
-        item.setForeground(color);
     }
 
     public boolean isDisabled(TreeObject treeObject) {
