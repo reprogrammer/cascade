@@ -3,10 +3,6 @@ package checker.framework.errorcentric.view.views;
 import java.util.HashSet;
 
 import org.eclipse.core.commands.operations.IOperationHistory;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -205,27 +201,10 @@ public class ErrorCentricView extends ViewPart implements TreeUpdater {
                     }
                     final MarkerResolutionTreeNode resolutionTreeNode = resolution
                             .get();
-
-                    Job job = new Job(
-                            Messages.ErrorCentricView_resolution_application_job_name) {
-                        @Override
-                        protected IStatus run(IProgressMonitor monitor) {
-
-                            Display.getDefault().syncExec(new Runnable() {
-                                @Override
-                                public void run() {
-                                    changeUndoRedoSupporter
-                                            .prepareToApplyUndoableChange(resolutionTreeNode);
-                                    changeUndoRedoSupporter
-                                            .applyUndoableChange(resolutionTreeNode);
-                                }
-                            });
-                            return Status.OK_STATUS;
-                        }
-
-                    };
-                    job.setPriority(Job.INTERACTIVE);
-                    job.schedule();
+                    changeUndoRedoSupporter
+                            .prepareToApplyUndoableChange(resolutionTreeNode);
+                    changeUndoRedoSupporter
+                            .applyUndoableChange(resolutionTreeNode);
                 }
                 Optional<ErrorTreeNode> error = getSelectedError(selectedTreeObject);
                 if (error.isPresent()) {

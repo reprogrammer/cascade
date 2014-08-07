@@ -1,7 +1,6 @@
 package checker.framework.change.propagator;
 
 import org.checkerframework.eclipse.actions.CheckerWorker;
-import org.checkerframework.eclipse.util.MutexSchedulingRule;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -13,8 +12,8 @@ public class ComputeQuickFixesJob extends Job {
 
     private String checkerID;
 
-    public ComputeQuickFixesJob(String name, ShadowOfShadowProject shadowProject,
-            String checkerID) {
+    public ComputeQuickFixesJob(String name,
+            ShadowOfShadowProject shadowProject, String checkerID) {
         super(name);
         this.shadowProject = shadowProject;
         this.checkerID = checkerID;
@@ -27,9 +26,7 @@ public class ComputeQuickFixesJob extends Job {
     private CheckerWorker getCheckerWorker() {
         CheckerWorker checkerJob = new CheckerWorker(
                 shadowProject.getProject(), getShadowSourceFiles(), checkerID);
-        checkerJob.setUser(true);
         checkerJob.setPriority(Job.BUILD);
-        checkerJob.setRule(new MutexSchedulingRule());
         return checkerJob;
     }
 

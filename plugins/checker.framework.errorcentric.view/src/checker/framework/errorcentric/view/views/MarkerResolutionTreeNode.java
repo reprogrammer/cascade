@@ -54,7 +54,11 @@ public class MarkerResolutionTreeNode extends TreeObject {
         job = new ChangeComputationJob(progressBarLabel, this);
         IProject project = resolution.getShadowProject().getProject()
                 .getProject();
-        job.setRule(project);
+        // We are avoiding using the project as the scheduling rule because it
+        // conflicts with the rule that is used by the undoable operation's
+        // checkpoint mechanism. Instead we are using our own synchronization
+        // locks now.
+        // job.setRule(project);
         job.setPriority(Job.DECORATE);
         job.schedule();
     }
@@ -65,6 +69,10 @@ public class MarkerResolutionTreeNode extends TreeObject {
         } catch (InterruptedException e) {
             throw new RuntimeException();
         }
+        return super.getChildren();
+    }
+
+    public TreeObject[] getExistingChildren() {
         return super.getChildren();
     }
 

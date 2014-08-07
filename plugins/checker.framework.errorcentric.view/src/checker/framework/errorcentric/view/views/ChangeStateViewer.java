@@ -6,7 +6,6 @@ import java.util.Set;
 
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TreeItem;
 
 import static com.google.common.collect.Sets.difference;
@@ -73,9 +72,8 @@ public class ChangeStateViewer {
 
     private Set<TreeObject> getRelatedNodes(Set<TreeObject> nodes) {
         Set<TreeObject> relatedNodes = new HashSet<>();
-        relatedNodes.addAll(getRelatedNodes(
-                ((MarkerResolutionTreeNode) viewer.getInput()).getChildren(),
-                nodes));
+        relatedNodes.addAll(getRelatedNodes(((MarkerResolutionTreeNode) viewer
+                .getInput()).getExistingChildren(), nodes));
         return relatedNodes;
     }
 
@@ -91,8 +89,9 @@ public class ChangeStateViewer {
                     relatedNodes.addAll(errorsFixed);
                 }
             }
-            relatedNodes.addAll(getRelatedNodes(candidate.getChildren(),
-                    existingNodes));
+
+            relatedNodes.addAll(getRelatedNodes(
+                    candidate.getExistingChildren(), existingNodes));
         }
         return relatedNodes;
     }
