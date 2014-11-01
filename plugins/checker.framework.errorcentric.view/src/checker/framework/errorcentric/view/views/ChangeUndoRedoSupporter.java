@@ -1,29 +1,48 @@
 package checker.framework.errorcentric.view.views;
 
-import java.lang.reflect.Field;
-import java.util.Map;
-
 import org.eclipse.core.commands.operations.IOperationHistory;
 import org.eclipse.core.commands.operations.IOperationHistoryListener;
+import org.eclipse.core.commands.operations.IUndoContext;
+import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.commands.operations.OperationHistoryEvent;
-import org.eclipse.core.commands.operations.TriggeredOperations;
-import org.eclipse.ltk.core.refactoring.ContentStamp;
-import org.eclipse.ltk.core.refactoring.TextFileChange;
-import org.eclipse.ltk.core.refactoring.UndoTextFileChange;
-import org.eclipse.ltk.internal.core.refactoring.UndoableOperation2ChangeAdapter;
-
-import static com.google.common.collect.Maps.newHashMap;
 
 public class ChangeUndoRedoSupporter {
+    private class MarkerResolutionTreeNodeContext implements IUndoContext {
+        private MarkerResolutionTreeNode markerResolutionTreeNode;
+
+        public MarkerResolutionTreeNodeContext(
+                MarkerResolutionTreeNode markerResolutionTreeNode) {
+            this.markerResolutionTreeNode = markerResolutionTreeNode;
+        }
+
+        public MarkerResolutionTreeNode getMarkerResolutionTreeNode() {
+            return markerResolutionTreeNode;
+        }
+
+        @Override
+        public String getLabel() {
+            return markerResolutionTreeNode.getName();
+        }
+
+        @Override
+        public boolean matches(IUndoContext context) {
+            if (context instanceof MarkerResolutionTreeNodeContext) {
+                MarkerResolutionTreeNodeContext other = (MarkerResolutionTreeNodeContext) context;
+                return this.markerResolutionTreeNode
+                        .equals(other.markerResolutionTreeNode);
+            }
+            return false;
+        }
+
+    }
+
     private MarkerResolutionTreeNode resolutionTreeNode;
-    private Map<ContentStamp, MarkerResolutionTreeNode> operationMap;
 
     private IOperationHistory operationHistory;
     private ChangeStateViewer changeStateViewer;
 
     public ChangeUndoRedoSupporter(IOperationHistory operationHistory,
             ChangeStateViewer changeStateViewer) {
-        this.operationMap = newHashMap();
         this.operationHistory = operationHistory;
         this.changeStateViewer = changeStateViewer;
     }
@@ -35,106 +54,34 @@ public class ChangeUndoRedoSupporter {
                     public void historyNotification(OperationHistoryEvent event) {
 
                         if (event.getEventType() == OperationHistoryEvent.ABOUT_TO_UNDO) {
-                            TriggeredOperations to = (TriggeredOperations) event
-                                    .getOperation();
-                            UndoableOperation2ChangeAdapter triggeringOperation = (UndoableOperation2ChangeAdapter) to
-                                    .getTriggeringOperation();
-                            UndoTextFileChange undoTextFileChange = (UndoTextFileChange) triggeringOperation
-                                    .getChange();
-                            try {
-                                Field declaredField = UndoTextFileChange.class
-                                        .getDeclaredField("fContentStampToRestore");
-                                declaredField.setAccessible(true);
-                                ; // NoSuchFieldException
-                                ContentStamp contentStampToRestore = (ContentStamp) declaredField
-                                        .get(undoTextFileChange);
-
-                                MarkerResolutionTreeNode markerResolutionTreeNode = operationMap
-                                        .get(contentStampToRestore);
-                                if (markerResolutionTreeNode != null) {
+                            IUndoContext[] contexts = event.getOperation()
+                                    .getContexts();
+                            for (IUndoContext context : contexts) {
+                                if (context instanceof MarkerResolutionTreeNodeContext) {
+                                    MarkerResolutionTreeNode markerResolutionTreeNode = ((MarkerResolutionTreeNodeContext) context)
+                                            .getMarkerResolutionTreeNode();
                                     changeStateViewer
                                             .enableChange(markerResolutionTreeNode);
                                 }
-                            } catch (IllegalArgumentException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                            } catch (IllegalAccessException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                            } catch (NoSuchFieldException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                            } catch (SecurityException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
                             }
                         } else if (event.getEventType() == OperationHistoryEvent.REDONE) {
-                            TriggeredOperations to = (TriggeredOperations) event
-                                    .getOperation();
-                            UndoableOperation2ChangeAdapter triggeringOperation = (UndoableOperation2ChangeAdapter) to
-                                    .getTriggeringOperation();
-                            UndoTextFileChange undoTextFileChange = (UndoTextFileChange) triggeringOperation
-                                    .getChange();
-                            try {
-                                Field declaredField = UndoTextFileChange.class
-                                        .getDeclaredField("fContentStampToRestore");
-                                declaredField.setAccessible(true);
-                                ; // NoSuchFieldException
-                                ContentStamp contentStampToRestore = (ContentStamp) declaredField
-                                        .get(undoTextFileChange);
-
-                                MarkerResolutionTreeNode markerResolutionTreeNode = operationMap
-                                        .get(contentStampToRestore);
-                                if (markerResolutionTreeNode != null) {
+                            IUndoContext[] contexts = event.getOperation()
+                                    .getContexts();
+                            for (IUndoContext context : contexts) {
+                                if (context instanceof MarkerResolutionTreeNodeContext) {
+                                    MarkerResolutionTreeNode markerResolutionTreeNode = ((MarkerResolutionTreeNodeContext) context)
+                                            .getMarkerResolutionTreeNode();
                                     changeStateViewer
                                             .disableChange(markerResolutionTreeNode);
-
                                 }
-                            } catch (IllegalArgumentException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                            } catch (IllegalAccessException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                            } catch (NoSuchFieldException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                            } catch (SecurityException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
                             }
                         } else if (event.getEventType() == OperationHistoryEvent.ABOUT_TO_EXECUTE) {
-                            TriggeredOperations operation = (TriggeredOperations) event
-                                    .getOperation();
-                            UndoableOperation2ChangeAdapter triggeringOperation = (UndoableOperation2ChangeAdapter) operation
-                                    .getTriggeringOperation();
-                            TextFileChange change = (TextFileChange) triggeringOperation
-                                    .getChange();
-
-                            Field declaredField;
-                            try {
-                                declaredField = TextFileChange.class
-                                        .getDeclaredField("fContentStamp");
-                                declaredField.setAccessible(true);
-                                ; // NoSuchFieldException
-                                ContentStamp contentStamp = (ContentStamp) declaredField
-                                        .get(change);
-                                if (resolutionTreeNode != null) {
-                                    operationMap.put(contentStamp,
-                                            resolutionTreeNode);
-                                }
-                            } catch (NoSuchFieldException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                            } catch (SecurityException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                            } catch (IllegalArgumentException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                            } catch (IllegalAccessException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
+                            if (resolutionTreeNode != null) {
+                                IUndoableOperation operation = event
+                                        .getOperation();
+                                operation
+                                        .addContext(new MarkerResolutionTreeNodeContext(
+                                                resolutionTreeNode));
                             }
                         } else if (event.getEventType() == OperationHistoryEvent.DONE) {
                             if (resolutionTreeNode != null) {
