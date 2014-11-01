@@ -1,24 +1,26 @@
 package checker.framework.errorcentric.view.views;
 
-import static com.google.common.collect.Sets.newHashSet;
-
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jdt.internal.corext.refactoring.nls.NLSMessages;
 
 import checker.framework.change.propagator.ActionableMarkerResolution;
 import checker.framework.change.propagator.ComparableMarker;
+import checker.framework.errorcentric.view.Messages;
 import checker.framework.quickfixes.descriptors.FixerDescriptor;
+
+import static com.google.common.collect.Sets.newHashSet;
 
 public class MarkerResolutionTreeNode extends TreeObject {
 
     private ActionableMarkerResolution resolution;
 
     private Job job;
+
     private volatile int fixedErrorsCount;
 
     private Set<ComparableMarker> unresolvableMarkers;
@@ -47,13 +49,23 @@ public class MarkerResolutionTreeNode extends TreeObject {
         return fixerDescriptors;
     }
 
+    public void addErrorCountToLabel() {
+        setName(getName() + " (" + fixedErrorsCount + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
     public void computeChangeEffect() {
-        // TODO(reprogrammer): Externalize this string.
-        String progressBarLabel = String.format("Computing the effect of: %s",
-                resolution.getLabel());
+        String progressBarLabel = NLSMessages
+                .bind(Messages.ErrorCentricView_compute_change_effect_progress_bar_label,
+                        resolution.getLabel());
         job = new ChangeComputationJob(progressBarLabel, this);
-        job.setRule(ResourcesPlugin.getWorkspace().getRoot());
-        job.setPriority(Job.LONG);
+        // We are avoiding using the project as the scheduling rule because it
+        // conflicts with the rule that is used by the undoable operation's
+        // checkpoint mechanism. Instead we are using our own synchronization
+        // locks now.
+        // IProject project = resolution.getShadowProject().getProject()
+        // .getProject();
+        // job.setRule(project);
+        job.setPriority(Job.DECORATE);
         job.schedule();
     }
 
@@ -63,6 +75,10 @@ public class MarkerResolutionTreeNode extends TreeObject {
         } catch (InterruptedException e) {
             throw new RuntimeException();
         }
+        return super.getChildren();
+    }
+
+    public TreeObject[] getExistingChildren() {
         return super.getChildren();
     }
 

@@ -203,14 +203,8 @@ public class ErrorCentricView extends ViewPart implements TreeUpdater {
                             .get();
                     changeUndoRedoSupporter
                             .prepareToApplyUndoableChange(resolutionTreeNode);
-
-                    Display.getDefault().syncExec(new Runnable() {
-                        @Override
-                        public void run() {
-                            changeUndoRedoSupporter
-                                    .applyUndoableChange(resolutionTreeNode);
-                        }
-                    });
+                    changeUndoRedoSupporter
+                            .applyUndoableChange(resolutionTreeNode);
                 }
                 Optional<ErrorTreeNode> error = getSelectedError(selectedTreeObject);
                 if (error.isPresent()) {
@@ -331,5 +325,10 @@ public class ErrorCentricView extends ViewPart implements TreeUpdater {
 
     public MarkerResolutionTreeNode getRoot() {
         return invisibleRoot;
+    }
+
+    @Override
+    public void recomputeDisabledNodes() {
+        changeStateViewer.recomputeDisabledChanges();
     }
 }

@@ -4,4 +4,6 @@ public interface TreeUpdater {
 
     void update(TreeObject node);
 
+    void recomputeDisabledNodes();
+
 }

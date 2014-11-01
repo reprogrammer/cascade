@@ -1,26 +1,48 @@
 package checker.framework.errorcentric.view.views;
 
-import java.util.Map;
-import java.util.Set;
-
 import org.eclipse.core.commands.operations.IOperationHistory;
 import org.eclipse.core.commands.operations.IOperationHistoryListener;
+import org.eclipse.core.commands.operations.IUndoContext;
 import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.commands.operations.OperationHistoryEvent;
 
-import static com.google.common.collect.Maps.newHashMap;
-
 public class ChangeUndoRedoSupporter {
+    private class MarkerResolutionTreeNodeContext implements IUndoContext {
+        private MarkerResolutionTreeNode markerResolutionTreeNode;
+
+        public MarkerResolutionTreeNodeContext(
+                MarkerResolutionTreeNode markerResolutionTreeNode) {
+            this.markerResolutionTreeNode = markerResolutionTreeNode;
+        }
+
+        public MarkerResolutionTreeNode getMarkerResolutionTreeNode() {
+            return markerResolutionTreeNode;
+        }
+
+        @Override
+        public String getLabel() {
+            return markerResolutionTreeNode.getName();
+        }
+
+        @Override
+        public boolean matches(IUndoContext context) {
+            if (context instanceof MarkerResolutionTreeNodeContext) {
+                MarkerResolutionTreeNodeContext other = (MarkerResolutionTreeNodeContext) context;
+                return this.markerResolutionTreeNode
+                        .equals(other.markerResolutionTreeNode);
+            }
+            return false;
+        }
+
+    }
+
     private MarkerResolutionTreeNode resolutionTreeNode;
-    private Map<IUndoableOperation, MarkerResolutionTreeNode> operationMap;
-    private Map<MarkerResolutionTreeNode, Set<TreeObject>> disabledNodesMap;
+
     private IOperationHistory operationHistory;
     private ChangeStateViewer changeStateViewer;
 
     public ChangeUndoRedoSupporter(IOperationHistory operationHistory,
             ChangeStateViewer changeStateViewer) {
-        this.operationMap = newHashMap();
-        this.disabledNodesMap = newHashMap();
         this.operationHistory = operationHistory;
         this.changeStateViewer = changeStateViewer;
     }
@@ -30,28 +52,36 @@ public class ChangeUndoRedoSupporter {
                 .addOperationHistoryListener(new IOperationHistoryListener() {
                     @Override
                     public void historyNotification(OperationHistoryEvent event) {
-                        if (event.getEventType() == OperationHistoryEvent.UNDONE) {
-                            MarkerResolutionTreeNode markerResolutionTreeNode = operationMap
-                                    .get(event.getOperation());
-                            if (markerResolutionTreeNode != null) {
-                                Set<TreeObject> disabledNodes = disabledNodesMap
-                                        .get(markerResolutionTreeNode);
-                                changeStateViewer.enableChange(disabledNodes);
+
+                        if (event.getEventType() == OperationHistoryEvent.ABOUT_TO_UNDO) {
+                            IUndoContext[] contexts = event.getOperation()
+                                    .getContexts();
+                            for (IUndoContext context : contexts) {
+                                if (context instanceof MarkerResolutionTreeNodeContext) {
+                                    MarkerResolutionTreeNode markerResolutionTreeNode = ((MarkerResolutionTreeNodeContext) context)
+                                            .getMarkerResolutionTreeNode();
+                                    changeStateViewer
+                                            .enableChange(markerResolutionTreeNode);
+                                }
                             }
                         } else if (event.getEventType() == OperationHistoryEvent.REDONE) {
-                            MarkerResolutionTreeNode markerResolutionTreeNode = operationMap
-                                    .get(event.getOperation());
-                            if (markerResolutionTreeNode != null) {
-                                Set<TreeObject> newDisabledNodes = changeStateViewer
-                                        .disableChange(markerResolutionTreeNode);
-                                disabledNodesMap.put(markerResolutionTreeNode,
-                                        newDisabledNodes);
-
+                            IUndoContext[] contexts = event.getOperation()
+                                    .getContexts();
+                            for (IUndoContext context : contexts) {
+                                if (context instanceof MarkerResolutionTreeNodeContext) {
+                                    MarkerResolutionTreeNode markerResolutionTreeNode = ((MarkerResolutionTreeNodeContext) context)
+                                            .getMarkerResolutionTreeNode();
+                                    changeStateViewer
+                                            .disableChange(markerResolutionTreeNode);
+                                }
                             }
                         } else if (event.getEventType() == OperationHistoryEvent.ABOUT_TO_EXECUTE) {
                             if (resolutionTreeNode != null) {
-                                operationMap.put(event.getOperation(),
-                                        resolutionTreeNode);
+                                IUndoableOperation operation = event
+                                        .getOperation();
+                                operation
+                                        .addContext(new MarkerResolutionTreeNodeContext(
+                                                resolutionTreeNode));
                             }
                         } else if (event.getEventType() == OperationHistoryEvent.DONE) {
                             if (resolutionTreeNode != null) {
@@ -65,9 +95,7 @@ public class ChangeUndoRedoSupporter {
     public void prepareToApplyUndoableChange(
             MarkerResolutionTreeNode resolutionTreeNode) {
         this.resolutionTreeNode = resolutionTreeNode;
-        Set<TreeObject> newDisabledNodes = changeStateViewer
-                .disableChange(resolutionTreeNode);
-        disabledNodesMap.put(resolutionTreeNode, newDisabledNodes);
+        changeStateViewer.disableChange(resolutionTreeNode);
     }
 
     public void applyUndoableChange(MarkerResolutionTreeNode resolutionTreeNode) {

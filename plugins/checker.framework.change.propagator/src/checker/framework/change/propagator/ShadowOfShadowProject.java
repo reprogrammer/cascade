@@ -22,7 +22,6 @@ public class ShadowOfShadowProject extends ShadowProject {
         ComputeQuickFixesJob computeQuickFixesJob = new ComputeQuickFixesJob(
                 "ComputeQuickFixes of " + getProject().getElementName(), this,
                 checkerID);
-        computeQuickFixesJob.setUser(true);
         computeQuickFixesJob.setPriority(Job.BUILD);
         computeQuickFixesJob.schedule();
         try {

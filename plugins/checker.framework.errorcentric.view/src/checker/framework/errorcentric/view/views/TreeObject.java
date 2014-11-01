@@ -7,13 +7,13 @@ import org.eclipse.core.runtime.IAdaptable;
 
 public class TreeObject implements IAdaptable {
 
-    private String name;
+    private volatile String name;
 
-    private TreeObject parent;
+    private volatile TreeObject parent;
 
     private ArrayList<TreeObject> children;
 
-    private TreeUpdater treeUpdater;
+    private volatile TreeUpdater treeUpdater;
 
     public TreeObject(String name, TreeUpdater treeUpdater) {
         this.children = new ArrayList<>();
@@ -34,7 +34,7 @@ public class TreeObject implements IAdaptable {
         treeUpdater.update(this);
     }
 
-    public void setParent(TreeObject parent) {
+    private void setParent(TreeObject parent) {
         this.parent = parent;
     }
 
@@ -50,7 +50,7 @@ public class TreeObject implements IAdaptable {
         return null;
     }
 
-    public void addChild(TreeObject child) {
+    public synchronized void addChild(TreeObject child) {
         children.add(child);
         child.setParent(this);
     }
@@ -61,25 +61,25 @@ public class TreeObject implements IAdaptable {
         }
     }
 
-    public void removeChild(TreeObject child) {
+    public synchronized void removeChild(TreeObject child) {
         children.remove(child);
         child.setParent(null);
     }
 
-    public TreeObject[] getChildren() {
+    public synchronized TreeObject[] getChildren() {
         return (TreeObject[]) children.toArray(new TreeObject[children.size()]);
     }
 
-    public boolean hasChildren() {
+    public TreeObject[] getExistingChildren() {
+        return getChildren();
+    }
+
+    public synchronized boolean hasChildren() {
         return children.size() > 0;
     }
 
     public TreeUpdater getTreeUpdater() {
         return treeUpdater;
-    }
-
-    public void setLabelUpdateListener(TreeUpdater treeUpdater) {
-        this.treeUpdater = treeUpdater;
     }
 
     public int getRank() {

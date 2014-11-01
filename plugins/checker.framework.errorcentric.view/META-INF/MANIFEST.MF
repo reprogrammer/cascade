@@ -17,6 +17,8 @@ Require-Bundle: org.eclipse.ui,
  checker.framework.quickfixes,
  com.google.guava,
  org.eclipse.jdt.ui,
- org.eclipse.ui.workbench.texteditor
+ org.eclipse.ui.workbench.texteditor,
+ org.eclipse.ltk.core.refactoring
 Bundle-ActivationPolicy: lazy
-Import-Package: org.apache.commons.lang3.builder
+Import-Package: org.apache.commons.lang3.builder,
+ org.eclipse.jdt.core.refactoring

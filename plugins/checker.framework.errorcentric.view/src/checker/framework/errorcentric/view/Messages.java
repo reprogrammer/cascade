@@ -4,6 +4,7 @@ import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
     private static final String BUNDLE_NAME = "checker.framework.errorcentric.view.messages"; //$NON-NLS-1$
+    public static String ErrorCentricView_compute_change_effect_progress_bar_label;
     public static String ErrorCentricView_refresh_icon;
     public static String ErrorCentricView_refresh_text;
     public static String ErrorCentricView_refresh_tool_tip;
